@@ -14,12 +14,5 @@ var RootCmd = &cobra.Command{
     },
 }
 
-var KeyLocation string
-var FiletoWrite string
-var MinFileLength int
-
 func init() {
-    RootCmd.PersistentFlags().StringVar(&KeyLocation, "key", "", "key to pull file from")
-    RootCmd.PersistentFlags().StringVar(&FiletoWrite, "file", "", "where to write the file")
-    RootCmd.PersistentFlags().IntVar(&MinFileLength, "length", 10, "minimum amount of lines in the file")
 }
