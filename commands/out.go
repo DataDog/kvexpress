@@ -2,6 +2,7 @@ package commands
 
 import (
 	"github.com/spf13/cobra"
+  "fmt"
 )
 
 var outCmd = &cobra.Command{
@@ -12,7 +13,16 @@ var outCmd = &cobra.Command{
 }
 
 func outRun(cmd *cobra.Command, args []string) {
-	// Stuff goes here.
+  checkFlags()
+}
+
+func checkFlags() {
+  if KeyLocation == "" {
+    fmt.Println("Need a key location in -k")
+  }
+  if FiletoWrite == "" {
+    fmt.Println("Need a file to write in -f")
+  }
 }
 
 var KeyLocation string
@@ -21,7 +31,7 @@ var MinFileLength int
 
 func init() {
 	RootCmd.AddCommand(outCmd)
-	outCmd.Flags().StringVarP(&FiletoWrite, "key", "k", "", "key to pull data from")
+	outCmd.Flags().StringVarP(&KeyLocation, "key", "k", "", "key to pull data from")
 	outCmd.Flags().StringVarP(&FiletoWrite, "file", "f", "", "where to write the data")
 	outCmd.Flags().IntVarP(&MinFileLength, "length", "l", 10, "minimum amount of lines in the file")
 }
