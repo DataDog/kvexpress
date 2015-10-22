@@ -1,4 +1,4 @@
-all: deps build
+all: build
 
 deps:
 	go get github.com/aryann/difflib
