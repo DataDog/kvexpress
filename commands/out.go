@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 var outCmd = &cobra.Command{
@@ -19,9 +20,11 @@ func outRun(cmd *cobra.Command, args []string) {
 func checkFlags() {
 	if KeyLocation == "" {
 		fmt.Println("Need a key location in -k")
+		os.Exit(1)
 	}
 	if FiletoWrite == "" {
 		fmt.Println("Need a file to write in -f")
+		os.Exit(1)
 	}
 }
 
