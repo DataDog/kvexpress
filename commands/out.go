@@ -1,8 +1,8 @@
 package commands
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
-  "fmt"
 )
 
 var outCmd = &cobra.Command{
@@ -13,16 +13,16 @@ var outCmd = &cobra.Command{
 }
 
 func outRun(cmd *cobra.Command, args []string) {
-  checkFlags()
+	checkFlags()
 }
 
 func checkFlags() {
-  if KeyLocation == "" {
-    fmt.Println("Need a key location in -k")
-  }
-  if FiletoWrite == "" {
-    fmt.Println("Need a file to write in -f")
-  }
+	if KeyLocation == "" {
+		fmt.Println("Need a key location in -k")
+	}
+	if FiletoWrite == "" {
+		fmt.Println("Need a file to write in -f")
+	}
 }
 
 var KeyLocation string
