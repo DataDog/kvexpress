@@ -30,11 +30,13 @@ func checkFlags() {
 
 var KeyLocation string
 var FiletoWrite string
+var ConsulServer string
 var MinFileLength int
 
 func init() {
 	RootCmd.AddCommand(outCmd)
 	outCmd.Flags().StringVarP(&KeyLocation, "key", "k", "", "key to pull data from")
 	outCmd.Flags().StringVarP(&FiletoWrite, "file", "f", "", "where to write the data")
+	outCmd.Flags().StringVarP(&ConsulServer, "server", "s", "localhost:8500", "Consul server location")
 	outCmd.Flags().IntVarP(&MinFileLength, "length", "l", 10, "minimum amount of lines in the file")
 }
