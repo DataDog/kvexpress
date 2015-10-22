@@ -9,6 +9,8 @@ deps:
 format:
 	gofmt -w .
 
-build:
+clean:
 	rm -f kvexpress || true
+
+build: clean
 	go build -o kvexpress main.go
