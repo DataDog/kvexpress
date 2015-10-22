@@ -7,8 +7,7 @@ deps:
 	go get github.com/zorkian/go-datadog-api
 
 format:
-	gofmt -w main.go
-	gofmt -w commands/*.go
+	gofmt -w .
 
 build:
 	rm -f kvexpress || true
