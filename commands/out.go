@@ -19,20 +19,27 @@ func outRun(cmd *cobra.Command, args []string) {
 	checkFlags()
 
 	// Get the data out of Consul.
-	config := consulapi.DefaultConfig()
-	config.Address = ConsulServer
-	consul, err := consulapi.NewClient(config)
-	kv := consul.KV()
-	pair, _, err := kv.Get(KeyLocation, nil)
-	if err != nil {
-		panic(err)
-	} else {
-		log.Print("out: value='", string(pair.Value[:]), "'")
-	}
+	KVData = get(KeyLocation, ConsulServer)
 
 	// Is the data long enough?
 
 	// If the data is long enough, write the file.
+}
+
+func get(key string, server string) string {
+	var value string
+	config := consulapi.DefaultConfig()
+	config.Address = server
+	consul, err := consulapi.NewClient(config)
+	kv := consul.KV()
+	pair, _, err := kv.Get(key, nil)
+	if err != nil {
+		panic(err)
+	} else {
+		value = string(pair.Value[:])
+		log.Print("out: value='", value, "'")
+	}
+	return value
 }
 
 func checkFlags() {
@@ -48,6 +55,7 @@ func checkFlags() {
 	log.Print("out: Required cli flags present.")
 }
 
+var KVData string
 var KeyLocation string
 var FiletoWrite string
 var ConsulServer string
