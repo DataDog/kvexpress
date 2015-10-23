@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	consulapi "github.com/hashicorp/consul/api"
 	"github.com/spf13/cobra"
 	"log"
 	"os"
@@ -16,10 +17,26 @@ var outCmd = &cobra.Command{
 
 func outRun(cmd *cobra.Command, args []string) {
 	checkFlags()
+
+	// Get the data out of Consul.
+	config := consulapi.DefaultConfig()
+	config.Address = ConsulServer
+	consul, err := consulapi.NewClient(config)
+	kv := consul.KV()
+	pair, _, err := kv.Get(KeyLocation, nil)
+	if err != nil {
+		panic(err)
+	} else {
+		log.Print("out: value='", string(pair.Value[:]), "'")
+	}
+
+	// Is the data long enough?
+
+	// If the data is long enough, write the file.
 }
 
 func checkFlags() {
-	log.Print("Checking cli flags.")
+	log.Print("out: Checking cli flags.")
 	if KeyLocation == "" {
 		fmt.Println("Need a key location in -k")
 		os.Exit(1)
@@ -28,6 +45,7 @@ func checkFlags() {
 		fmt.Println("Need a file to write in -f")
 		os.Exit(1)
 	}
+	log.Print("out: Required cli flags present.")
 }
 
 var KeyLocation string
