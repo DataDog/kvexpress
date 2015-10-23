@@ -14,7 +14,7 @@ func main() {
 	if e == nil {
 		log.SetOutput(logwriter)
 	}
-	log.Print("Startup kvexpress version:", minversion)
+	log.Print("main: Startup kvexpress version:", minversion)
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	commands.RootCmd.Execute()
 }

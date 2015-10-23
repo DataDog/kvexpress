@@ -56,7 +56,7 @@ func check(e error) {
 func writeFile(data string) {
 	err := ioutil.WriteFile(FiletoWrite, []byte(data), os.FileMode(FilePermissions))
 	check(err)
-	log.Print("out: file_wrote='true' location='", FiletoWrite, "'")
+	log.Print("out: file_wrote='true' location='", FiletoWrite, "' permissions='", FilePermissions, "'")
 }
 
 func lengthCheck(data string) bool {
