@@ -76,7 +76,7 @@ func computeChecksum(data string) string {
 func checksumCheck(data string, checksum string) bool {
 	computed_checksum := computeChecksum(data)
 	log.Print("out: checksum='", checksum, "' computed_checksum='", computed_checksum, "'")
-	if computed_checksum == checksum {
+	if strings.TrimSpace(computed_checksum) == strings.TrimSpace(checksum) {
 		return true
 	} else {
 		return false
