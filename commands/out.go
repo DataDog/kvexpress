@@ -5,6 +5,7 @@ import (
 	"fmt"
 	consulapi "github.com/hashicorp/consul/api"
 	"github.com/spf13/cobra"
+	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
@@ -46,8 +47,16 @@ func outRun(cmd *cobra.Command, args []string) {
 	}
 }
 
-func writeFile(data string) bool {
-	return true
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
+
+func writeFile(data string) {
+	err := ioutil.WriteFile(FiletoWrite, []byte(data), os.FileMode(FilePermissions))
+	check(err)
+	log.Print("out: file_wrote='true' location='", FiletoWrite, "'")
 }
 
 func lengthCheck(data string) bool {
@@ -129,9 +138,11 @@ var FiletoWrite string
 var PrefixLocation string
 var ConsulServer string
 var MinFileLength int
+var FilePermissions int
 
 func init() {
 	RootCmd.AddCommand(outCmd)
+	outCmd.Flags().IntVarP(&FilePermissions, "chmod", "c", 0640, "permissions for the file")
 	outCmd.Flags().StringVarP(&PrefixLocation, "prefix", "p", "kvexpress", "prefix for the key")
 	outCmd.Flags().StringVarP(&KeyLocation, "key", "k", "", "key to pull data from")
 	outCmd.Flags().StringVarP(&FiletoWrite, "file", "f", "", "where to write the data")
