@@ -28,12 +28,21 @@ func outRun(cmd *cobra.Command, args []string) {
 	Checksum := get(key_checksum)
 
 	// Is the data long enough?
-	lengthCheck(KVData)
+	longEnough := lengthCheck(KVData)
 
 	// Does the checksum match?
-	checksumCheck(KVData, Checksum)
+	checksumMatch := checksumCheck(KVData, Checksum)
 
 	// If the data is long enough and the checksum matches, write the file.
+	if longEnough && checksumMatch {
+		writeFile(KVData)
+	} else {
+		log.Print("Could not write file.")
+	}
+}
+
+func writeFile(data string) bool {
+	return true
 }
 
 func lengthCheck(data string) bool {
