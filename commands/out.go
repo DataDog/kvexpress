@@ -36,13 +36,13 @@ func outRun(cmd *cobra.Command, args []string) {
 
 func KeyDataPath(key string) string {
 	full_path := fmt.Sprint(PrefixLocation, "/", key, "/data")
-	log.Print("out: full_path='", full_path, "'")
+	log.Print("out: path='data' full_path='", full_path, "'")
 	return full_path
 }
 
 func KeyChecksumPath(key string) string {
 	full_path := fmt.Sprint(PrefixLocation, "/", key, "/checksum")
-	log.Print("out: full_path='", full_path, "'")
+	log.Print("out: path='checksum' full_path='", full_path, "'")
 	return full_path
 }
 
@@ -57,7 +57,7 @@ func get(key string) string {
 		panic(err)
 	} else {
 		value = string(pair.Value[:])
-		log.Print("out: value='", value, "'")
+		log.Print("out: key='", key, "' value='", value, "'")
 	}
 	return value
 }
