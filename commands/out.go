@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 	"log"
 	"os"
+	"strings"
 )
 
 var outCmd = &cobra.Command{
@@ -46,7 +47,18 @@ func writeFile(data string) bool {
 }
 
 func lengthCheck(data string) bool {
-	return true
+	var length int
+	if strings.ContainsAny(data, "\n") {
+		length = strings.Count(data, "\n")
+	} else {
+		length = 1
+	}
+	log.Print("out: length='", length, "' min_length='", MinFileLength, "'")
+	if length >= MinFileLength {
+		return true
+	} else {
+		return false
+	}
 }
 
 func checksumCheck(data string, checksum string) bool {
