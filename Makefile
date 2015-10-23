@@ -1,3 +1,5 @@
+GIT_COMMIT=$(shell git rev-parse HEAD)
+
 all: build
 
 deps:
@@ -13,7 +15,7 @@ clean:
 	rm -f kvexpress || true
 
 build: clean
-	go build -ldflags "-X main.minversion=`date -u +%Y%m%d.%H%M%S`" -o kvexpress main.go
+	go build -ldflags "-X main.minversion=`date -u +%Y%m%d.%H%M%S` -X main.GitCommit=$(GIT_COMMIT)" -o kvexpress main.go
 
 linux: clean
-	GOOS=linux GOARCH=amd64 go build -ldflags "-X main.minversion=`date -u +%Y%m%d.%H%M%S`" -o kvexpress main.go
+	GOOS=linux GOARCH=amd64 go build -ldflags "-X main.minversion=`date -u +%Y%m%d.%H%M%S` -X main.GitCommit=$(GIT_COMMIT)" -o kvexpress main.go
