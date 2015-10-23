@@ -1,0 +1,3 @@
+#!/bin/bash
+KVEXPRESS_VERSION="0.1"
+echo $KVEXPRESS_VERSION
