@@ -18,20 +18,30 @@ var outCmd = &cobra.Command{
 func outRun(cmd *cobra.Command, args []string) {
 	checkFlags()
 
-	key_data = KeyDataPath(KeyLocation)
-	key_checksum = KeyChecksumPath(KeyLocation)
+	key_data := KeyDataPath(KeyLocation)
+	key_checksum := KeyChecksumPath(KeyLocation)
 
 	// Get the KV data out of Consul.
-	KVData = get(key_data)
+	KVData := get(key_data)
 
 	// Get the Checksum data out of Consul.
-	Checksum = get(key_checksum)
+	Checksum := get(key_checksum)
 
 	// Is the data long enough?
+	lengthCheck(KVData)
 
 	// Does the checksum match?
+	checksumCheck(KVData, Checksum)
 
 	// If the data is long enough and the checksum matches, write the file.
+}
+
+func lengthCheck(data string) bool {
+	return true
+}
+
+func checksumCheck(data string, checksum string) bool {
+	return true
 }
 
 func KeyDataPath(key string) string {
@@ -75,11 +85,7 @@ func checkFlags() {
 	log.Print("out: Required cli flags present.")
 }
 
-var KVData string
 var KeyLocation string
-var Checksum string
-var key_data string
-var key_checksum string
 var FiletoWrite string
 var PrefixLocation string
 var ConsulServer string
