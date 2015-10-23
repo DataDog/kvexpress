@@ -6,8 +6,6 @@ import (
 	"log/syslog"
 	"runtime"
 	// "crypto/sha256"
-	// "github.com/aryann/difflib"
-	// consul "github.com/hashicorp/consul/api"
 )
 
 func main() {
