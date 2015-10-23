@@ -1,11 +1,13 @@
 package commands
 
 import (
+	"crypto/sha256"
 	"fmt"
 	consulapi "github.com/hashicorp/consul/api"
 	"github.com/spf13/cobra"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -30,9 +32,11 @@ func outRun(cmd *cobra.Command, args []string) {
 
 	// Is the data long enough?
 	longEnough := lengthCheck(KVData)
+	log.Print("out: longEnough='", strconv.FormatBool(longEnough), "'")
 
 	// Does the checksum match?
 	checksumMatch := checksumCheck(KVData, Checksum)
+	log.Print("out: checksumMatch='", strconv.FormatBool(checksumMatch), "'")
 
 	// If the data is long enough and the checksum matches, write the file.
 	if longEnough && checksumMatch {
@@ -61,8 +65,22 @@ func lengthCheck(data string) bool {
 	}
 }
 
+func computeChecksum(data string) string {
+	data_bytes := []byte(data)
+	computed_checksum := sha256.Sum256(data_bytes)
+	final_checksum := fmt.Sprintf("%x\n", computed_checksum)
+	log.Print("out: computed_checksum='", final_checksum, "'")
+	return final_checksum
+}
+
 func checksumCheck(data string, checksum string) bool {
-	return true
+	computed_checksum := computeChecksum(data)
+	log.Print("out: checksum='", checksum, "' computed_checksum='", computed_checksum, "'")
+	if computed_checksum == checksum {
+		return true
+	} else {
+		return false
+	}
 }
 
 func KeyDataPath(key string) string {

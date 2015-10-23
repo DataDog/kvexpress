@@ -5,7 +5,6 @@ import (
 	"log"
 	"log/syslog"
 	"runtime"
-	// "crypto/sha256"
 )
 
 var minversion = "No Version Provided."
