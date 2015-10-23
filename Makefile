@@ -13,7 +13,7 @@ clean:
 	rm -f kvexpress || true
 
 build: clean
-	go build -o kvexpress main.go
+	go build -ldflags "-X main.minversion=`date -u +%Y%m%d.%H%M%S`" -o kvexpress main.go
 
 linux: clean
-	GOOS=linux GOARCH=amd64 go build -o kvexpress main.go
+	GOOS=linux GOARCH=amd64 go build -ldflags "-X main.minversion=`date -u +%Y%m%d.%H%M%S`" -o kvexpress main.go
