@@ -15,5 +15,8 @@ var RootCmd = &cobra.Command{
 	},
 }
 
+var Token string
+
 func init() {
+	RootCmd.PersistentFlags().StringVarP(&Token, "token", "t", "", "Token for Consul access")
 }

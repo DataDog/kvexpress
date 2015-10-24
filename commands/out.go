@@ -108,6 +108,9 @@ func get(key string) string {
 	var value string
 	config := consulapi.DefaultConfig()
 	config.Address = ConsulServer
+	if Token != "" {
+		config.Token = Token
+	}
 	consul, err := consulapi.NewClient(config)
 	kv := consul.KV()
 	pair, _, err := kv.Get(key, nil)
@@ -115,7 +118,7 @@ func get(key string) string {
 		panic(err)
 	} else {
 		value = string(pair.Value[:])
-		log.Print("out: key='", key, "' value='", value, "'")
+		log.Print("out: key='", key, "' value='", value, "' address='", ConsulServer, "' token='", Token, "'")
 	}
 	return value
 }
