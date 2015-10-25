@@ -1,5 +1,7 @@
 GIT_COMMIT=$(shell git rev-parse HEAD)
 KVEXPRESS_VERSION=$(shell ./version)
+COMPILE_DATE=$(shell date -u +%Y%m%d.%H%M%S)
+BUILD_FLAGS=-X main.CompileDate=$(COMPILE_DATE) -X main.GitCommit=$(GIT_COMMIT) -X main.Version=$(KVEXPRESS_VERSION)
 
 all: build
 
@@ -16,14 +18,14 @@ clean:
 	rm -f kvexpress || true
 
 build: clean
-	go build -ldflags "-X main.CompileDate=`date -u +%Y%m%d.%H%M%S` -X main.GitCommit=$(GIT_COMMIT) -X main.Version=$(KVEXPRESS_VERSION)" -o kvexpress main.go
+	go build -ldflags "$(BUILD_FLAGS)" -o kvexpress main.go
 
 gziposx:
 	gzip kvexpress
 	mv kvexpress.gz kvexpress-$(KVEXPRESS_VERSION)-darwin.gz
 
 linux: clean
-	GOOS=linux GOARCH=amd64 go build -ldflags "-X main.CompileDate=`date -u +%Y%m%d.%H%M%S` -X main.GitCommit=$(GIT_COMMIT) -X main.Version=$(KVEXPRESS_VERSION)" -o kvexpress main.go
+	GOOS=linux GOARCH=amd64 go build -ldflags "$(BUILD_FLAGS)" -o kvexpress main.go
 
 gziplinux:
 	gzip kvexpress
