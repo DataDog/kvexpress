@@ -16,7 +16,9 @@ var RootCmd = &cobra.Command{
 }
 
 var Token string
+var PostExec string
 
 func init() {
 	RootCmd.PersistentFlags().StringVarP(&Token, "token", "t", "", "Token for Consul access")
+	RootCmd.PersistentFlags().StringVarP(&PostExec, "exec", "e", "", "Execute this command after")
 }

@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"fmt"
 	consulapi "github.com/hashicorp/consul/api"
@@ -8,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 )
@@ -44,6 +46,28 @@ func outRun(cmd *cobra.Command, args []string) {
 		writeFile(KVData)
 	} else {
 		log.Print("Could not write file.")
+	}
+
+	// Run this command after the file is written.
+	if PostExec != "" {
+		log.Print("out: exec='", PostExec, "'")
+		runCommand(PostExec)
+	}
+}
+
+func runCommand(command string) bool {
+	parts := strings.Fields(command)
+	cli := parts[0]
+	args := parts[1:len(parts)]
+	cmd := exec.Command(cli, args...)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		log.Print(err)
+		return false
+	} else {
+		return true
 	}
 }
 
