@@ -38,12 +38,12 @@ func inRun(cmd *cobra.Command, args []string) {
 }
 
 func checkInFlags() {
-	log.Print("out: Checking cli flags.")
+	log.Print("in: Checking cli flags.")
 	if KeyInLocation == "" {
 		fmt.Println("Need a key location in -k")
 		os.Exit(1)
 	}
-	log.Print("out: Required cli flags present.")
+	log.Print("in: Required cli flags present.")
 }
 
 var KeyInLocation string
