@@ -24,8 +24,10 @@ func inRun(cmd *cobra.Command, args []string) {
 	StopKeyData := kvexpress.Get(key_stop, ConsulServer, Token, Direction)
 
 	if StopKeyData != "" {
-		log.Print("in: Stop Key is present.")
+		log.Print(Direction, ": Stop Key is present.")
 		os.Exit(1)
+	} else {
+		log.Print(Direction, ": Stop Key is NOT present - continuing.")
 	}
 
 	// key_data := kvexpress.KeyDataPath(KeyLocation, PrefixLocation)
