@@ -15,7 +15,7 @@ format:
 	gofmt -w .
 
 clean:
-	rm -f kvexpress || true
+	rm -f bin/kvexpress || true
 
 build: clean
 	go build -ldflags "$(BUILD_FLAGS)" -o bin/kvexpress main.go
