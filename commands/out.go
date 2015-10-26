@@ -162,17 +162,13 @@ func checkFlags() {
 
 var KeyLocation string
 var FiletoWrite string
-var PrefixLocation string
-var ConsulServer string
 var MinFileLength int
 var FilePermissions int
 
 func init() {
 	RootCmd.AddCommand(outCmd)
 	outCmd.Flags().IntVarP(&FilePermissions, "chmod", "c", 0640, "permissions for the file")
-	outCmd.Flags().StringVarP(&PrefixLocation, "prefix", "p", "kvexpress", "prefix for the key")
 	outCmd.Flags().StringVarP(&KeyLocation, "key", "k", "", "key to pull data from")
 	outCmd.Flags().StringVarP(&FiletoWrite, "file", "f", "", "where to write the data")
-	outCmd.Flags().StringVarP(&ConsulServer, "server", "s", "localhost:8500", "Consul server location")
 	outCmd.Flags().IntVarP(&MinFileLength, "length", "l", 10, "minimum amount of lines in the file")
 }
