@@ -17,16 +17,17 @@ var outCmd = &cobra.Command{
 }
 
 func outRun(cmd *cobra.Command, args []string) {
+	var Direction = "out"
 	checkOutFlags()
 
-	key_data := kvexpress.KeyDataPath(KeyOutLocation, PrefixLocation, "out")
-	key_checksum := kvexpress.KeyChecksumPath(KeyOutLocation, PrefixLocation, "out")
+	key_data := kvexpress.KeyDataPath(KeyOutLocation, PrefixLocation, Direction)
+	key_checksum := kvexpress.KeyChecksumPath(KeyOutLocation, PrefixLocation, Direction)
 
 	// Get the KV data out of Consul.
-	KVData := kvexpress.Get(key_data, ConsulServer, Token, "out")
+	KVData := kvexpress.Get(key_data, ConsulServer, Token, Direction)
 
 	// Get the Checksum data out of Consul.
-	Checksum := kvexpress.Get(key_checksum, ConsulServer, Token, "out")
+	Checksum := kvexpress.Get(key_checksum, ConsulServer, Token, Direction)
 
 	// Is the data long enough?
 	longEnough := kvexpress.LengthCheck(KVData, MinFileLength)

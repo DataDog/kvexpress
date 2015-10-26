@@ -16,11 +16,12 @@ var inCmd = &cobra.Command{
 }
 
 func inRun(cmd *cobra.Command, args []string) {
+  var Direction = "in"
 	checkInFlags()
 
-  key_stop := kvexpress.KeyStopPath(KeyInLocation, PrefixLocation, "in")
+  key_stop := kvexpress.KeyStopPath(KeyInLocation, PrefixLocation, Direction)
 
-  StopKeyData := kvexpress.Get(key_stop, ConsulServer, Token, "in")
+  StopKeyData := kvexpress.Get(key_stop, ConsulServer, Token, Direction)
 
   if StopKeyData != "" {
     log.Print("in: Stop Key is present.")
