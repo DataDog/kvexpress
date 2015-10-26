@@ -66,7 +66,6 @@ func checkOutFlags() {
 
 var KeyOutLocation string
 var FiletoWrite string
-var MinFileLength int
 var FilePermissions int
 
 func init() {
@@ -74,5 +73,4 @@ func init() {
 	outCmd.Flags().IntVarP(&FilePermissions, "chmod", "c", 0640, "permissions for the file")
 	outCmd.Flags().StringVarP(&KeyOutLocation, "key", "k", "", "key to pull data from")
 	outCmd.Flags().StringVarP(&FiletoWrite, "file", "f", "", "where to write the data")
-	outCmd.Flags().IntVarP(&MinFileLength, "length", "l", 10, "minimum amount of lines in the file")
 }

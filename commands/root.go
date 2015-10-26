@@ -19,10 +19,12 @@ var Token string
 var PostExec string
 var ConsulServer string
 var PrefixLocation string
+var MinFileLength int
 
 func init() {
 	RootCmd.PersistentFlags().StringVarP(&ConsulServer, "server", "s", "localhost:8500", "Consul server location")
 	RootCmd.PersistentFlags().StringVarP(&Token, "token", "t", "", "Token for Consul access")
 	RootCmd.PersistentFlags().StringVarP(&PrefixLocation, "prefix", "p", "kvexpress", "prefix for the key")
 	RootCmd.PersistentFlags().StringVarP(&PostExec, "exec", "e", "", "Execute this command after")
+	RootCmd.PersistentFlags().IntVarP(&MinFileLength, "length", "l", 10, "minimum amount of lines in the file")
 }
