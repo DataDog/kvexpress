@@ -17,10 +17,10 @@ var outCmd = &cobra.Command{
 }
 
 func outRun(cmd *cobra.Command, args []string) {
-	checkFlags()
+	checkOutFlags()
 
-	key_data := kvexpress.KeyDataPath(KeyLocation, PrefixLocation)
-	key_checksum := kvexpress.KeyChecksumPath(KeyLocation, PrefixLocation)
+	key_data := kvexpress.KeyDataPath(KeyOutLocation, PrefixLocation)
+	key_checksum := kvexpress.KeyChecksumPath(KeyOutLocation, PrefixLocation)
 
 	// Get the KV data out of Consul.
 	KVData := kvexpress.Get(key_data, ConsulServer, Token)
@@ -50,9 +50,9 @@ func outRun(cmd *cobra.Command, args []string) {
 	}
 }
 
-func checkFlags() {
+func checkOutFlags() {
 	log.Print("out: Checking cli flags.")
-	if KeyLocation == "" {
+	if KeyOutLocation == "" {
 		fmt.Println("Need a key location in -k")
 		os.Exit(1)
 	}
@@ -63,7 +63,7 @@ func checkFlags() {
 	log.Print("out: Required cli flags present.")
 }
 
-var KeyLocation string
+var KeyOutLocation string
 var FiletoWrite string
 var MinFileLength int
 var FilePermissions int
@@ -71,7 +71,7 @@ var FilePermissions int
 func init() {
 	RootCmd.AddCommand(outCmd)
 	outCmd.Flags().IntVarP(&FilePermissions, "chmod", "c", 0640, "permissions for the file")
-	outCmd.Flags().StringVarP(&KeyLocation, "key", "k", "", "key to pull data from")
+	outCmd.Flags().StringVarP(&KeyOutLocation, "key", "k", "", "key to pull data from")
 	outCmd.Flags().StringVarP(&FiletoWrite, "file", "f", "", "where to write the data")
 	outCmd.Flags().IntVarP(&MinFileLength, "length", "l", 10, "minimum amount of lines in the file")
 }
