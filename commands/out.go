@@ -1,9 +1,9 @@
 package commands
 
 import (
+	kvexpress "../kvexpress/"
 	"fmt"
 	"github.com/spf13/cobra"
-	kvexpress "../kvexpress/"
 	"log"
 	"os"
 	"strconv"

@@ -2,18 +2,18 @@ package kvexpress
 
 import (
 	"bytes"
-	"fmt"
-  consulapi "github.com/hashicorp/consul/api"
-	"strings"
 	"crypto/sha256"
+	"fmt"
+	consulapi "github.com/hashicorp/consul/api"
+	"io/ioutil"
 	"log"
 	"os"
-	"io/ioutil"
 	"os/exec"
+	"strings"
 )
 
-func init()  {
-  // Nothing happens here.
+func init() {
+	// Nothing happens here.
 }
 
 func KeyDataPath(key string, prefix string) string {
