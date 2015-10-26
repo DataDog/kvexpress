@@ -1,17 +1,12 @@
 package commands
 
 import (
-	"bytes"
-	"crypto/sha256"
 	"fmt"
-	consulapi "github.com/hashicorp/consul/api"
 	"github.com/spf13/cobra"
-	"io/ioutil"
+	kvexpress "../kvexpress/"
 	"log"
 	"os"
-	"os/exec"
 	"strconv"
-	"strings"
 )
 
 var outCmd = &cobra.Command{
@@ -24,26 +19,26 @@ var outCmd = &cobra.Command{
 func outRun(cmd *cobra.Command, args []string) {
 	checkFlags()
 
-	key_data := KeyDataPath(KeyLocation)
-	key_checksum := KeyChecksumPath(KeyLocation)
+	key_data := kvexpress.KeyDataPath(KeyLocation, PrefixLocation)
+	key_checksum := kvexpress.KeyChecksumPath(KeyLocation, PrefixLocation)
 
 	// Get the KV data out of Consul.
-	KVData := get(key_data)
+	KVData := kvexpress.Get(key_data, ConsulServer, Token)
 
 	// Get the Checksum data out of Consul.
-	Checksum := get(key_checksum)
+	Checksum := kvexpress.Get(key_checksum, ConsulServer, Token)
 
 	// Is the data long enough?
-	longEnough := lengthCheck(KVData)
+	longEnough := kvexpress.LengthCheck(KVData, MinFileLength)
 	log.Print("out: longEnough='", strconv.FormatBool(longEnough), "'")
 
 	// Does the checksum match?
-	checksumMatch := checksumCheck(KVData, Checksum)
+	checksumMatch := kvexpress.ChecksumCompare(KVData, Checksum)
 	log.Print("out: checksumMatch='", strconv.FormatBool(checksumMatch), "'")
 
 	// If the data is long enough and the checksum matches, write the file.
 	if longEnough && checksumMatch {
-		writeFile(KVData)
+		kvexpress.WriteFile(KVData, FiletoWrite, FilePermissions)
 	} else {
 		log.Print("Could not write file.")
 	}
@@ -51,100 +46,8 @@ func outRun(cmd *cobra.Command, args []string) {
 	// Run this command after the file is written.
 	if PostExec != "" {
 		log.Print("out: exec='", PostExec, "'")
-		runCommand(PostExec)
+		kvexpress.RunCommand(PostExec)
 	}
-}
-
-func runCommand(command string) bool {
-	parts := strings.Fields(command)
-	cli := parts[0]
-	args := parts[1:len(parts)]
-	cmd := exec.Command(cli, args...)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	err := cmd.Run()
-	if err != nil {
-		log.Print(err)
-		return false
-	} else {
-		return true
-	}
-}
-
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
-func writeFile(data string) {
-	err := ioutil.WriteFile(FiletoWrite, []byte(data), os.FileMode(FilePermissions))
-	check(err)
-	log.Print("out: file_wrote='true' location='", FiletoWrite, "' permissions='", FilePermissions, "'")
-}
-
-func lengthCheck(data string) bool {
-	var length int
-	if strings.ContainsAny(data, "\n") {
-		length = strings.Count(data, "\n")
-	} else {
-		length = 1
-	}
-	log.Print("out: length='", length, "' min_length='", MinFileLength, "'")
-	if length >= MinFileLength {
-		return true
-	} else {
-		return false
-	}
-}
-
-func computeChecksum(data string) string {
-	data_bytes := []byte(data)
-	computed_checksum := sha256.Sum256(data_bytes)
-	final_checksum := fmt.Sprintf("%x\n", computed_checksum)
-	log.Print("out: computed_checksum='", final_checksum, "'")
-	return final_checksum
-}
-
-func checksumCheck(data string, checksum string) bool {
-	computed_checksum := computeChecksum(data)
-	log.Print("out: checksum='", checksum, "' computed_checksum='", computed_checksum, "'")
-	if strings.TrimSpace(computed_checksum) == strings.TrimSpace(checksum) {
-		return true
-	} else {
-		return false
-	}
-}
-
-func KeyDataPath(key string) string {
-	full_path := fmt.Sprint(PrefixLocation, "/", key, "/data")
-	log.Print("out: path='data' full_path='", full_path, "'")
-	return full_path
-}
-
-func KeyChecksumPath(key string) string {
-	full_path := fmt.Sprint(PrefixLocation, "/", key, "/checksum")
-	log.Print("out: path='checksum' full_path='", full_path, "'")
-	return full_path
-}
-
-func get(key string) string {
-	var value string
-	config := consulapi.DefaultConfig()
-	config.Address = ConsulServer
-	if Token != "" {
-		config.Token = Token
-	}
-	consul, err := consulapi.NewClient(config)
-	kv := consul.KV()
-	pair, _, err := kv.Get(key, nil)
-	if err != nil {
-		panic(err)
-	} else {
-		value = string(pair.Value[:])
-		log.Print("out: key='", key, "' value='", value, "' address='", ConsulServer, "' token='", Token, "'")
-	}
-	return value
 }
 
 func checkFlags() {
