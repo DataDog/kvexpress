@@ -19,8 +19,8 @@ var outCmd = &cobra.Command{
 func outRun(cmd *cobra.Command, args []string) {
 	checkOutFlags()
 
-	key_data := kvexpress.KeyDataPath(KeyOutLocation, PrefixLocation)
-	key_checksum := kvexpress.KeyChecksumPath(KeyOutLocation, PrefixLocation)
+	key_data := kvexpress.KeyDataPath(KeyOutLocation, PrefixLocation, "out")
+	key_checksum := kvexpress.KeyChecksumPath(KeyOutLocation, PrefixLocation, "out")
 
 	// Get the KV data out of Consul.
 	KVData := kvexpress.Get(key_data, ConsulServer, Token)

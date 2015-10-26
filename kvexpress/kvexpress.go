@@ -16,15 +16,21 @@ func init() {
 	// Nothing happens here.
 }
 
-func KeyDataPath(key string, prefix string) string {
+func KeyDataPath(key string, prefix string, direction string) string {
 	full_path := fmt.Sprint(prefix, "/", key, "/data")
-	log.Print("out: path='data' full_path='", full_path, "'")
+	log.Print(direction, ": path='data' full_path='", full_path, "'")
 	return full_path
 }
 
-func KeyChecksumPath(key string, prefix string) string {
+func KeyChecksumPath(key string, prefix string, direction string) string {
 	full_path := fmt.Sprint(prefix, "/", key, "/checksum")
-	log.Print("out: path='checksum' full_path='", full_path, "'")
+	log.Print(direction, ": path='checksum' full_path='", full_path, "'")
+	return full_path
+}
+
+func KeyStopPath(key string, prefix string, direction string) string {
+	full_path := fmt.Sprint(prefix, "/", key, "/stop")
+	log.Print(direction, ": path='data' full_path='", full_path, "'")
 	return full_path
 }
 
