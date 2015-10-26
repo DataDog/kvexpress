@@ -47,7 +47,11 @@ func Get(key string, server string, token string, direction string) string {
 	if err != nil {
 		panic(err)
 	} else {
-		value = string(pair.Value[:])
+		if pair != nil {
+			value = string(pair.Value[:])
+		} else {
+			value = ""
+		}
 		log.Print(direction, ": key='", key, "' value='", value, "' address='", server, "' token='", token, "'")
 	}
 	return value
