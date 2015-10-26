@@ -18,17 +18,17 @@ clean:
 	rm -f kvexpress || true
 
 build: clean
-	go build -ldflags "$(BUILD_FLAGS)" -o kvexpress main.go
+	go build -ldflags "$(BUILD_FLAGS)" -o bin/kvexpress main.go
 
 gziposx:
-	gzip kvexpress
-	mv kvexpress.gz kvexpress-$(KVEXPRESS_VERSION)-darwin.gz
+	gzip bin/kvexpress
+	mv bin/kvexpress.gz bin/kvexpress-$(KVEXPRESS_VERSION)-darwin.gz
 
 linux: clean
-	GOOS=linux GOARCH=amd64 go build -ldflags "$(BUILD_FLAGS)" -o kvexpress main.go
+	GOOS=linux GOARCH=amd64 go build -ldflags "$(BUILD_FLAGS)" -o bin/kvexpress main.go
 
 gziplinux:
-	gzip kvexpress
-	mv kvexpress.gz kvexpress-$(KVEXPRESS_VERSION)-linux-amd64.gz
+	gzip bin/kvexpress
+	mv bin/kvexpress.gz bin/kvexpress-$(KVEXPRESS_VERSION)-linux-amd64.gz
 
 release: clean build gziposx clean linux gziplinux clean
