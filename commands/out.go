@@ -23,10 +23,10 @@ func outRun(cmd *cobra.Command, args []string) {
 	key_checksum := kvexpress.KeyChecksumPath(KeyOutLocation, PrefixLocation, "out")
 
 	// Get the KV data out of Consul.
-	KVData := kvexpress.Get(key_data, ConsulServer, Token)
+	KVData := kvexpress.Get(key_data, ConsulServer, Token, "out")
 
 	// Get the Checksum data out of Consul.
-	Checksum := kvexpress.Get(key_checksum, ConsulServer, Token)
+	Checksum := kvexpress.Get(key_checksum, ConsulServer, Token, "out")
 
 	// Is the data long enough?
 	longEnough := kvexpress.LengthCheck(KVData, MinFileLength)

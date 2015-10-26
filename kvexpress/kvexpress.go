@@ -34,7 +34,7 @@ func KeyStopPath(key string, prefix string, direction string) string {
 	return full_path
 }
 
-func Get(key string, server string, token string) string {
+func Get(key string, server string, token string, direction string) string {
 	var value string
 	config := consulapi.DefaultConfig()
 	config.Address = server
@@ -48,7 +48,7 @@ func Get(key string, server string, token string) string {
 		panic(err)
 	} else {
 		value = string(pair.Value[:])
-		log.Print("out: key='", key, "' value='", value, "' address='", server, "' token='", token, "'")
+		log.Print(direction, ": key='", key, "' value='", value, "' address='", server, "' token='", token, "'")
 	}
 	return value
 }
