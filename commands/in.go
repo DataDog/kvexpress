@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"log"
-  "os"
+	"os"
 )
 
 var inCmd = &cobra.Command{
@@ -16,24 +16,24 @@ var inCmd = &cobra.Command{
 }
 
 func inRun(cmd *cobra.Command, args []string) {
-  var Direction = "in"
+	var Direction = "in"
 	checkInFlags()
 
-  key_stop := kvexpress.KeyStopPath(KeyInLocation, PrefixLocation, Direction)
+	key_stop := kvexpress.KeyStopPath(KeyInLocation, PrefixLocation, Direction)
 
-  StopKeyData := kvexpress.Get(key_stop, ConsulServer, Token, Direction)
+	StopKeyData := kvexpress.Get(key_stop, ConsulServer, Token, Direction)
 
-  if StopKeyData != "" {
-    log.Print("in: Stop Key is present.")
-    os.Exit(1)
-  }
+	if StopKeyData != "" {
+		log.Print("in: Stop Key is present.")
+		os.Exit(1)
+	}
 
 	// key_data := kvexpress.KeyDataPath(KeyLocation, PrefixLocation)
 	// key_checksum := kvexpress.KeyChecksumPath(KeyLocation, PrefixLocation)
 
 	// Run this command after the data is input.
 	if PostExec != "" {
-		log.Print("in: exec='", PostExec, "'")
+		log.Print(Direction, ": exec='", PostExec, "'")
 		kvexpress.RunCommand(PostExec)
 	}
 }
