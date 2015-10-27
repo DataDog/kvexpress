@@ -63,9 +63,6 @@ func inRun(cmd *cobra.Command, args []string) {
 		log.Print(Direction, ": We have data - let's do the thing.")
 	}
 
-	// key_data := kvexpress.KeyDataPath(KeyLocation, PrefixLocation)
-	// key_checksum := kvexpress.KeyChecksumPath(KeyLocation, PrefixLocation)
-
 	// Run this command after the data is input.
 	if PostExec != "" {
 		log.Print(Direction, ": exec='", PostExec, "'")
