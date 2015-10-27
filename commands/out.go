@@ -22,6 +22,16 @@ func outRun(cmd *cobra.Command, args []string) {
 
 	key_data := kvexpress.KeyDataPath(KeyOutLocation, PrefixLocation, Direction)
 	key_checksum := kvexpress.KeyChecksumPath(KeyOutLocation, PrefixLocation, Direction)
+	key_stop := kvexpress.KeyStopPath(KeyOutLocation, PrefixLocation, Direction)
+
+	StopKeyData := kvexpress.Get(key_stop, ConsulServer, Token, Direction)
+
+	if StopKeyData != "" {
+		log.Print(Direction, ": Stop Key is present.")
+		os.Exit(1)
+	} else {
+		log.Print(Direction, ": Stop Key is NOT present - continuing.")
+	}
 
 	// Get the KV data out of Consul.
 	KVData := kvexpress.Get(key_data, ConsulServer, Token, Direction)
