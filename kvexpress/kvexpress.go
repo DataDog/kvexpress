@@ -9,9 +9,9 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"strings"
-	"sort"
 	"path"
+	"sort"
+	"strings"
 )
 
 func init() {
@@ -116,21 +116,21 @@ func WriteFile(data string, filepath string, perms int, direction string) {
 	log.Print(direction, ": file_wrote='true' location='", filepath, "' permissions='", perms, "'")
 }
 
-func CompareFilename(file string) string  {
+func CompareFilename(file string) string {
 	compare := fmt.Sprintf("%s.compare", file)
 	full_path := path.Join(path.Dir(file), compare)
 	log.Print("in: file='compare' full_path='", full_path, "'")
 	return full_path
 }
 
-func LastFilename(file string) string  {
+func LastFilename(file string) string {
 	last := fmt.Sprintf("%s.last", file)
 	full_path := path.Join(path.Dir(file), last)
 	log.Print("in: file='last' full_path='", full_path, "'")
 	return full_path
 }
 
-func CheckLastFile(file string, perms int)  {
+func CheckLastFile(file string, perms int) {
 	if _, err := os.Stat(file); err != nil {
 		log.Print("in: Last File: ", file, " does not exist.")
 		WriteFile("", file, perms, "in")
