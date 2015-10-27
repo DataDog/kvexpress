@@ -96,6 +96,12 @@ func check(e error) {
 	}
 }
 
+func ReadFile(filepath string) string {
+	dat, err := ioutil.ReadFile(filepath)
+	check(err)
+	return string(dat)
+}
+
 func WriteFile(data string, filepath string, perms int) {
 	err := ioutil.WriteFile(filepath, []byte(data), os.FileMode(perms))
 	check(err)

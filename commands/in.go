@@ -30,6 +30,10 @@ func inRun(cmd *cobra.Command, args []string) {
 		log.Print(Direction, ": Stop Key is NOT present - continuing.")
 	}
 
+	// Create .compare file - if it's sorted - then make sure to sort/uniq.
+	file_string := kvexpress.ReadFile(FiletoRead)
+	log.Print(Direction, ": file_string='", file_string, "'")
+
 	// key_data := kvexpress.KeyDataPath(KeyLocation, PrefixLocation)
 	// key_checksum := kvexpress.KeyChecksumPath(KeyLocation, PrefixLocation)
 
@@ -46,12 +50,22 @@ func checkInFlags() {
 		fmt.Println("Need a key location in -k")
 		os.Exit(1)
 	}
+	if FiletoRead == "" {
+		fmt.Println("Need a file to read in -f")
+		os.Exit(1)
+	}
+	if _, err := os.Stat(FiletoRead); err != nil {
+		fmt.Println("File ", FiletoRead, " does not exist.")
+		os.Exit(1)
+	}
 	log.Print("in: Required cli flags present.")
 }
 
 var KeyInLocation string
+var FiletoRead string
 
 func init() {
 	RootCmd.AddCommand(inCmd)
-	inCmd.Flags().StringVarP(&KeyInLocation, "key", "k", "", "key to pull data from")
+	inCmd.Flags().StringVarP(&KeyInLocation, "key", "k", "", "key to push data to")
+	inCmd.Flags().StringVarP(&FiletoRead, "file", "f", "", "filename to read data from")
 }
