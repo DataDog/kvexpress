@@ -119,8 +119,22 @@ func WriteFile(data string, filepath string, perms int, direction string) {
 func CompareFilename(file string) string  {
 	compare := fmt.Sprintf("%s.compare", file)
 	full_path := path.Join(path.Dir(file), compare)
-	log.Print("in: full_path='", full_path, "'")
+	log.Print("in: file='compare' full_path='", full_path, "'")
 	return full_path
+}
+
+func LastFilename(file string) string  {
+	last := fmt.Sprintf("%s.last", file)
+	full_path := path.Join(path.Dir(file), last)
+	log.Print("in: file='last' full_path='", full_path, "'")
+	return full_path
+}
+
+func CheckLastFile(file string, perms int)  {
+	if _, err := os.Stat(file); err != nil {
+		log.Print("in: Last File: ", file, " does not exist.")
+		WriteFile("", file, perms, "in")
+	}
 }
 
 func RunCommand(command string) bool {

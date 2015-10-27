@@ -43,6 +43,10 @@ func inRun(cmd *cobra.Command, args []string) {
 	compare_file := kvexpress.CompareFilename(FiletoRead)
 	kvexpress.WriteFile(file_string, compare_file, FilePermissions, Direction)
 
+	// Check for the .last file - touch if it doesn't exist.
+	last_file := kvexpress.LastFilename(FiletoRead)
+	kvexpress.CheckLastFile(last_file, FilePermissions)
+
 	// key_data := kvexpress.KeyDataPath(KeyLocation, PrefixLocation)
 	// key_checksum := kvexpress.KeyChecksumPath(KeyLocation, PrefixLocation)
 
