@@ -30,9 +30,14 @@ func inRun(cmd *cobra.Command, args []string) {
 		log.Print(Direction, ": Stop Key is NOT present - continuing.")
 	}
 
-	// Create .compare file - if it's sorted - then make sure to sort/uniq.
+	// Create .compare file - if it's to be sorted - then make sure to sort.
+	// TODO: Do we need to uniq as well?
 	file_string := kvexpress.ReadFile(FiletoRead)
 	log.Print(Direction, ": file_string='", file_string, "'")
+
+	if Sorted {
+		file_string = kvexpress.SortFile(file_string)
+	}
 
 	// key_data := kvexpress.KeyDataPath(KeyLocation, PrefixLocation)
 	// key_checksum := kvexpress.KeyChecksumPath(KeyLocation, PrefixLocation)
@@ -63,9 +68,11 @@ func checkInFlags() {
 
 var KeyInLocation string
 var FiletoRead string
+var Sorted bool
 
 func init() {
 	RootCmd.AddCommand(inCmd)
 	inCmd.Flags().StringVarP(&KeyInLocation, "key", "k", "", "key to push data to")
 	inCmd.Flags().StringVarP(&FiletoRead, "file", "f", "", "filename to read data from")
+	inCmd.Flags().BoolVarP(&Sorted, "sorted", "S", false, "sort the input file")
 }

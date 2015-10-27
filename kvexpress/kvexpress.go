@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sort"
 )
 
 func init() {
@@ -100,6 +101,12 @@ func ReadFile(filepath string) string {
 	dat, err := ioutil.ReadFile(filepath)
 	check(err)
 	return string(dat)
+}
+
+func SortFile(file string) string {
+	lines := strings.Split(file, "\n")
+	sort.Strings(lines)
+	return strings.Join(lines, "\n")
 }
 
 func WriteFile(data string, filepath string, perms int) {
