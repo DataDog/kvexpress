@@ -55,6 +55,14 @@ func inRun(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
+	// Read compare and last files into string.
+	compare_data := kvexpress.ReadFile(compare_file)
+	last_data := kvexpress.ReadFile(last_file)
+
+	if compare_data != "" && last_data != "" {
+		log.Print(Direction, ": We have data - let's do the thing.")
+	}
+
 	// key_data := kvexpress.KeyDataPath(KeyLocation, PrefixLocation)
 	// key_checksum := kvexpress.KeyChecksumPath(KeyLocation, PrefixLocation)
 

@@ -133,7 +133,7 @@ func LastFilename(file string) string {
 func CheckLastFile(file string, perms int) {
 	if _, err := os.Stat(file); err != nil {
 		log.Print("in: Last File: ", file, " does not exist.")
-		WriteFile("", file, perms, "in")
+		WriteFile("This is a blank file.\n", file, perms, "in")
 	}
 }
 
