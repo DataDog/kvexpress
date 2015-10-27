@@ -66,11 +66,9 @@ func checkOutFlags() {
 
 var KeyOutLocation string
 var FiletoWrite string
-var FilePermissions int
 
 func init() {
 	RootCmd.AddCommand(outCmd)
-	outCmd.Flags().IntVarP(&FilePermissions, "chmod", "c", 0640, "permissions for the file")
 	outCmd.Flags().StringVarP(&KeyOutLocation, "key", "k", "", "key to pull data from")
 	outCmd.Flags().StringVarP(&FiletoWrite, "file", "f", "", "where to write the data")
 }
