@@ -39,7 +39,7 @@ func outRun(cmd *cobra.Command, args []string) {
 
 	// If the data is long enough and the checksum matches, write the file.
 	if longEnough && checksumMatch {
-		kvexpress.WriteFile(KVData, FiletoWrite, FilePermissions)
+		kvexpress.WriteFile(KVData, FiletoWrite, FilePermissions, Direction)
 	} else {
 		log.Print("Could not write file.")
 	}

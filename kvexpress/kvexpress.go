@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"strings"
 	"sort"
+	"path"
 )
 
 func init() {
@@ -109,10 +110,17 @@ func SortFile(file string) string {
 	return strings.Join(lines, "\n")
 }
 
-func WriteFile(data string, filepath string, perms int) {
+func WriteFile(data string, filepath string, perms int, direction string) {
 	err := ioutil.WriteFile(filepath, []byte(data), os.FileMode(perms))
 	check(err)
-	log.Print("out: file_wrote='true' location='", filepath, "' permissions='", perms, "'")
+	log.Print(direction, ": file_wrote='true' location='", filepath, "' permissions='", perms, "'")
+}
+
+func CompareFilename(file string) string  {
+	compare := fmt.Sprintf("%s.compare", file)
+	full_path := path.Join(path.Dir(file), compare)
+	log.Print("in: full_path='", full_path, "'")
+	return full_path
 }
 
 func RunCommand(command string) bool {
