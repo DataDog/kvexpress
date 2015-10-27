@@ -83,6 +83,11 @@ func inRun(cmd *cobra.Command, args []string) {
 			if current_checksum != compare_checksum {
 				log.Print(Direction, ": Consul and current checksum are different - let's update the KV store.")
 
+				key_data := kvexpress.KeyDataPath(KeyInLocation, PrefixLocation, Direction)
+				saved := kvexpress.Set(key_data, compare_data, ConsulServer, Token, Direction)
+				if saved {
+					log.Print("It saved.")
+				}
 			}
 
 		}

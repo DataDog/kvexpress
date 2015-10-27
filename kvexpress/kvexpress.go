@@ -61,6 +61,23 @@ func Get(key string, server string, token string, direction string) string {
 	return value
 }
 
+func Set(key string, value string, server string, token string, direction string) bool {
+	config := consulapi.DefaultConfig()
+	config.Address = server
+	if token != "" {
+		config.Token = token
+	}
+	consul, err := consulapi.NewClient(config)
+	kv := consul.KV()
+	p := &consulapi.KVPair{Key: key, Value: []byte(value)}
+	_, err = kv.Put(p, nil)
+	if err != nil {
+		panic(err)
+	} else {
+		return true
+	}
+}
+
 func LengthCheck(data string, min_length int, direction string) bool {
 	var length int
 	if strings.ContainsAny(data, "\n") {
