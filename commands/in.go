@@ -68,7 +68,23 @@ func inRun(cmd *cobra.Command, args []string) {
 
 		// If they're different - let's update things.
 		if compare_checksum != last_checksum {
-			log.Print(Direction, ": checksums are different - let's update some stuff!")
+			log.Print(Direction, ": file checksums are different - let's update some stuff!")
+
+			// Diff the file data.
+			html_diff := kvexpress.HTMLDiff(last_data, compare_data)
+
+			// TODO: To be removed.
+			fmt.Printf("%v", html_diff)
+
+			// Get the checksum from Consul.
+			key_checksum := kvexpress.KeyChecksumPath(KeyInLocation, PrefixLocation, Direction)
+			current_checksum := kvexpress.Get(key_checksum, ConsulServer, Token, Direction)
+
+			if current_checksum != compare_checksum {
+				log.Print(Direction, ": Consul and current checksum are different - let's update the KV store.")
+
+			}
+
 		}
 	}
 

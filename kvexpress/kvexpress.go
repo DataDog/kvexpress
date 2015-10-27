@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"fmt"
+	"github.com/aryann/difflib"
 	consulapi "github.com/hashicorp/consul/api"
+	"html"
 	"io/ioutil"
 	"log"
 	"os"
@@ -135,6 +137,20 @@ func CheckLastFile(file string, perms int) {
 		log.Print("in: Last File: ", file, " does not exist.")
 		WriteFile("This is a blank file.\n", file, perms, "in")
 	}
+}
+
+func HTMLDiff(last string, current string) string {
+	var buffer bytes.Buffer
+
+	// Split lines.
+	last_strings := strings.Split(html.EscapeString(string(last)), "\n")
+	current_strings := strings.Split(html.EscapeString(string(current)), "\n")
+
+	log.Print("in: Doing the diff.")
+	buffer.WriteString("<table>")
+	buffer.WriteString(difflib.HTMLDiff(last_strings, current_strings))
+	buffer.WriteString("</table>")
+	return buffer.String()
 }
 
 func RunCommand(command string) bool {
