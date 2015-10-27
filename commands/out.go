@@ -30,7 +30,7 @@ func outRun(cmd *cobra.Command, args []string) {
 	Checksum := kvexpress.Get(key_checksum, ConsulServer, Token, Direction)
 
 	// Is the data long enough?
-	longEnough := kvexpress.LengthCheck(KVData, MinFileLength)
+	longEnough := kvexpress.LengthCheck(KVData, MinFileLength, Direction)
 	log.Print("out: longEnough='", strconv.FormatBool(longEnough), "'")
 
 	// Does the checksum match?

@@ -47,6 +47,14 @@ func inRun(cmd *cobra.Command, args []string) {
 	last_file := kvexpress.LastFilename(FiletoRead)
 	kvexpress.CheckLastFile(last_file, FilePermissions)
 
+	// Is it long enough?
+	longEnough := kvexpress.LengthCheck(file_string, MinFileLength, Direction)
+
+	if !longEnough {
+		log.Print(Direction, ": File is NOT long enough. Stopping.")
+		os.Exit(1)
+	}
+
 	// key_data := kvexpress.KeyDataPath(KeyLocation, PrefixLocation)
 	// key_checksum := kvexpress.KeyChecksumPath(KeyLocation, PrefixLocation)
 

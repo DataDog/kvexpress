@@ -59,14 +59,14 @@ func Get(key string, server string, token string, direction string) string {
 	return value
 }
 
-func LengthCheck(data string, min_length int) bool {
+func LengthCheck(data string, min_length int, direction string) bool {
 	var length int
 	if strings.ContainsAny(data, "\n") {
 		length = strings.Count(data, "\n")
 	} else {
 		length = 1
 	}
-	log.Print("out: length='", length, "' min_length='", min_length, "'")
+	log.Print(direction, ": length='", length, "' min_length='", min_length, "'")
 	if length >= min_length {
 		return true
 	} else {
