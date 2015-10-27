@@ -20,11 +20,17 @@ func inRun(cmd *cobra.Command, args []string) {
 	checkInFlags()
 
 	key_stop := kvexpress.KeyStopPath(KeyInLocation, PrefixLocation, Direction)
+	key_data := kvexpress.KeyDataPath(KeyInLocation, PrefixLocation, Direction)
+	key_checksum := kvexpress.KeyChecksumPath(KeyInLocation, PrefixLocation, Direction)
+	key_updated := kvexpress.KeyUpdatedPath(KeyInLocation, PrefixLocation, Direction)
+
+	compare_file := kvexpress.CompareFilename(FiletoRead)
+	last_file := kvexpress.LastFilename(FiletoRead)
 
 	StopKeyData := kvexpress.Get(key_stop, ConsulServer, Token, Direction)
 
 	if StopKeyData != "" {
-		log.Print(Direction, ": Stop Key is present.")
+		log.Print(Direction, ": Stop Key is present - stopping.")
 		os.Exit(1)
 	} else {
 		log.Print(Direction, ": Stop Key is NOT present - continuing.")
@@ -40,11 +46,9 @@ func inRun(cmd *cobra.Command, args []string) {
 	}
 
 	// Write the .compare file.
-	compare_file := kvexpress.CompareFilename(FiletoRead)
 	kvexpress.WriteFile(file_string, compare_file, FilePermissions, Direction)
 
 	// Check for the .last file - touch if it doesn't exist.
-	last_file := kvexpress.LastFilename(FiletoRead)
 	kvexpress.CheckLastFile(last_file, FilePermissions)
 
 	// Is it long enough?
@@ -77,17 +81,24 @@ func inRun(cmd *cobra.Command, args []string) {
 			fmt.Printf("%v", html_diff)
 
 			// Get the checksum from Consul.
-			key_checksum := kvexpress.KeyChecksumPath(KeyInLocation, PrefixLocation, Direction)
 			current_checksum := kvexpress.Get(key_checksum, ConsulServer, Token, Direction)
 
 			if current_checksum != compare_checksum {
-				log.Print(Direction, ": Consul and current checksum are different - let's update the KV store.")
-
-				key_data := kvexpress.KeyDataPath(KeyInLocation, PrefixLocation, Direction)
+				log.Print(Direction, ": current and previous Consul checksum are different - let's update the KV store.")
 				saved := kvexpress.Set(key_data, compare_data, ConsulServer, Token, Direction)
 				if saved {
-					log.Print("It saved.")
+					log.Print(Direction, ": key_data='", key_data, "' saved='true'")
+					kvexpress.Set(key_checksum, compare_checksum, ConsulServer, Token, Direction)
+					kvexpress.Set(key_updated, kvexpress.ReturnCurrentUTC(), ConsulServer, Token, Direction)
+
+					// Copy the compare_data to the .last file.
+					kvexpress.WriteFile(compare_data, last_file, FilePermissions, Direction)
+				} else {
+					log.Print(Direction, ": key_data='", key_data, "' saved='false'")
+					os.Exit(1)
 				}
+			} else {
+				log.Print(Direction, ": checksums='match' saved='false'")
 			}
 
 		}

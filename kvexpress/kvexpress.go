@@ -14,6 +14,7 @@ import (
 	"path"
 	"sort"
 	"strings"
+	"time"
 )
 
 func init() {
@@ -34,8 +35,20 @@ func KeyChecksumPath(key string, prefix string, direction string) string {
 
 func KeyStopPath(key string, prefix string, direction string) string {
 	full_path := fmt.Sprint(prefix, "/", key, "/stop")
-	log.Print(direction, ": path='data' full_path='", full_path, "'")
+	log.Print(direction, ": path='stop' full_path='", full_path, "'")
 	return full_path
+}
+
+func KeyUpdatedPath(key string, prefix string, direction string) string {
+	full_path := fmt.Sprint(prefix, "/", key, "/updated")
+	log.Print(direction, ": path='updated' full_path='", full_path, "'")
+	return full_path
+}
+
+func ReturnCurrentUTC() string {
+	t := time.Now().UTC()
+	date_updated := (t.Format(time.RFC3339))
+	return date_updated
 }
 
 func Get(key string, server string, token string, direction string) string {
