@@ -74,17 +74,17 @@ func LengthCheck(data string, min_length int, direction string) bool {
 	}
 }
 
-func ComputeChecksum(data string) string {
+func ComputeChecksum(data string, direction string) string {
 	data_bytes := []byte(data)
 	computed_checksum := sha256.Sum256(data_bytes)
 	final_checksum := fmt.Sprintf("%x\n", computed_checksum)
-	log.Print("out: computed_checksum='", final_checksum, "'")
+	log.Print(direction, ": computed_checksum='", final_checksum, "'")
 	return final_checksum
 }
 
-func ChecksumCompare(data string, checksum string) bool {
-	computed_checksum := ComputeChecksum(data)
-	log.Print("out: checksum='", checksum, "' computed_checksum='", computed_checksum, "'")
+func ChecksumCompare(data string, checksum string, direction string) bool {
+	computed_checksum := ComputeChecksum(data, direction)
+	log.Print(direction, ": checksum='", checksum, "' computed_checksum='", computed_checksum, "'")
 	if strings.TrimSpace(computed_checksum) == strings.TrimSpace(checksum) {
 		return true
 	} else {

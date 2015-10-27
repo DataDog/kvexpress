@@ -61,6 +61,15 @@ func inRun(cmd *cobra.Command, args []string) {
 
 	if compare_data != "" && last_data != "" {
 		log.Print(Direction, ": We have data - let's do the thing.")
+
+		// Get SHA256 values for each string.
+		compare_checksum := kvexpress.ComputeChecksum(compare_data, Direction)
+		last_checksum := kvexpress.ComputeChecksum(last_data, Direction)
+
+		// If they're different - let's update things.
+		if compare_checksum != last_checksum {
+			log.Print(Direction, ": checksums are different - let's update some stuff!")
+		}
 	}
 
 	// Run this command after the data is input.

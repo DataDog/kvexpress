@@ -34,7 +34,7 @@ func outRun(cmd *cobra.Command, args []string) {
 	log.Print("out: longEnough='", strconv.FormatBool(longEnough), "'")
 
 	// Does the checksum match?
-	checksumMatch := kvexpress.ChecksumCompare(KVData, Checksum)
+	checksumMatch := kvexpress.ChecksumCompare(KVData, Checksum, Direction)
 	log.Print("out: checksumMatch='", strconv.FormatBool(checksumMatch), "'")
 
 	// If the data is long enough and the checksum matches, write the file.
