@@ -75,10 +75,10 @@ func inRun(cmd *cobra.Command, args []string) {
 			log.Print(Direction, ": file checksums are different - let's update some stuff!")
 
 			// Diff the file data.
-			html_diff := kvexpress.HTMLDiff(last_data, compare_data)
+			// html_diff := kvexpress.HTMLDiff(last_data, compare_data)
 
 			// TODO: To be removed.
-			fmt.Printf("%v", html_diff)
+			// fmt.Printf("%v", html_diff)
 
 			// Get the checksum from Consul.
 			current_checksum := kvexpress.Get(key_checksum, ConsulServer, Token, Direction)
