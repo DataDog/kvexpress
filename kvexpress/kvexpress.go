@@ -5,90 +5,14 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"github.com/aryann/difflib"
-	consulapi "github.com/hashicorp/consul/api"
 	"html"
-	"io/ioutil"
 	"log"
-	"os"
 	"os/exec"
-	"path"
-	"sort"
 	"strings"
-	"time"
 )
 
 func init() {
 	// Nothing happens here.
-}
-
-func KeyDataPath(key string, prefix string, direction string) string {
-	full_path := fmt.Sprint(prefix, "/", key, "/data")
-	log.Print(direction, ": path='data' full_path='", full_path, "'")
-	return full_path
-}
-
-func KeyChecksumPath(key string, prefix string, direction string) string {
-	full_path := fmt.Sprint(prefix, "/", key, "/checksum")
-	log.Print(direction, ": path='checksum' full_path='", full_path, "'")
-	return full_path
-}
-
-func KeyStopPath(key string, prefix string, direction string) string {
-	full_path := fmt.Sprint(prefix, "/", key, "/stop")
-	log.Print(direction, ": path='stop' full_path='", full_path, "'")
-	return full_path
-}
-
-func KeyUpdatedPath(key string, prefix string, direction string) string {
-	full_path := fmt.Sprint(prefix, "/", key, "/updated")
-	log.Print(direction, ": path='updated' full_path='", full_path, "'")
-	return full_path
-}
-
-func ReturnCurrentUTC() string {
-	t := time.Now().UTC()
-	date_updated := (t.Format(time.RFC3339))
-	return date_updated
-}
-
-func Get(key string, server string, token string, direction string) string {
-	var value string
-	config := consulapi.DefaultConfig()
-	config.Address = server
-	if token != "" {
-		config.Token = token
-	}
-	consul, err := consulapi.NewClient(config)
-	kv := consul.KV()
-	pair, _, err := kv.Get(key, nil)
-	if err != nil {
-		panic(err)
-	} else {
-		if pair != nil {
-			value = string(pair.Value[:])
-		} else {
-			value = ""
-		}
-		log.Print(direction, ": key='", key, "' value='", value, "' address='", server, "' token='", token, "'")
-	}
-	return value
-}
-
-func Set(key string, value string, server string, token string, direction string) bool {
-	config := consulapi.DefaultConfig()
-	config.Address = server
-	if token != "" {
-		config.Token = token
-	}
-	consul, err := consulapi.NewClient(config)
-	kv := consul.KV()
-	p := &consulapi.KVPair{Key: key, Value: []byte(value)}
-	_, err = kv.Put(p, nil)
-	if err != nil {
-		panic(err)
-	} else {
-		return true
-	}
 }
 
 func LengthCheck(data string, min_length int, direction string) bool {
@@ -121,51 +45,6 @@ func ChecksumCompare(data string, checksum string, direction string) bool {
 		return true
 	} else {
 		return false
-	}
-}
-
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
-func ReadFile(filepath string) string {
-	dat, err := ioutil.ReadFile(filepath)
-	check(err)
-	return string(dat)
-}
-
-func SortFile(file string) string {
-	lines := strings.Split(file, "\n")
-	sort.Strings(lines)
-	return strings.Join(lines, "\n")
-}
-
-func WriteFile(data string, filepath string, perms int, direction string) {
-	err := ioutil.WriteFile(filepath, []byte(data), os.FileMode(perms))
-	check(err)
-	log.Print(direction, ": file_wrote='true' location='", filepath, "' permissions='", perms, "'")
-}
-
-func CompareFilename(file string) string {
-	compare := fmt.Sprintf("%s.compare", file)
-	full_path := path.Join(path.Dir(file), compare)
-	log.Print("in: file='compare' full_path='", full_path, "'")
-	return full_path
-}
-
-func LastFilename(file string) string {
-	last := fmt.Sprintf("%s.last", file)
-	full_path := path.Join(path.Dir(file), last)
-	log.Print("in: file='last' full_path='", full_path, "'")
-	return full_path
-}
-
-func CheckLastFile(file string, perms int) {
-	if _, err := os.Stat(file); err != nil {
-		log.Print("in: Last File: ", file, " does not exist.")
-		WriteFile("This is a blank file.\n", file, perms, "in")
 	}
 }
 
