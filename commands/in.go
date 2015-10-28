@@ -45,12 +45,6 @@ func inRun(cmd *cobra.Command, args []string) {
 		file_string = kvexpress.SortFile(file_string)
 	}
 
-	// Write the .compare file.
-	kvexpress.WriteFile(file_string, compare_file, FilePermissions, Direction)
-
-	// Check for the .last file - touch if it doesn't exist.
-	kvexpress.CheckLastFile(last_file, FilePermissions)
-
 	// Is it long enough?
 	longEnough := kvexpress.LengthCheck(file_string, MinFileLength, Direction)
 
@@ -58,6 +52,12 @@ func inRun(cmd *cobra.Command, args []string) {
 		log.Print(Direction, ": File is NOT long enough. Stopping.")
 		os.Exit(1)
 	}
+
+	// Write the .compare file.
+	kvexpress.WriteFile(file_string, compare_file, FilePermissions, Direction)
+
+	// Check for the .last file - touch if it doesn't exist.
+	kvexpress.CheckLastFile(last_file, FilePermissions)
 
 	// Read compare and last files into string.
 	compare_data := kvexpress.ReadFile(compare_file)
