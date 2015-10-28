@@ -16,9 +16,13 @@ Yes you can - but we kept wanting to:
 2. Load the file from some other custom templating process - not just from straight KV files.
 3. Put the file into any location in the filesystem.
 4. Restart/reload/stop/start daemon after writing the file.
-5. Run some other random command after writing the file.
+5. Run some other custom command after writing the file.
 6. Verify that the file we put into the KV was the same file that was written on the other end.
-7. Stop the process - in or out - if we want everything to stay as it is for the moment.
+7. Stop the process on all nodes - in or out - if we want everything to stay as it is for the moment.
+
+We did this at first with some custom Ruby scripts - but the pattern was apparent and could be applied to many other files as well.
+
+This replaces all the custom Ruby/shell scripts with a single Go binary we can use to get data in and out.
 
 **in**
 
@@ -61,7 +65,23 @@ Global Flags:
   -t, --token="": Token for Consul access
 ```
 
-Example: `kvexpress out -k nginx -f /etc/nginx/nginx.conf -e 'sudo service restart nginx'`
+Example `out` as a Consul watch:
+
+```
+{
+  "watches": [
+    {
+      "type":"key",
+      "key":"/kvexpress/hosts/data",
+      "handler":"kvexpress out -k hosts -f /etc/hosts.consul -l 100 -e 'sudo pkill -HUP dnsmasq'"
+    }
+  ]
+}
+```
+
+**Consul KV Structure**
+
+TODO
 
 **Build**
 
