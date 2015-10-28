@@ -87,7 +87,7 @@ func inRun(cmd *cobra.Command, args []string) {
 				log.Print(Direction, ": current and previous Consul checksum are different - let's update the KV store.")
 				saved := kvexpress.Set(key_data, compare_data, ConsulServer, Token, Direction)
 				if saved {
-					log.Print(Direction, ": key_data='", key_data, "' saved='true'")
+					log.Print(Direction, ": key_data='", key_data, "' saved='true' size='", len(compare_data), "'")
 					kvexpress.Set(key_checksum, compare_checksum, ConsulServer, Token, Direction)
 					kvexpress.Set(key_updated, kvexpress.ReturnCurrentUTC(), ConsulServer, Token, Direction)
 
