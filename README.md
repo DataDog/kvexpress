@@ -81,7 +81,23 @@ Example `out` as a Consul watch:
 
 **Consul KV Structure**
 
-TODO
+How are keys organized in Consul's KV store to work with kvexpress?
+
+Underneath a global prefix `/kvexpress/` - each directory represents a specific file we are distributing through the KV store.
+
+Each directory is named for the unique key and has the following keys underneath it:
+
+1. `data` - where the configuration file is stored.
+2. `checksum` - where the SHA256 of the data is stored.
+3. `updated` - where the last updated time is stored - human readable
+
+For example - the `hosts` file is arranged like this:
+
+```
+/kvexpress/hosts/data
+/kvexpress/hosts/checksum
+/kvexpress/hosts/updated
+```
 
 **Build**
 
