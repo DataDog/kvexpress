@@ -99,6 +99,8 @@ For example - the `hosts` file is arranged like this:
 /kvexpress/hosts/updated
 ```
 
+There is an optional `stop` key - that if present - will cause all `in` and `out` processes to stop before writing anything. Allows us to freeze the automatic process if we need to.
+
 **Build**
 
 To build: `make deps && make`
