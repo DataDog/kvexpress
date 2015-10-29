@@ -22,7 +22,6 @@ func inRun(cmd *cobra.Command, args []string) {
 	key_stop := kvexpress.KeyStopPath(KeyInLocation, PrefixLocation, Direction)
 	key_data := kvexpress.KeyDataPath(KeyInLocation, PrefixLocation, Direction)
 	key_checksum := kvexpress.KeyChecksumPath(KeyInLocation, PrefixLocation, Direction)
-	key_updated := kvexpress.KeyUpdatedPath(KeyInLocation, PrefixLocation, Direction)
 
 	compare_file := kvexpress.CompareFilename(FiletoRead)
 	last_file := kvexpress.LastFilename(FiletoRead)
@@ -89,7 +88,6 @@ func inRun(cmd *cobra.Command, args []string) {
 				if saved {
 					log.Print(Direction, ": key_data='", key_data, "' saved='true' size='", len(compare_data), "'")
 					kvexpress.Set(key_checksum, compare_checksum, ConsulServer, Token, Direction)
-					kvexpress.Set(key_updated, kvexpress.ReturnCurrentUTC(), ConsulServer, Token, Direction)
 
 					// Copy the compare_data to the .last file.
 					kvexpress.WriteFile(compare_data, last_file, FilePermissions, Direction)
