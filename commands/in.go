@@ -65,52 +65,56 @@ func inRun(cmd *cobra.Command, args []string) {
 
 	if compare_data != "" && last_data != "" {
 		log.Print(Direction, ": We have data - let's do the thing.")
+	} else {
+		log.Print(Direction, ": We do NOT have data. This should never happen.")
+		os.Exit(1)
+	}
 
-		// Get SHA256 values for each string.
-		compare_checksum := kvexpress.ComputeChecksum(compare_data, Direction)
-		last_checksum := kvexpress.ComputeChecksum(last_data, Direction)
+	// Get SHA256 values for each string.
+	compare_checksum := kvexpress.ComputeChecksum(compare_data, Direction)
+	last_checksum := kvexpress.ComputeChecksum(last_data, Direction)
 
-		// If they're different - let's update things.
-		if compare_checksum != last_checksum {
-			log.Print(Direction, ": file checksums are different - let's update some stuff!")
+	// If they're different - let's update things.
+	if compare_checksum != last_checksum {
+		log.Print(Direction, ": file checksums are different - let's update some stuff!")
+	} else {
+		log.Print(Direction, ": checksums='match' saved='false'")
+		os.Exit(0)
+	}
 
-			// Diff the file data.
-			// html_diff := kvexpress.HTMLDiff(last_data, compare_data)
+	// Diff the file data.
+	// html_diff := kvexpress.HTMLDiff(last_data, compare_data)
 
-			// TODO: To be removed.
-			// fmt.Printf("%v", html_diff)
+	// TODO: To be removed.
+	// fmt.Printf("%v", html_diff)
 
-			// Get the checksum from Consul.
-			current_checksum := kvexpress.Get(key_checksum, ConsulServer, Token, Direction)
+	// Get the checksum from Consul.
+	current_checksum := kvexpress.Get(key_checksum, ConsulServer, Token, Direction)
 
-			if current_checksum != compare_checksum {
-				log.Print(Direction, ": current and previous Consul checksum are different - let's update the KV store.")
-				saved := kvexpress.Set(key_data, compare_data, ConsulServer, Token, Direction)
-				if saved {
-					compare_data_bytes := len(compare_data)
-					log.Print(Direction, ": key_data='", key_data, "' saved='true' size='", compare_data_bytes, "'")
-					kvexpress.Set(key_checksum, compare_checksum, ConsulServer, Token, Direction)
+	if current_checksum != compare_checksum {
+		log.Print(Direction, ": current and previous Consul checksum are different - let's update the KV store.")
+		saved := kvexpress.Set(key_data, compare_data, ConsulServer, Token, Direction)
+		if saved {
+			compare_data_bytes := len(compare_data)
+			log.Print(Direction, ": key_data='", key_data, "' saved='true' size='", compare_data_bytes, "'")
+			kvexpress.Set(key_checksum, compare_checksum, ConsulServer, Token, Direction)
 
-					if DogStatsd {
-						statsd, _ := godspeed.NewDefault()
-						defer statsd.Conn.Close()
-						statsdTags := []string{fmt.Sprintf("kvkey:%s", KeyInLocation)}
-						statsd.Incr("kvexpress.updates", statsdTags)
-						statsd.Gauge("kvexpress.bytes", float64(compare_data_bytes), statsdTags)
-						statsd.Gauge("kvexpress.lines", float64(kvexpress.LineCount(compare_data)), statsdTags)
-					}
-
-					// Copy the compare_data to the .last file.
-					kvexpress.WriteFile(compare_data, last_file, FilePermissions, Direction)
-				} else {
-					log.Print(Direction, ": key_data='", key_data, "' saved='false'")
-					os.Exit(1)
-				}
-			} else {
-				log.Print(Direction, ": checksums='match' saved='false'")
+			if DogStatsd {
+				statsd, _ := godspeed.NewDefault()
+				defer statsd.Conn.Close()
+				statsdTags := []string{fmt.Sprintf("kvkey:%s", KeyInLocation)}
+				statsd.Incr("kvexpress.updates", statsdTags)
+				statsd.Gauge("kvexpress.bytes", float64(compare_data_bytes), statsdTags)
+				statsd.Gauge("kvexpress.lines", float64(kvexpress.LineCount(compare_data)), statsdTags)
 			}
 
+			// Copy the compare_data to the .last file.
+			kvexpress.WriteFile(compare_data, last_file, FilePermissions, Direction)
+		} else {
+			log.Print(Direction, ": key_data='", key_data, "' saved='false'")
+			os.Exit(1)
 		}
+
 	}
 
 	// Run this command after the data is input.
