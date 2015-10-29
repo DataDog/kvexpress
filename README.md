@@ -26,7 +26,7 @@ This replaces all the custom Ruby/shell scripts with a single Go binary we can u
 
 **How does it work? - 1000 foot view**
 
-In: `kvexpress in --key hosts --file /etc/consul-template/output/hosts.consul --length 100 --sorted=true`
+**In:** `kvexpress in --key hosts --file /etc/consul-template/output/hosts.consul --length 100 --sorted=true`
 
 1. Check that at least `--file` and `--key` are passed along with the command. Quit if they're not present - there are no safe defaults for those flags.
 2. Check for the existence of a `stop` key - if it's there - stop and exit.
@@ -37,11 +37,11 @@ In: `kvexpress in --key hosts --file /etc/consul-template/output/hosts.consul --
 7. Are the `.compare` and `.last` files blank? If not - let's continue.
 8. Compare the checksums of the `.compare` and `.last` files - if they're different - continue.
 9. Grab the checksum from Consul and compare with the `.compare` file - if it's different - then let's update. This is to guard against it running on multiple server nodes that might have different `.last` files.
-10. Save `data`, `checksum` and `updated` keys.
+10. Save `data`, and `checksum` keys.
 11. Copy `.compare` to `.last`
 12. If `--exec` is passed - run that command.
 
-Out: `kvexpress out -k hosts -f /etc/hosts.consul -l 100 -e 'sudo pkill -HUP dnsmasq'`
+**Out:** `kvexpress out -k hosts -f /etc/hosts.consul -l 100 -e 'sudo pkill -HUP dnsmasq'`
 
 1. Check that at least `--file` and `--key` are passed along with the command. Quit if they're not present - there are no safe defaults for those flags.
 2. Check for the existence of a `stop` key - if it's there - stop and exit.
