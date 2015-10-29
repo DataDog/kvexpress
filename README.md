@@ -63,6 +63,8 @@ Flags:
 
 Global Flags:
   -c, --chmod=416: permissions for the file
+  -d, --dogstatsd[=false]: send metrics to dogstatsd
+  -D, --dogstatsd_addr="localhost:8125": address for dogstatsd server
   -e, --exec="": Execute this command after
   -l, --length=10: minimum amount of lines in the file
   -p, --prefix="kvexpress": prefix for the key
@@ -70,7 +72,7 @@ Global Flags:
   -t, --token="": Token for Consul access
 ```
 
-Example: `kvexpress in -k hosts -f /etc/consul-template/output/hosts.consul -l 100 --sorted=true`
+Example: `kvexpress in -d true -k hosts -f /etc/consul-template/output/hosts.consul -l 100 --sorted=true`
 
 **`out` command flags**
 
@@ -84,6 +86,8 @@ Flags:
 
 Global Flags:
   -c, --chmod=416: permissions for the file
+  -d, --dogstatsd[=false]: send metrics to dogstatsd
+  -D, --dogstatsd_addr="localhost:8125": address for dogstatsd server
   -e, --exec="": Execute this command after
   -l, --length=10: minimum amount of lines in the file
   -p, --prefix="kvexpress": prefix for the key
@@ -99,7 +103,7 @@ Example `out` as a Consul watch:
     {
       "type":"key",
       "key":"/kvexpress/hosts/checksum",
-      "handler":"kvexpress out -k hosts -f /etc/hosts.consul -l 100 -e 'sudo pkill -HUP dnsmasq'"
+      "handler":"kvexpress out -d true -k hosts -f /etc/hosts.consul -l 100 -e 'sudo pkill -HUP dnsmasq'"
     }
   ]
 }
@@ -130,6 +134,8 @@ There is an optional `stop` key - that if present - will cause all `in` and `out
 To build: `make deps && make`
 
 To build for Linux: `make deps && make linux`
+
+To launch an empty [Consul](https://www.consul.io/) instance: `make consul`
 
 Logs to to Syslog.
 

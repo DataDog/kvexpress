@@ -103,7 +103,7 @@ func inRun(cmd *cobra.Command, args []string) {
 				statsd, _ := godspeed.NewDefault()
 				defer statsd.Conn.Close()
 				statsdTags := []string{fmt.Sprintf("kvkey:%s", KeyInLocation)}
-				statsd.Incr("kvexpress.updates", statsdTags)
+				statsd.Incr("kvexpress.in", statsdTags)
 				statsd.Gauge("kvexpress.bytes", float64(compare_data_bytes), statsdTags)
 				statsd.Gauge("kvexpress.lines", float64(kvexpress.LineCount(compare_data)), statsdTags)
 			}

@@ -3,6 +3,7 @@ package commands
 import (
 	kvexpress "../kvexpress/"
 	"fmt"
+	"github.com/PagerDuty/godspeed"
 	"github.com/spf13/cobra"
 	"log"
 	"os"
@@ -50,6 +51,12 @@ func outRun(cmd *cobra.Command, args []string) {
 	// If the data is long enough and the checksum matches, write the file.
 	if longEnough && checksumMatch {
 		kvexpress.WriteFile(KVData, FiletoWrite, FilePermissions, Direction)
+		if DogStatsd {
+			statsd, _ := godspeed.NewDefault()
+			defer statsd.Conn.Close()
+			statsdTags := []string{fmt.Sprintf("kvkey:%s", KeyOutLocation)}
+			statsd.Incr("kvexpress.out", statsdTags)
+		}
 	} else {
 		log.Print("Could not write file.")
 	}
