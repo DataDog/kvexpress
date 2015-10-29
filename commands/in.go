@@ -3,7 +3,6 @@ package commands
 import (
 	kvexpress "../kvexpress/"
 	"fmt"
-	"github.com/PagerDuty/godspeed"
 	"github.com/spf13/cobra"
 	"log"
 	"os"
@@ -100,12 +99,7 @@ func inRun(cmd *cobra.Command, args []string) {
 			kvexpress.Set(key_checksum, compare_checksum, ConsulServer, Token, Direction)
 
 			if DogStatsd {
-				statsd, _ := godspeed.NewDefault()
-				defer statsd.Conn.Close()
-				statsdTags := []string{fmt.Sprintf("kvkey:%s", KeyInLocation)}
-				statsd.Incr("kvexpress.in", statsdTags)
-				statsd.Gauge("kvexpress.bytes", float64(compare_data_bytes), statsdTags)
-				statsd.Gauge("kvexpress.lines", float64(kvexpress.LineCount(compare_data)), statsdTags)
+				kvexpress.StatsdIn(KeyInLocation, compare_data_bytes, compare_data)
 			}
 
 			// Copy the compare_data to the .last file.
