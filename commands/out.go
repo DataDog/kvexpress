@@ -18,7 +18,6 @@ var outCmd = &cobra.Command{
 }
 
 func outRun(cmd *cobra.Command, args []string) {
-	var Direction = "out"
 	checkOutFlags()
 
 	key_data := kvexpress.KeyDataPath(KeyOutLocation, PrefixLocation, Direction)
@@ -42,11 +41,11 @@ func outRun(cmd *cobra.Command, args []string) {
 
 	// Is the data long enough?
 	longEnough := kvexpress.LengthCheck(KVData, MinFileLength, Direction)
-	log.Print("out: longEnough='", strconv.FormatBool(longEnough), "'")
+	log.Print(Direction, ": longEnough='", strconv.FormatBool(longEnough), "'")
 
 	// Does the checksum match?
 	checksumMatch := kvexpress.ChecksumCompare(KVData, Checksum, Direction)
-	log.Print("out: checksumMatch='", strconv.FormatBool(checksumMatch), "'")
+	log.Print(Direction, ": checksumMatch='", strconv.FormatBool(checksumMatch), "'")
 
 	// If the data is long enough and the checksum matches, write the file.
 	if longEnough && checksumMatch {
@@ -58,18 +57,18 @@ func outRun(cmd *cobra.Command, args []string) {
 			statsd.Incr("kvexpress.out", statsdTags)
 		}
 	} else {
-		log.Print("Could not write file.")
+		log.Print(Direction, ": Could not write file.")
 	}
 
 	// Run this command after the file is written.
 	if PostExec != "" {
-		log.Print("out: exec='", PostExec, "'")
+		log.Print(Direction, ": exec='", PostExec, "'")
 		kvexpress.RunCommand(PostExec)
 	}
 }
 
 func checkOutFlags() {
-	log.Print("out: Checking cli flags.")
+	log.Print(Direction, ": Checking cli flags.")
 	if KeyOutLocation == "" {
 		fmt.Println("Need a key location in -k")
 		os.Exit(1)
@@ -79,20 +78,21 @@ func checkOutFlags() {
 		os.Exit(1)
 	}
 	if DogStatsd {
-		log.Print("out: Enabling Dogstatsd metrics.")
+		log.Print(Direction, ": Enabling Dogstatsd metrics.")
 	}
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		log.Print("out: Enabling Datadog API.")
+		log.Print(Direction, ": Enabling Datadog API.")
 		if os.Getenv("DATADOG_HOST") != "" {
-			log.Print("out: Using custom Datadog host.")
+			log.Print(Direction, ": Using custom Datadog host.")
 			DatadogHost = os.Getenv("DATADOG_HOST")
 		}
 	}
-	log.Print("out: Required cli flags present.")
+	log.Print(Direction, ": Required cli flags present.")
 }
 
 var KeyOutLocation string
 var FiletoWrite string
+var Direction = "out"
 
 func init() {
 	RootCmd.AddCommand(outCmd)
