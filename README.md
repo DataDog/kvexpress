@@ -98,7 +98,7 @@ Example `out` as a Consul watch:
   "watches": [
     {
       "type":"key",
-      "key":"/kvexpress/hosts/data",
+      "key":"/kvexpress/hosts/checksum",
       "handler":"kvexpress out -k hosts -f /etc/hosts.consul -l 100 -e 'sudo pkill -HUP dnsmasq'"
     }
   ]
@@ -115,14 +115,12 @@ Each directory is named for the unique key and has the following keys underneath
 
 1. `data` - where the configuration file is stored.
 2. `checksum` - where the SHA256 of the data is stored.
-3. `updated` - where the last updated time is stored - human readable
 
 For example - the `hosts` file is arranged like this:
 
 ```
 /kvexpress/hosts/data
 /kvexpress/hosts/checksum
-/kvexpress/hosts/updated
 ```
 
 There is an optional `stop` key - that if present - will cause all `in` and `out` processes to stop before writing anything. Allows us to freeze the automatic process if we need to.
