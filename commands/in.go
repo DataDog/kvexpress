@@ -18,7 +18,7 @@ var inCmd = &cobra.Command{
 
 func inRun(cmd *cobra.Command, args []string) {
 	var Direction = "in"
-	checkInFlags()
+	checkInFlags(Direction)
 
 	key_stop := kvexpress.KeyStopPath(KeyInLocation, PrefixLocation, Direction)
 	key_data := kvexpress.KeyDataPath(KeyInLocation, PrefixLocation, Direction)
@@ -124,24 +124,24 @@ func inRun(cmd *cobra.Command, args []string) {
 	}
 }
 
-func checkInFlags() {
-	log.Print("in: Checking cli flags.")
+func checkInFlags(direction string) {
+	log.Print(direction, ": Checking cli flags.")
 	if KeyInLocation == "" {
-		fmt.Println("Need a key location in -k")
+		fmt.Println(direction, ": Need a key location in -k")
 		os.Exit(1)
 	}
 	if FiletoRead == "" {
-		fmt.Println("Need a file to read in -f")
+		fmt.Println(direction, ": Need a file to read in -f")
 		os.Exit(1)
 	}
 	if _, err := os.Stat(FiletoRead); err != nil {
-		fmt.Println("File ", FiletoRead, " does not exist.")
+		fmt.Println(direction, ": File ", FiletoRead, " does not exist.")
 		os.Exit(1)
 	}
 	if DogStatsd {
-		log.Print("in: Enabling Dogstatsd metrics.")
+		log.Print(direction, ": Enabling Dogstatsd metrics.")
 	}
-	log.Print("in: Required cli flags present.")
+	log.Print(direction, ": Required cli flags present.")
 }
 
 var KeyInLocation string
