@@ -78,6 +78,13 @@ func checkOutFlags() {
 		fmt.Println("Need a file to write in -f")
 		os.Exit(1)
 	}
+	if DatadogAPIKey != "" && DatadogAPPKey != "" {
+		log.Print("out: Enabling Datadog API.")
+		if os.Getenv("DATADOG_HOST") != "" {
+			log.Print("out: Using custom Datadog host.")
+			DatadogHost = os.Getenv("DATADOG_HOST")
+		}
+	}
 	log.Print("out: Required cli flags present.")
 }
 
