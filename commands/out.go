@@ -18,7 +18,8 @@ var outCmd = &cobra.Command{
 }
 
 func outRun(cmd *cobra.Command, args []string) {
-	checkOutFlags()
+	var Direction = "out"
+	checkOutFlags(Direction)
 
 	key_data := kvexpress.KeyDataPath(KeyOutLocation, PrefixLocation, Direction)
 	key_checksum := kvexpress.KeyChecksumPath(KeyOutLocation, PrefixLocation, Direction)
@@ -67,8 +68,8 @@ func outRun(cmd *cobra.Command, args []string) {
 	}
 }
 
-func checkOutFlags() {
-	log.Print(Direction, ": Checking cli flags.")
+func checkOutFlags(direction string) {
+	log.Print(direction, ": Checking cli flags.")
 	if KeyOutLocation == "" {
 		fmt.Println("Need a key location in -k")
 		os.Exit(1)
@@ -78,21 +79,20 @@ func checkOutFlags() {
 		os.Exit(1)
 	}
 	if DogStatsd {
-		log.Print(Direction, ": Enabling Dogstatsd metrics.")
+		log.Print(direction, ": Enabling Dogstatsd metrics.")
 	}
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		log.Print(Direction, ": Enabling Datadog API.")
+		log.Print(direction, ": Enabling Datadog API.")
 		if os.Getenv("DATADOG_HOST") != "" {
-			log.Print(Direction, ": Using custom Datadog host.")
+			log.Print(direction, ": Using custom Datadog host.")
 			DatadogHost = os.Getenv("DATADOG_HOST")
 		}
 	}
-	log.Print(Direction, ": Required cli flags present.")
+	log.Print(direction, ": Required cli flags present.")
 }
 
 var KeyOutLocation string
 var FiletoWrite string
-var Direction = "out"
 
 func init() {
 	RootCmd.AddCommand(outCmd)
