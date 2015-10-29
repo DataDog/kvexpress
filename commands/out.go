@@ -78,6 +78,9 @@ func checkOutFlags() {
 		fmt.Println("Need a file to write in -f")
 		os.Exit(1)
 	}
+	if DogStatsd {
+		log.Print("out: Enabling Dogstatsd metrics.")
+	}
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
 		log.Print("out: Enabling Datadog API.")
 		if os.Getenv("DATADOG_HOST") != "" {

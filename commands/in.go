@@ -138,6 +138,9 @@ func checkInFlags() {
 		fmt.Println("File ", FiletoRead, " does not exist.")
 		os.Exit(1)
 	}
+	if DogStatsd {
+		log.Print("in: Enabling Dogstatsd metrics.")
+	}
 	log.Print("in: Required cli flags present.")
 }
 
