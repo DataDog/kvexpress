@@ -33,3 +33,6 @@ gziplinux:
 	mv bin/kvexpress.gz bin/kvexpress-$(KVEXPRESS_VERSION)-linux-amd64.gz
 
 release: clean build gziposx clean linux gziplinux clean
+
+consul:
+	consul agent -data-dir `mktemp -d`  -bootstrap -server -bind=127.0.0.1
