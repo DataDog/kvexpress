@@ -16,18 +16,23 @@ func init() {
 }
 
 func LengthCheck(data string, min_length int, direction string) bool {
-	var length int
-	if strings.ContainsAny(data, "\n") {
-		length = strings.Count(data, "\n")
-	} else {
-		length = 1
-	}
+	length := LineCount(data)
 	log.Print(direction, ": length='", length, "' min_length='", min_length, "'")
 	if length >= min_length {
 		return true
 	} else {
 		return false
 	}
+}
+
+func LineCount(data string) int {
+	var length int
+	if strings.ContainsAny(data, "\n") {
+		length = strings.Count(data, "\n")
+	} else {
+		length = 1
+	}
+	return length
 }
 
 func ComputeChecksum(data string, direction string) string {

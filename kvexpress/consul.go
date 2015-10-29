@@ -1,8 +1,8 @@
 package kvexpress
 
 import (
-  consulapi "github.com/hashicorp/consul/api"
-  "log"
+	consulapi "github.com/hashicorp/consul/api"
+	"log"
 )
 
 func Get(key string, server string, token string, direction string) string {

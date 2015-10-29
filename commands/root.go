@@ -21,6 +21,8 @@ var ConsulServer string
 var PrefixLocation string
 var MinFileLength int
 var FilePermissions int
+var DogStatsd bool
+var DogStatsdAddress string
 
 func init() {
 	RootCmd.PersistentFlags().StringVarP(&ConsulServer, "server", "s", "localhost:8500", "Consul server location")
@@ -29,4 +31,6 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&PostExec, "exec", "e", "", "Execute this command after")
 	RootCmd.PersistentFlags().IntVarP(&MinFileLength, "length", "l", 10, "minimum amount of lines in the file")
 	RootCmd.PersistentFlags().IntVarP(&FilePermissions, "chmod", "c", 0640, "permissions for the file")
+	RootCmd.PersistentFlags().BoolVarP(&DogStatsd, "dogstatsd", "d", false, "send metrics to dogstatsd")
+	RootCmd.PersistentFlags().StringVarP(&DogStatsdAddress, "dogstatsd_addr", "D", "localhost:8125", "address for dogstatsd server")
 }

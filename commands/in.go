@@ -3,6 +3,7 @@ package commands
 import (
 	kvexpress "../kvexpress/"
 	"fmt"
+	"github.com/PagerDuty/godspeed"
 	"github.com/spf13/cobra"
 	"log"
 	"os"
@@ -86,8 +87,18 @@ func inRun(cmd *cobra.Command, args []string) {
 				log.Print(Direction, ": current and previous Consul checksum are different - let's update the KV store.")
 				saved := kvexpress.Set(key_data, compare_data, ConsulServer, Token, Direction)
 				if saved {
-					log.Print(Direction, ": key_data='", key_data, "' saved='true' size='", len(compare_data), "'")
+					compare_data_bytes := len(compare_data)
+					log.Print(Direction, ": key_data='", key_data, "' saved='true' size='", compare_data_bytes, "'")
 					kvexpress.Set(key_checksum, compare_checksum, ConsulServer, Token, Direction)
+
+					if DogStatsd {
+						statsd, _ := godspeed.NewDefault()
+						defer statsd.Conn.Close()
+						statsdTags := []string{fmt.Sprintf("kvkey:%s", KeyInLocation)}
+						statsd.Incr("kvexpress.updates", statsdTags)
+						statsd.Gauge("kvexpress.bytes", float64(compare_data_bytes), statsdTags)
+						statsd.Gauge("kvexpress.lines", float64(kvexpress.LineCount(compare_data)), statsdTags)
+					}
 
 					// Copy the compare_data to the .last file.
 					kvexpress.WriteFile(compare_data, last_file, FilePermissions, Direction)
