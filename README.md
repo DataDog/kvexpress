@@ -50,7 +50,7 @@ This replaces all the custom Ruby/shell scripts with a single Go binary we can u
 5. Write the contents of `data` to the passed `--file` location.
 6. If `--exec` is passed - run that command.
 
-**in**
+**`in` command flags**
 
 ```
 Usage:
@@ -72,7 +72,7 @@ Global Flags:
 
 Example: `kvexpress in -k hosts -f /etc/consul-template/output/hosts.consul -l 100 --sorted=true`
 
-**out**
+**`out` command flags**
 
 ```
 Usage:
