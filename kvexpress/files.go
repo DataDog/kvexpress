@@ -18,8 +18,19 @@ func ReadFile(filepath string) string {
 
 func SortFile(file string) string {
 	lines := strings.Split(file, "\n")
+	lines = BlankLineStrip(lines)
 	sort.Strings(lines)
 	return strings.Join(lines, "\n")
+}
+
+func BlankLineStrip(data []string) []string {
+	var stripped []string
+	for _, str := range data {
+		if str != "" {
+			stripped = append(stripped, str)
+		}
+	}
+	return stripped
 }
 
 func WriteFile(data string, filepath string, perms int, direction string) {
