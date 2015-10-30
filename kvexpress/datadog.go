@@ -1,7 +1,7 @@
 package kvexpress
 
 import (
-  "fmt"
+	"fmt"
 	"github.com/PagerDuty/godspeed"
 )
 

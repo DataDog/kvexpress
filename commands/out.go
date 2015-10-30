@@ -84,8 +84,8 @@ func checkOutFlags(direction string) {
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
 		log.Print(direction, ": Enabling Datadog API.")
 		if os.Getenv("DATADOG_HOST") != "" {
-			log.Print(direction, ": Using custom Datadog host.")
 			DatadogHost = os.Getenv("DATADOG_HOST")
+			log.Print(direction, ": Using custom Datadog host: ", DatadogHost)
 		}
 	}
 	log.Print(direction, ": Required cli flags present.")
