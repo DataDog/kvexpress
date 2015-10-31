@@ -138,9 +138,11 @@ func checkInFlags(direction string) {
 	log.Print(direction, ": Required cli flags present.")
 }
 
-var KeyInLocation string
-var FiletoRead string
-var Sorted bool
+var (
+	KeyInLocation string
+	FiletoRead    string
+	Sorted        bool
+)
 
 func init() {
 	RootCmd.AddCommand(inCmd)

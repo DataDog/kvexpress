@@ -91,8 +91,10 @@ func checkOutFlags(direction string) {
 	log.Print(direction, ": Required cli flags present.")
 }
 
-var KeyOutLocation string
-var FiletoWrite string
+var (
+	KeyOutLocation string
+	FiletoWrite    string
+)
 
 func init() {
 	RootCmd.AddCommand(outCmd)

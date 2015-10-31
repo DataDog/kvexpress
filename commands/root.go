@@ -15,17 +15,19 @@ var RootCmd = &cobra.Command{
 	},
 }
 
-var Token string
-var PostExec string
-var ConsulServer string
-var PrefixLocation string
-var MinFileLength int
-var FilePermissions int
-var DogStatsd bool
-var DogStatsdAddress string
-var DatadogAPIKey string
-var DatadogAPPKey string
-var DatadogHost string
+var (
+	Token            string
+	PostExec         string
+	ConsulServer     string
+	PrefixLocation   string
+	MinFileLength    int
+	FilePermissions  int
+	DogStatsd        bool
+	DogStatsdAddress string
+	DatadogAPIKey    string
+	DatadogAPPKey    string
+	DatadogHost      string
+)
 
 func init() {
 	RootCmd.PersistentFlags().StringVarP(&ConsulServer, "server", "s", "localhost:8500", "Consul server location")
