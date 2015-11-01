@@ -1,3 +1,4 @@
+# Built and pushed as: darron/kvexpress-test
 FROM octohost/base:trusty
 
 # Go 1.5.1
