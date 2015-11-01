@@ -9,4 +9,4 @@ ENV GOPATH /root/gocode
 ENV PATH /opt/go/bin:/root/gocode/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # Install Consul
-RUN curl -s https://packagecloud.io/install/repositories/darron/consul/script.deb.sh | bash && apt-get install consul && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN curl -s https://packagecloud.io/install/repositories/darron/consul/script.deb.sh | bash && apt-get install -y consul git make && apt-get clean && rm -rf /var/lib/apt/lists/*
