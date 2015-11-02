@@ -23,8 +23,8 @@ func inRun(cmd *cobra.Command, args []string) {
 	KeyData := kvexpress.KeyDataPath(KeyInLocation, PrefixLocation, Direction)
 	KeyChecksum := kvexpress.KeyChecksumPath(KeyInLocation, PrefixLocation, Direction)
 
-	CompareFile := kvexpress.CompareFilename(FiletoRead)
-	LastFile := kvexpress.LastFilename(FiletoRead)
+	CompareFile := kvexpress.CompareFilename(FiletoRead, Direction)
+	LastFile := kvexpress.LastFilename(FiletoRead, Direction)
 
 	StopKeyData := kvexpress.Get(KeyStop, ConsulServer, Token, Direction)
 

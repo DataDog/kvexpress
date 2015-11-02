@@ -39,17 +39,36 @@ func WriteFile(data string, filepath string, perms int, direction string) {
 	log.Print(direction, ": file_wrote='true' location='", filepath, "' permissions='", perms, "'")
 }
 
-func CompareFilename(file string) string {
+func RemoveFile(filename string, direction string) {
+	file, err := os.Open(filename)
+	f, err := file.Stat()
+	switch {
+	case err != nil:
+		log.Print(direction, ": Could NOT stat ", filename)
+	case f.IsDir():
+		log.Print(direction, ": Would NOT remove a directory ", filename)
+		os.Exit(1)
+	default:
+		err = os.Remove(filename)
+		if err != nil {
+			log.Print(direction, ": Could NOT remove ", filename)
+		} else {
+			log.Print(direction, ": Removed ", filename)
+		}
+	}
+}
+
+func CompareFilename(file string, direction string) string {
 	compare := fmt.Sprintf("%s.compare", path.Base(file))
 	full_path := path.Join(path.Dir(file), compare)
-	log.Print("in: file='compare' full_path='", full_path, "'")
+	log.Print(direction, ": file='compare' full_path='", full_path, "'")
 	return full_path
 }
 
-func LastFilename(file string) string {
+func LastFilename(file string, direction string) string {
 	last := fmt.Sprintf("%s.last", path.Base(file))
 	full_path := path.Join(path.Dir(file), last)
-	log.Print("in: file='last' full_path='", full_path, "'")
+	log.Print(direction, ": file='last' full_path='", full_path, "'")
 	return full_path
 }
 

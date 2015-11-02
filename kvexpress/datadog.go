@@ -14,7 +14,7 @@ func StatsdIn(key string, data_length int, data string) {
 	statsd.Gauge("kvexpress.lines", float64(LineCount(data)), statsdTags)
 }
 
-func StatsdOut(key string)  {
+func StatsdOut(key string) {
 	statsd, _ := godspeed.NewDefault()
 	defer statsd.Conn.Close()
 	statsdTags := []string{fmt.Sprintf("kvkey:%s", key)}
