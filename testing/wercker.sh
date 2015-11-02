@@ -18,7 +18,9 @@ bin/kvexpress out -k testing -f output
 
 export CHECKSUM=$(shasum -a 256 output | cut -d ' ' -f 1)
 
-rm -f output sorting*
+echo "Testing clean command."
+bin/kvexpress clean -f sorting
+bin/kvexpress clean -f output
 
 echo "Checksum : $CHECKSUM"
 echo "Predicted: $PREDICTED_CHECKSUM"
