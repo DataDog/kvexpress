@@ -36,10 +36,9 @@ func inRun(cmd *cobra.Command, args []string) {
 	}
 
 	// Read the file - if it's to be sorted - then make sure to sort.
-	// TODO: Do we need to uniq as well?
 	FileString := kvexpress.ReadFile(FiletoRead)
-	log.Print(Direction, ": FileString='", FileString, "'")
 
+	// Sorting also removes any blank lines.
 	if Sorted {
 		FileString = kvexpress.SortFile(FileString)
 	}
