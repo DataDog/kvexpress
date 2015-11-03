@@ -26,11 +26,15 @@ func outRun(cmd *cobra.Command, args []string) {
 
 	StopKeyData := kvexpress.Get(KeyStop, ConsulServer, Token, Direction)
 
-	if StopKeyData != "" {
+	if StopKeyData != "" && IgnoreStop == false {
 		log.Print(Direction, ": Stop Key is present - stopping. Reason: ", StopKeyData)
 		os.Exit(1)
 	} else {
-		log.Print(Direction, ": Stop Key is NOT present - continuing.")
+		if IgnoreStop {
+			log.Print(Direction, ": Ignoring any stop key.")
+		} else {
+			log.Print(Direction, ": Stop Key is NOT present - continuing.")
+		}
 	}
 
 	// Get the KV data out of Consul.
@@ -90,10 +94,12 @@ func checkOutFlags(direction string) {
 var (
 	KeyOutLocation string
 	FiletoWrite    string
+	IgnoreStop     bool
 )
 
 func init() {
 	RootCmd.AddCommand(outCmd)
 	outCmd.Flags().StringVarP(&KeyOutLocation, "key", "k", "", "key to pull data from")
 	outCmd.Flags().StringVarP(&FiletoWrite, "file", "f", "", "where to write the data")
+	outCmd.Flags().BoolVarP(&IgnoreStop, "ignore_stop", "", false, "ignore stop key")
 }
