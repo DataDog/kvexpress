@@ -80,6 +80,10 @@ func inRun(cmd *cobra.Command, args []string) {
 		os.Exit(0)
 	}
 
+	// If we get this far - copy the CompareData to the .last file.
+	// This handles the case detailed in https://github.com/darron/kvexpress/issues/33
+	kvexpress.WriteFile(CompareData, LastFile, FilePermissions, Direction)
+
 	// Diff the file data.
 	// html_diff := kvexpress.HTMLDiff(LastData, CompareData)
 
@@ -101,15 +105,12 @@ func inRun(cmd *cobra.Command, args []string) {
 				kvexpress.StatsdIn(KeyInLocation, CompareDataBytes, CompareData)
 			}
 
-			// Copy the CompareData to the .last file.
-			kvexpress.WriteFile(CompareData, LastFile, FilePermissions, Direction)
 		} else {
 			log.Print(Direction, ": KeyData='", KeyData, "' saved='false'")
-			os.Exit(1)
+			os.Exit(0)
 		}
 
 	}
-
 	// Run this command after the data is input.
 	if PostExec != "" {
 		log.Print(Direction, ": exec='", PostExec, "'")
