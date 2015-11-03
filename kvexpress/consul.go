@@ -23,7 +23,7 @@ func Get(key string, server string, token string, direction string) string {
 		} else {
 			value = ""
 		}
-		log.Print(direction, ": key='", key, "' value='", value, "' address='", server, "' token='", token, "'")
+		log.Print(direction, ": key='", key, "' address='", server, "' token='", token, "'")
 	}
 	return value
 }
