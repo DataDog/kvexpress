@@ -132,6 +132,30 @@ Global Flags:
   -t, --token="": Token for Consul access
 ```
 
+**`stop` command flags**
+
+```
+Usage:
+  kvexpress stop [flags]
+
+Flags:
+  -k, --key="": key to stop
+  -r, --reason="": reason to stop
+
+Global Flags:
+  -c, --chmod=416: permissions for the file
+  -a, --datadog_api="": Datadog API Key
+  -A, --datadog_app="": Datadog App Key
+      --datadog_host="https://app.datadoghq.com": Datadog Host
+  -d, --dogstatsd[=false]: send metrics to dogstatsd
+  -D, --dogstatsd_addr="localhost:8125": address for dogstatsd server
+  -e, --exec="": Execute this command after
+  -l, --length=10: minimum amount of lines in the file
+  -p, --prefix="kvexpress": prefix for the key
+  -s, --server="localhost:8500": Consul server location
+  -t, --token="": Token for Consul access
+  ```
+
 **Consul KV Structure**
 
 How are keys organized in Consul's KV store to work with kvexpress?
