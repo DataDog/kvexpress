@@ -12,4 +12,4 @@ build:
     - script:
         name: go test
         code: |
-          testing/wercker.sh
+          make wercker

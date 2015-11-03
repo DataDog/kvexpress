@@ -4,9 +4,6 @@ set -e
 
 export PREDICTED_CHECKSUM="0ab71a1c8fef24ade8d650e2cc248aac1e499a45a0e9456ba0b47901f99176d8"
 
-make deps
-make build
-
 echo "Launching Consul."
 consul agent -data-dir `mktemp -d` -bootstrap -server -bind=127.0.0.1 1>/dev/null &
 sleep 3
@@ -18,9 +15,33 @@ bin/kvexpress out -k testing -f output
 
 export CHECKSUM=$(shasum -a 256 output | cut -d ' ' -f 1)
 
+echo "Set stop key"
+bin/kvexpress stop -k testing -r "Setting a stop key."
+
+echo "Try to pull it out - should not succeed."
+bin/kvexpress out -k testing -f stopped
+
+if [ -e "stopped" ]; then
+  echo "Oops - something went wrong."
+  exit 1
+else
+  echo "Perfect."
+fi
+
+echo "Ignore stop key - should succeed."
+bin/kvexpress out -k testing -f ignored --ignore_stop
+
+if [ -e "ignored" ]; then
+  echo "Perfect."
+else
+  echo "Oops - something went wrong."
+  exit 1
+fi
+
 echo "Testing clean command."
 bin/kvexpress clean -f sorting
 bin/kvexpress clean -f output
+bin/kvexpress clean -f ignored
 
 echo "Checksum : $CHECKSUM"
 echo "Predicted: $PREDICTED_CHECKSUM"

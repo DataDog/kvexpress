@@ -39,3 +39,6 @@ consul:
 
 sorting:
 	curl -s https://gist.githubusercontent.com/darron/94447bfab90617f16962/raw/d4cb39471724800ba9e731f99e5844167e93c5df/sorting.txt > sorting
+
+wercker:
+	testing/wercker.sh
