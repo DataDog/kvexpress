@@ -28,7 +28,7 @@ func outRun(cmd *cobra.Command, args []string) {
 
 	if StopKeyData != "" && IgnoreStop == false {
 		log.Print(Direction, ": Stop Key is present - stopping. Reason: ", StopKeyData)
-		os.Exit(1)
+		os.Exit(0)
 	} else {
 		if IgnoreStop {
 			log.Print(Direction, ": Ignoring any stop key.")
