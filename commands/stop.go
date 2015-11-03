@@ -19,13 +19,13 @@ func stopRun(cmd *cobra.Command, args []string) {
 	var Direction = "stop"
 	checkStopFlags(Direction)
 
-  KeyStop := kvexpress.KeyStopPath(KeyStopLocation, PrefixLocation, Direction)
+	KeyStop := kvexpress.KeyStopPath(KeyStopLocation, PrefixLocation, Direction)
 
-  saved := kvexpress.Set(KeyStop, KeyStopReason, ConsulServer, Token, Direction)
+	saved := kvexpress.Set(KeyStop, KeyStopReason, ConsulServer, Token, Direction)
 
-  if saved {
-    log.Print(Direction, ": KeyStop='", KeyStop, "' saved='true' KeyStopReason='", KeyStopReason, "'")
-  }
+	if saved {
+		log.Print(Direction, ": KeyStop='", KeyStop, "' saved='true' KeyStopReason='", KeyStopReason, "'")
+	}
 
 	// Run this command after the key is stopped.
 	if PostExec != "" {
@@ -40,20 +40,20 @@ func checkStopFlags(direction string) {
 		fmt.Println("Need a key to stop in -k")
 		os.Exit(1)
 	}
-  if KeyStopReason == "" {
-    fmt.Println("Need a reason to stop in -r")
-    os.Exit(1)
-  }
+	if KeyStopReason == "" {
+		fmt.Println("Need a reason to stop in -r")
+		os.Exit(1)
+	}
 	log.Print(direction, ": Required cli flags present.")
 }
 
 var (
 	KeyStopLocation string
-  KeyStopReason string
+	KeyStopReason   string
 )
 
 func init() {
 	RootCmd.AddCommand(stopCmd)
 	stopCmd.Flags().StringVarP(&KeyStopLocation, "key", "k", "", "key to stop")
-  stopCmd.Flags().StringVarP(&KeyStopReason, "reason", "r", "", "reason to stop")
+	stopCmd.Flags().StringVarP(&KeyStopReason, "reason", "r", "", "reason to stop")
 }
