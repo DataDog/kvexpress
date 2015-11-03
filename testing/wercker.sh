@@ -10,7 +10,7 @@ make build
 echo "Launching Consul."
 consul agent -data-dir `mktemp -d` -bootstrap -server -bind=127.0.0.1 1>/dev/null &
 sleep 3
-curl -s https://gist.githubusercontent.com/darron/94447bfab90617f16962/raw/d4cb39471724800ba9e731f99e5844167e93c5df/sorting.txt > sorting
+make sorting
 echo "Putting 'sorting' into 'testing' key."
 bin/kvexpress in -k testing -f sorting --sorted true
 echo "Pulling 'testing' key out and saving it to 'output'."
