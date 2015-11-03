@@ -26,7 +26,7 @@ func cleanRun(cmd *cobra.Command, args []string) {
 	kvexpress.RemoveFile(CompareFile, Direction)
 	kvexpress.RemoveFile(LastFile, Direction)
 
-	// Run this command after the file is written.
+	// Run this command after the files are cleaned.
 	if PostExec != "" {
 		log.Print(Direction, ": exec='", PostExec, "'")
 		kvexpress.RunCommand(PostExec)
