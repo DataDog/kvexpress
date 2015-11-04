@@ -53,6 +53,11 @@ func outRun(cmd *cobra.Command, args []string) {
 
 	// If the data is long enough and the checksum matches, write the file.
 	if longEnough && checksumMatch {
+		// Does the file already present in FiletoWrite have the same checksum?
+		// Is it directory? Does it exist?
+		kvexpress.CheckFiletoWrite(FiletoWrite, Checksum, Direction)
+
+		// Acually write the file.
 		kvexpress.WriteFile(KVData, FiletoWrite, FilePermissions, Direction)
 		if DogStatsd {
 			kvexpress.StatsdOut(KeyOutLocation)

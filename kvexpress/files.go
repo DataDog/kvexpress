@@ -39,6 +39,29 @@ func WriteFile(data string, filepath string, perms int, direction string) {
 	log.Print(direction, ": file_wrote='true' location='", filepath, "' permissions='", perms, "'")
 }
 
+func CheckFiletoWrite(filename, checksum, direction string) {
+	// Try to open the file.
+	file, err := os.Open(filename)
+	f, err := file.Stat()
+	switch {
+	case err != nil:
+		log.Print(direction, ": there is NO file at ", filename)
+		break
+	case f.IsDir():
+		log.Print(direction, ": Can NOT write a directory ", filename)
+		os.Exit(1)
+	default:
+		data, _ := ioutil.ReadFile(filename)
+		computedChecksum := ComputeChecksum(string(data), direction)
+		if computedChecksum == checksum {
+			log.Print(direction, ": already a file with the same checksum. Stopping.")
+			os.Exit(0)
+		}
+	}
+
+	// If there's no file - then great - there's nothing to check
+}
+
 func RemoveFile(filename string, direction string) {
 	file, err := os.Open(filename)
 	f, err := file.Stat()
