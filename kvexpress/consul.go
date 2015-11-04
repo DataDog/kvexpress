@@ -34,7 +34,7 @@ func Get(key string, server string, token string, direction string) string {
 
 func cleanupToken(token string) string {
 	first := strings.Split(token, "-")
-	firstString := fmt.Sprintf("%s", first[0:1])
+	firstString := fmt.Sprintf("%s", first[0])
 	return firstString
 }
 
