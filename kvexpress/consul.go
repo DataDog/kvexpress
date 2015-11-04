@@ -1,8 +1,10 @@
 package kvexpress
 
 import (
+	"fmt"
 	consulapi "github.com/hashicorp/consul/api"
 	"log"
+	"strings"
 )
 
 func Get(key string, server string, token string, direction string) string {
@@ -23,9 +25,16 @@ func Get(key string, server string, token string, direction string) string {
 		} else {
 			value = ""
 		}
-		log.Print(direction, ": key='", key, "' address='", server, "' token='", token, "'")
+		cleanedToken := cleanupToken(token)
+		log.Print(direction, ": key='", key, "' address='", server, "' token='", cleanedToken, "'")
 	}
 	return value
+}
+
+func cleanupToken(token string) string {
+	first := strings.Split(token, "-")
+	firstString := fmt.Sprintf("%s", first[0:1])
+	return firstString
 }
 
 func Set(key string, value string, server string, token string, direction string) bool {
