@@ -9,10 +9,12 @@ import (
 
 func Get(key string, server string, token string, direction string) string {
 	var value string
+	var cleanedToken = ""
 	config := consulapi.DefaultConfig()
 	config.Address = server
 	if token != "" {
 		config.Token = token
+		cleanedToken = cleanupToken(token)
 	}
 	consul, err := consulapi.NewClient(config)
 	kv := consul.KV()
@@ -25,7 +27,6 @@ func Get(key string, server string, token string, direction string) string {
 		} else {
 			value = ""
 		}
-		cleanedToken := cleanupToken(token)
 		log.Print(direction, ": key='", key, "' address='", server, "' token='", cleanedToken, "'")
 	}
 	return value
