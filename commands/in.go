@@ -26,6 +26,10 @@ func inRun(cmd *cobra.Command, args []string) {
 	CompareFile := kvexpress.CompareFilename(FiletoRead, Direction)
 	LastFile := kvexpress.LastFilename(FiletoRead, Direction)
 
+	// Let's double check those files are safe to write.
+	kvexpress.CheckFiletoWrite(CompareFile, "", Direction)
+	kvexpress.CheckFiletoWrite(LastFile, "", Direction)
+
 	StopKeyData := kvexpress.Get(KeyStop, ConsulServer, Token, Direction)
 
 	if StopKeyData != "" {
