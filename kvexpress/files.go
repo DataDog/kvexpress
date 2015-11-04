@@ -12,7 +12,9 @@ import (
 
 func ReadFile(filepath string) string {
 	dat, err := ioutil.ReadFile(filepath)
-	check(err)
+	if err != nil {
+		dat = []byte("")
+	}
 	return string(dat)
 }
 
