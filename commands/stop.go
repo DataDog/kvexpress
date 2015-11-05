@@ -3,8 +3,8 @@ package commands
 import (
 	kvexpress "../kvexpress/"
 	"fmt"
-	"github.com/spf13/cobra"
 	"github.com/darron/go-datadog-api"
+	"github.com/spf13/cobra"
 	"log"
 	"os"
 )

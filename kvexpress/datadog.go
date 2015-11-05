@@ -40,6 +40,7 @@ func makeTags(key, direction string) []string {
 	return tags
 }
 
+// TODO: These three functions are ripe for refactoring to be more Golang like.
 func DDStopEvent(dd *datadog.Client, key, value, direction string) {
 	tags := makeTags(key, direction)
 	tags = append(tags, "kvexpress:stop")
