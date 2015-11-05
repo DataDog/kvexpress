@@ -2,22 +2,27 @@ package kvexpress
 
 import (
 	"fmt"
-	consulapi "github.com/hashicorp/consul/api"
+	consul "github.com/hashicorp/consul/api"
 	"log"
 	"strings"
 )
 
-func Get(key string, server string, token string, direction string) string {
-	var value string
+func Connect(server, token, direction string) (*consul.Client, error) {
 	var cleanedToken = ""
-	config := consulapi.DefaultConfig()
+	config := consul.DefaultConfig()
 	config.Address = server
 	if token != "" {
 		config.Token = token
 		cleanedToken = cleanupToken(token)
 	}
-	consul, err := consulapi.NewClient(config)
-	kv := consul.KV()
+	consul, _ := consul.NewClient(config)
+	log.Print(direction, ": address='", server, "' token='", cleanedToken, "'")
+	return consul, nil
+}
+
+func Get(c *consul.Client, key, direction string) string {
+	var value string
+	kv := c.KV()
 	pair, _, err := kv.Get(key, nil)
 	if err != nil {
 		panic(err)
@@ -27,7 +32,7 @@ func Get(key string, server string, token string, direction string) string {
 		} else {
 			value = ""
 		}
-		log.Print(direction, ": key='", key, "' address='", server, "' token='", cleanedToken, "'")
+		log.Print(direction, ": key='", key)
 	}
 	return value
 }
@@ -38,19 +43,14 @@ func cleanupToken(token string) string {
 	return firstString
 }
 
-func Set(key string, value string, server string, token string, direction string) bool {
-	config := consulapi.DefaultConfig()
-	config.Address = server
-	if token != "" {
-		config.Token = token
-	}
-	consul, err := consulapi.NewClient(config)
-	kv := consul.KV()
-	p := &consulapi.KVPair{Key: key, Value: []byte(value)}
-	_, err = kv.Put(p, nil)
+func Set(c *consul.Client, key, value, direction string) bool {
+	p := &consul.KVPair{Key: key, Value: []byte(value)}
+	kv := c.KV()
+	_, err := kv.Put(p, nil)
 	if err != nil {
 		panic(err)
 	} else {
 		return true
 	}
+	return true
 }

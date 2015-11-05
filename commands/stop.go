@@ -24,7 +24,9 @@ func stopRun(cmd *cobra.Command, args []string) {
 
 	KeyStop := kvexpress.KeyStopPath(KeyStopLocation, PrefixLocation, Direction)
 
-	saved := kvexpress.Set(KeyStop, KeyStopReason, ConsulServer, Token, Direction)
+	c, _ := kvexpress.Connect(ConsulServer, Token, Direction)
+
+	saved := kvexpress.Set(c, KeyStop, KeyStopReason, Direction)
 
 	if saved {
 		log.Print(Direction, ": KeyStop='", KeyStop, "' saved='true' KeyStopReason='", KeyStopReason, "'")

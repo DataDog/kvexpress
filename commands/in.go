@@ -33,7 +33,9 @@ func inRun(cmd *cobra.Command, args []string) {
 	kvexpress.CheckFiletoWrite(CompareFile, "", Direction)
 	kvexpress.CheckFiletoWrite(LastFile, "", Direction)
 
-	StopKeyData := kvexpress.Get(KeyStop, ConsulServer, Token, Direction)
+	c, _ := kvexpress.Connect(ConsulServer, Token, Direction)
+
+	StopKeyData := kvexpress.Get(c, KeyStop, Direction)
 
 	if StopKeyData != "" {
 		log.Print(Direction, ": Stop Key is present - stopping. Reason: ", StopKeyData)
@@ -98,15 +100,15 @@ func inRun(cmd *cobra.Command, args []string) {
 	// fmt.Printf("%v", html_diff)
 
 	// Get the checksum from Consul.
-	CurrentChecksum := kvexpress.Get(KeyChecksum, ConsulServer, Token, Direction)
+	CurrentChecksum := kvexpress.Get(c, KeyChecksum, Direction)
 
 	if CurrentChecksum != CompareChecksum {
 		log.Print(Direction, ": current and previous Consul checksum are different - let's update the KV store.")
-		saved := kvexpress.Set(KeyData, CompareData, ConsulServer, Token, Direction)
+		saved := kvexpress.Set(c, KeyData, CompareData, Direction)
 		if saved {
 			CompareDataBytes := len(CompareData)
 			log.Print(Direction, ": KeyData='", KeyData, "' saved='true' size='", CompareDataBytes, "'")
-			kvexpress.Set(KeyChecksum, CompareChecksum, ConsulServer, Token, Direction)
+			kvexpress.Set(c, KeyChecksum, CompareChecksum, Direction)
 
 			if DogStatsd {
 				kvexpress.StatsdIn(KeyInLocation, CompareDataBytes, CompareData)
