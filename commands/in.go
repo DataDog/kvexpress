@@ -4,7 +4,7 @@ import (
 	kvexpress "../kvexpress/"
 	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/zorkian/go-datadog-api"
+	"github.com/darron/go-datadog-api"
 	"log"
 	"os"
 )
