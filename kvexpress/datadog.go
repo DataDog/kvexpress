@@ -61,3 +61,14 @@ func DDSaveDataEvent(dd *datadog.Client, key, value, direction string) {
 
 	}
 }
+
+func DDSaveStopEvent(dd *datadog.Client, key, value, direction string) {
+	tags := makeTags(key, direction)
+	tags = append(tags, "kvexpress:stop_set")
+	title := fmt.Sprintf("Set Stop Key: %s", key)
+	event := datadog.Event{Title: title, Text: value, AlertType: "warning", Tags: tags}
+	post, _ := dd.PostEvent(&event)
+	if post != nil {
+
+	}
+}

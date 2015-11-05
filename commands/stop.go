@@ -4,6 +4,7 @@ import (
 	kvexpress "../kvexpress/"
 	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/zorkian/go-datadog-api"
 	"log"
 	"os"
 )
@@ -16,6 +17,7 @@ var stopCmd = &cobra.Command{
 }
 
 func stopRun(cmd *cobra.Command, args []string) {
+	var dog = new(datadog.Client)
 	var Direction = "stop"
 	checkStopFlags(Direction)
 	if EnvVars {
@@ -26,10 +28,17 @@ func stopRun(cmd *cobra.Command, args []string) {
 
 	c, _ := kvexpress.Connect(ConsulServer, Token, Direction)
 
+	if DatadogAPIKey != "" && DatadogAPPKey != "" {
+		dog = kvexpress.DDAPIConnect(DatadogAPIKey, DatadogAPPKey, DatadogHost)
+	}
+
 	saved := kvexpress.Set(c, KeyStop, KeyStopReason, Direction)
 
 	if saved {
 		log.Print(Direction, ": KeyStop='", KeyStop, "' saved='true' KeyStopReason='", KeyStopReason, "'")
+		if DatadogAPIKey != "" && DatadogAPPKey != "" {
+			kvexpress.DDSaveStopEvent(dog, KeyStop, KeyStopReason, Direction)
+		}
 	}
 
 	// Run this command after the key is stopped.
