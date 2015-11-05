@@ -4,6 +4,7 @@ import (
 	kvexpress "../kvexpress/"
 	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/zorkian/go-datadog-api"
 	"log"
 	"os"
 )
@@ -16,6 +17,7 @@ var inCmd = &cobra.Command{
 }
 
 func inRun(cmd *cobra.Command, args []string) {
+	var dog = new(datadog.Client)
 	var Direction = "in"
 	checkInFlags(Direction)
 	if EnvVars {
@@ -34,13 +36,18 @@ func inRun(cmd *cobra.Command, args []string) {
 	kvexpress.CheckFiletoWrite(LastFile, "", Direction)
 
 	c, _ := kvexpress.Connect(ConsulServer, Token, Direction)
-	dog := kvexpress.DDAPIConnect(DatadogAPIKey, DatadogAPPKey, DatadogHost)
+
+	if DatadogAPIKey != "" && DatadogAPPKey != "" {
+		dog = kvexpress.DDAPIConnect(DatadogAPIKey, DatadogAPPKey, DatadogHost)
+	}
 
 	StopKeyData := kvexpress.Get(c, KeyStop, Direction)
 
 	if StopKeyData != "" {
 		log.Print(Direction, ": Stop Key is present - stopping. Reason: ", StopKeyData)
-		kvexpress.DDStopEvent(dog, KeyStop, StopKeyData, Direction)
+		if DatadogAPIKey != "" && DatadogAPPKey != "" {
+			kvexpress.DDStopEvent(dog, KeyStop, StopKeyData, Direction)
+		}
 		os.Exit(1)
 	} else {
 		log.Print(Direction, ": Stop Key is NOT present - continuing.")
@@ -108,7 +115,9 @@ func inRun(cmd *cobra.Command, args []string) {
 			CompareDataBytes := len(CompareData)
 			log.Print(Direction, ": KeyData='", KeyData, "' saved='true' size='", CompareDataBytes, "'")
 			kvexpress.Set(c, KeyChecksum, CompareChecksum, Direction)
-			kvexpress.DDSaveDataEvent(dog, KeyData, diff, Direction)
+			if DatadogAPIKey != "" && DatadogAPPKey != "" {
+				kvexpress.DDSaveDataEvent(dog, KeyData, diff, Direction)
+			}
 
 			if DogStatsd {
 				kvexpress.StatsdIn(KeyInLocation, CompareDataBytes, CompareData)
