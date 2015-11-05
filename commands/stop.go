@@ -18,6 +18,9 @@ var stopCmd = &cobra.Command{
 func stopRun(cmd *cobra.Command, args []string) {
 	var Direction = "stop"
 	checkStopFlags(Direction)
+	if EnvVars {
+		ConfigEnvVars(Direction)
+	}
 
 	KeyStop := kvexpress.KeyStopPath(KeyStopLocation, PrefixLocation, Direction)
 

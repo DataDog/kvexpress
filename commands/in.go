@@ -18,6 +18,9 @@ var inCmd = &cobra.Command{
 func inRun(cmd *cobra.Command, args []string) {
 	var Direction = "in"
 	checkInFlags(Direction)
+	if EnvVars {
+		ConfigEnvVars(Direction)
+	}
 
 	KeyStop := kvexpress.KeyStopPath(KeyInLocation, PrefixLocation, Direction)
 	KeyData := kvexpress.KeyDataPath(KeyInLocation, PrefixLocation, Direction)
