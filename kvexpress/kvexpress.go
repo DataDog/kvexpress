@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"github.com/aryann/difflib"
-	"html"
 	"log"
 	"os/exec"
 	"strings"
@@ -53,17 +52,18 @@ func ChecksumCompare(data string, checksum string, direction string) bool {
 	}
 }
 
-func HTMLDiff(last string, current string) string {
+func Diff(last string, current string) string {
 	var buffer bytes.Buffer
 
 	// Split lines.
-	last_strings := strings.Split(html.EscapeString(string(last)), "\n")
-	current_strings := strings.Split(html.EscapeString(string(current)), "\n")
+	last_strings := strings.Split(string(last), "\n")
+	current_strings := strings.Split(string(current), "\n")
+
+	diff := difflib.Diff(last_strings, current_strings)
+	diffString := fmt.Sprintf("%v", diff)
 
 	log.Print("in: Doing the diff.")
-	buffer.WriteString("<table>")
-	buffer.WriteString(difflib.HTMLDiff(last_strings, current_strings))
-	buffer.WriteString("</table>")
+	buffer.WriteString(diffString)
 	return buffer.String()
 }
 
