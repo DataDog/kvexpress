@@ -34,11 +34,13 @@ func inRun(cmd *cobra.Command, args []string) {
 	kvexpress.CheckFiletoWrite(LastFile, "", Direction)
 
 	c, _ := kvexpress.Connect(ConsulServer, Token, Direction)
+	dog := kvexpress.DDAPIConnect(DatadogAPIKey, DatadogAPPKey, DatadogHost)
 
 	StopKeyData := kvexpress.Get(c, KeyStop, Direction)
 
 	if StopKeyData != "" {
 		log.Print(Direction, ": Stop Key is present - stopping. Reason: ", StopKeyData)
+		kvexpress.DDStopEvent(dog, KeyStop, StopKeyData, Direction)
 		os.Exit(1)
 	} else {
 		log.Print(Direction, ": Stop Key is NOT present - continuing.")
@@ -94,10 +96,7 @@ func inRun(cmd *cobra.Command, args []string) {
 	kvexpress.WriteFile(CompareData, LastFile, FilePermissions, Direction)
 
 	// Diff the file data.
-	// html_diff := kvexpress.HTMLDiff(LastData, CompareData)
-
-	// TODO: To be removed.
-	// fmt.Printf("%v", html_diff)
+	diff := kvexpress.Diff(LastData, CompareData)
 
 	// Get the checksum from Consul.
 	CurrentChecksum := kvexpress.Get(c, KeyChecksum, Direction)
@@ -109,6 +108,7 @@ func inRun(cmd *cobra.Command, args []string) {
 			CompareDataBytes := len(CompareData)
 			log.Print(Direction, ": KeyData='", KeyData, "' saved='true' size='", CompareDataBytes, "'")
 			kvexpress.Set(c, KeyChecksum, CompareChecksum, Direction)
+			kvexpress.DDSaveDataEvent(dog, KeyData, diff, Direction)
 
 			if DogStatsd {
 				kvexpress.StatsdIn(KeyInLocation, CompareDataBytes, CompareData)
