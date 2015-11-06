@@ -3,7 +3,7 @@ package kvexpress
 import (
 	"fmt"
 	"github.com/PagerDuty/godspeed"
-	"github.com/darron/go-datadog-api"
+	"github.com/zorkian/go-datadog-api"
 	"os"
 )
 
