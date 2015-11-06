@@ -18,7 +18,7 @@ func ReadFile(filepath string) string {
 }
 
 func SortFile(file string) string {
-	Log(fmt.Sprintf("in: sorting='true' file='%s'", file), "debug")
+	Log("in: sorting='true'", "debug")
 	lines := strings.Split(file, "\n")
 	lines = BlankLineStrip(lines)
 	sort.Strings(lines)
