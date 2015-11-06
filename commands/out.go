@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 )
 
 var outCmd = &cobra.Command{
@@ -17,6 +18,7 @@ var outCmd = &cobra.Command{
 }
 
 func outRun(cmd *cobra.Command, args []string) {
+	start := time.Now()
 	var Direction = "out"
 	checkOutFlags(Direction)
 	if EnvVars {
@@ -33,6 +35,7 @@ func outRun(cmd *cobra.Command, args []string) {
 
 	if StopKeyData != "" && IgnoreStop == false {
 		log.Print(Direction, ": Stop Key is present - stopping. Reason: ", StopKeyData)
+		kvexpress.RunTime(start, "stop_key", Direction)
 		os.Exit(0)
 	} else {
 		if IgnoreStop {
@@ -76,6 +79,7 @@ func outRun(cmd *cobra.Command, args []string) {
 		log.Print(Direction, ": exec='", PostExec, "'")
 		kvexpress.RunCommand(PostExec)
 	}
+	kvexpress.RunTime(start, "complete", Direction)
 }
 
 func checkOutFlags(direction string) {

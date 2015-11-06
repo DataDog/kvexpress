@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"log"
 	"os"
+	"time"
 )
 
 var inCmd = &cobra.Command{
@@ -17,6 +18,7 @@ var inCmd = &cobra.Command{
 }
 
 func inRun(cmd *cobra.Command, args []string) {
+	start := time.Now()
 	var dog = new(datadog.Client)
 	var Direction = "in"
 	checkInFlags(Direction)
@@ -48,6 +50,7 @@ func inRun(cmd *cobra.Command, args []string) {
 		if DatadogAPIKey != "" && DatadogAPPKey != "" {
 			kvexpress.DDStopEvent(dog, KeyStop, StopKeyData, Direction)
 		}
+		kvexpress.RunTime(start, "stop_key", Direction)
 		os.Exit(1)
 	} else {
 		log.Print(Direction, ": Stop Key is NOT present - continuing.")
@@ -66,6 +69,7 @@ func inRun(cmd *cobra.Command, args []string) {
 
 	if !longEnough {
 		log.Print(Direction, ": File is NOT long enough. Stopping.")
+		kvexpress.RunTime(start, "not_long_enough", Direction)
 		os.Exit(1)
 	}
 
@@ -83,6 +87,7 @@ func inRun(cmd *cobra.Command, args []string) {
 		log.Print(Direction, ": We have data - let's do the thing.")
 	} else {
 		log.Print(Direction, ": We do NOT have data. This should never happen.")
+		kvexpress.RunTime(start, "error_no_data", Direction)
 		os.Exit(1)
 	}
 
@@ -95,6 +100,7 @@ func inRun(cmd *cobra.Command, args []string) {
 		log.Print(Direction, ": file checksums are different - let's update some stuff!")
 	} else {
 		log.Print(Direction, ": checksums='match' saved='false'")
+		kvexpress.RunTime(start, "file_checksums_match", Direction)
 		os.Exit(0)
 	}
 
@@ -125,6 +131,7 @@ func inRun(cmd *cobra.Command, args []string) {
 
 		} else {
 			log.Print(Direction, ": KeyData='", KeyData, "' saved='false'")
+			kvexpress.RunTime(start, "consul_checksums_match", Direction)
 			os.Exit(0)
 		}
 
@@ -134,6 +141,7 @@ func inRun(cmd *cobra.Command, args []string) {
 		log.Print(Direction, ": exec='", PostExec, "'")
 		kvexpress.RunCommand(PostExec)
 	}
+	kvexpress.RunTime(start, "complete", Direction)
 }
 
 func checkInFlags(direction string) {

@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"log"
 	"os"
+	"time"
 )
 
 var stopCmd = &cobra.Command{
@@ -17,6 +18,7 @@ var stopCmd = &cobra.Command{
 }
 
 func stopRun(cmd *cobra.Command, args []string) {
+	start := time.Now()
 	var dog = new(datadog.Client)
 	var Direction = "stop"
 	checkStopFlags(Direction)
@@ -46,6 +48,7 @@ func stopRun(cmd *cobra.Command, args []string) {
 		log.Print(Direction, ": exec='", PostExec, "'")
 		kvexpress.RunCommand(PostExec)
 	}
+	kvexpress.RunTime(start, "complete", Direction)
 }
 
 func checkStopFlags(direction string) {

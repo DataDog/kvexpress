@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 	"log"
 	"os"
+	"time"
 )
 
 var cleanCmd = &cobra.Command{
@@ -16,6 +17,7 @@ var cleanCmd = &cobra.Command{
 }
 
 func cleanRun(cmd *cobra.Command, args []string) {
+	start := time.Now()
 	var Direction = "clean"
 	checkCleanFlags(Direction)
 	if EnvVars {
@@ -34,6 +36,7 @@ func cleanRun(cmd *cobra.Command, args []string) {
 		log.Print(Direction, ": exec='", PostExec, "'")
 		kvexpress.RunCommand(PostExec)
 	}
+	kvexpress.RunTime(start, "complete", Direction)
 }
 
 func checkCleanFlags(direction string) {

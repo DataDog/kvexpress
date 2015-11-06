@@ -1,6 +1,8 @@
 package kvexpress
 
 import (
+	"fmt"
+	"log"
 	"time"
 )
 
@@ -14,4 +16,9 @@ func check(e error) {
 	if e != nil {
 		panic(e)
 	}
+}
+
+func RunTime(start time.Time, location string, direction string) {
+	elapsed := time.Since(start)
+	log.Print(fmt.Sprintf("%s: location='%s', elapsed='%s'", direction, location, elapsed))
 }
