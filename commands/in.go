@@ -3,9 +3,8 @@ package commands
 import (
 	kvexpress "../kvexpress/"
 	"fmt"
-	"github.com/zorkian/go-datadog-api"
 	"github.com/spf13/cobra"
-	"log"
+	"github.com/zorkian/go-datadog-api"
 	"os"
 	"time"
 )
@@ -46,14 +45,14 @@ func inRun(cmd *cobra.Command, args []string) {
 	StopKeyData := kvexpress.Get(c, KeyStop, Direction)
 
 	if StopKeyData != "" {
-		log.Print(Direction, ": Stop Key is present - stopping. Reason: ", StopKeyData)
+		kvexpress.Log(fmt.Sprintf("%s: Stop Key is present - stopping. Reason: %s", Direction, StopKeyData), "info")
 		if DatadogAPIKey != "" && DatadogAPPKey != "" {
 			kvexpress.DDStopEvent(dog, KeyStop, StopKeyData, Direction)
 		}
 		kvexpress.RunTime(start, "stop_key", Direction)
 		os.Exit(1)
 	} else {
-		log.Print(Direction, ": Stop Key is NOT present - continuing.")
+		kvexpress.Log(fmt.Sprintf("%s: Stop Key is NOT present - continuing.", Direction), "info")
 	}
 
 	// Read the file - if it's to be sorted - then make sure to sort.
@@ -68,7 +67,8 @@ func inRun(cmd *cobra.Command, args []string) {
 	longEnough := kvexpress.LengthCheck(FileString, MinFileLength, Direction)
 
 	if !longEnough {
-		log.Print(Direction, ": File is NOT long enough. Stopping.")
+		kvexpress.Log(fmt.Sprintf("%s: File is NOT long enough. Stopping.", Direction), "info")
+		// TODO: Add Datadog Event here.
 		kvexpress.RunTime(start, "not_long_enough", Direction)
 		os.Exit(1)
 	}
@@ -84,9 +84,9 @@ func inRun(cmd *cobra.Command, args []string) {
 	LastData := kvexpress.ReadFile(LastFile)
 
 	if CompareData != "" && LastData != "" {
-		log.Print(Direction, ": We have data - let's do the thing.")
+		kvexpress.Log(fmt.Sprintf("%s: We have data - let's do the thing.", Direction), "info")
 	} else {
-		log.Print(Direction, ": We do NOT have data. This should never happen.")
+		kvexpress.Log(fmt.Sprintf("%s: We do NOT have data. This should never happen.", Direction), "info")
 		kvexpress.RunTime(start, "error_no_data", Direction)
 		os.Exit(1)
 	}
@@ -97,9 +97,9 @@ func inRun(cmd *cobra.Command, args []string) {
 
 	// If they're different - let's update things.
 	if CompareChecksum != LastChecksum {
-		log.Print(Direction, ": file checksums are different - let's update some stuff!")
+		kvexpress.Log(fmt.Sprintf("%s: file checksums are different - let's update some stuff!", Direction), "info")
 	} else {
-		log.Print(Direction, ": checksums='match' saved='false'")
+		kvexpress.Log(fmt.Sprintf("%s: checksums='match' saved='false'", Direction), "info")
 		kvexpress.RunTime(start, "file_checksums_match", Direction)
 		os.Exit(0)
 	}
@@ -115,11 +115,11 @@ func inRun(cmd *cobra.Command, args []string) {
 	CurrentChecksum := kvexpress.Get(c, KeyChecksum, Direction)
 
 	if CurrentChecksum != CompareChecksum {
-		log.Print(Direction, ": current and previous Consul checksum are different - let's update the KV store.")
+		kvexpress.Log(fmt.Sprintf("%s: current and previous Consul checksum are different - let's update the KV store.", Direction), "info")
 		saved := kvexpress.Set(c, KeyData, CompareData, Direction)
 		if saved {
 			CompareDataBytes := len(CompareData)
-			log.Print(Direction, ": KeyData='", KeyData, "' saved='true' size='", CompareDataBytes, "'")
+			kvexpress.Log(fmt.Sprintf("%s: KeyData='%s' saved='true' size='%d'", Direction, KeyData, CompareDataBytes), "info")
 			kvexpress.Set(c, KeyChecksum, CompareChecksum, Direction)
 			if DatadogAPIKey != "" && DatadogAPPKey != "" {
 				kvexpress.DDSaveDataEvent(dog, KeyData, diff, Direction)
@@ -130,7 +130,7 @@ func inRun(cmd *cobra.Command, args []string) {
 			}
 
 		} else {
-			log.Print(Direction, ": KeyData='", KeyData, "' saved='false'")
+			kvexpress.Log(fmt.Sprintf("%s: KeyData='%s' saved='false'", Direction, KeyData), "info")
 			kvexpress.RunTime(start, "consul_checksums_match", Direction)
 			os.Exit(0)
 		}
@@ -138,14 +138,14 @@ func inRun(cmd *cobra.Command, args []string) {
 	}
 	// Run this command after the data is input.
 	if PostExec != "" {
-		log.Print(Direction, ": exec='", PostExec, "'")
+		kvexpress.Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
 		kvexpress.RunCommand(PostExec)
 	}
 	kvexpress.RunTime(start, "complete", Direction)
 }
 
 func checkInFlags(direction string) {
-	log.Print(direction, ": Checking cli flags.")
+	kvexpress.Log(fmt.Sprintf("%s: Checking cli flags.", direction), "debug")
 	if KeyInLocation == "" {
 		fmt.Println(direction, ": Need a key location in -k")
 		os.Exit(1)
@@ -158,10 +158,13 @@ func checkInFlags(direction string) {
 		fmt.Println(direction, ": File ", FiletoRead, " does not exist.")
 		os.Exit(1)
 	}
-	if DogStatsd {
-		log.Print(direction, ": Enabling Dogstatsd metrics.")
+	if DatadogAPIKey != "" && DatadogAPPKey != "" {
+		kvexpress.Log(fmt.Sprintf("%s: Enabling Datadog API.", direction), "debug")
 	}
-	log.Print(direction, ": Required cli flags present.")
+	if DogStatsd {
+		kvexpress.Log(fmt.Sprintf("%s: Enabling Dogstatsd metrics.", direction), "debug")
+	}
+	kvexpress.Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
 }
 
 var (

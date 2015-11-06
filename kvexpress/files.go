@@ -3,7 +3,6 @@ package kvexpress
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
 	"sort"
@@ -19,6 +18,7 @@ func ReadFile(filepath string) string {
 }
 
 func SortFile(file string) string {
+	Log(fmt.Sprintf("in: sorting='true' file='%s'", file), "debug")
 	lines := strings.Split(file, "\n")
 	lines = BlankLineStrip(lines)
 	sort.Strings(lines)
@@ -26,6 +26,7 @@ func SortFile(file string) string {
 }
 
 func BlankLineStrip(data []string) []string {
+	Log(fmt.Sprintf("in: stripping_blank_lines='true'"), "debug")
 	var stripped []string
 	for _, str := range data {
 		if str != "" {
@@ -38,7 +39,7 @@ func BlankLineStrip(data []string) []string {
 func WriteFile(data string, filepath string, perms int, direction string) {
 	err := ioutil.WriteFile(filepath, []byte(data), os.FileMode(perms))
 	check(err)
-	log.Print(direction, ": file_wrote='true' location='", filepath, "' permissions='", perms, "'")
+	Log(fmt.Sprintf("%s: file_wrote='true' location='%s' permissions='%d'", direction, filepath, perms), "debug")
 }
 
 func CheckFiletoWrite(filename, checksum, direction string) {
@@ -47,16 +48,16 @@ func CheckFiletoWrite(filename, checksum, direction string) {
 	f, err := file.Stat()
 	switch {
 	case err != nil:
-		log.Print(direction, ": there is NO file at ", filename)
+		Log(fmt.Sprintf("%s: there is NO file at %s", direction, filename), "debug")
 		break
 	case f.IsDir():
-		log.Print(direction, ": Can NOT write a directory ", filename)
+		Log(fmt.Sprintf("%s: Can NOT write a directory %s", direction, filename), "info")
 		os.Exit(1)
 	default:
 		data, _ := ioutil.ReadFile(filename)
 		computedChecksum := ComputeChecksum(string(data), direction)
 		if computedChecksum == checksum {
-			log.Print(direction, ": already a file with the same checksum. Stopping.")
+			Log(fmt.Sprintf("%s: already a file with the same checksum. Stopping.", direction), "info")
 			os.Exit(0)
 		}
 	}
@@ -69,16 +70,16 @@ func RemoveFile(filename string, direction string) {
 	f, err := file.Stat()
 	switch {
 	case err != nil:
-		log.Print(direction, ": Could NOT stat ", filename)
+		Log(fmt.Sprintf("%s: Could NOT stat %s", direction, filename), "debug")
 	case f.IsDir():
-		log.Print(direction, ": Would NOT remove a directory ", filename)
+		Log(fmt.Sprintf("%s: Would NOT remove a directory %s", direction, filename), "info")
 		os.Exit(1)
 	default:
 		err = os.Remove(filename)
 		if err != nil {
-			log.Print(direction, ": Could NOT remove ", filename)
+			Log(fmt.Sprintf("%s: Could NOT remove %s", direction, filename), "info")
 		} else {
-			log.Print(direction, ": Removed ", filename)
+			Log(fmt.Sprintf("%s: Removed %s", direction, filename), "info")
 		}
 	}
 }
@@ -86,20 +87,20 @@ func RemoveFile(filename string, direction string) {
 func CompareFilename(file string, direction string) string {
 	compare := fmt.Sprintf("%s.compare", path.Base(file))
 	full_path := path.Join(path.Dir(file), compare)
-	log.Print(direction, ": file='compare' full_path='", full_path, "'")
+	Log(fmt.Sprintf("%s: file='compare' full_path='%s'", direction, full_path), "debug")
 	return full_path
 }
 
 func LastFilename(file string, direction string) string {
 	last := fmt.Sprintf("%s.last", path.Base(file))
 	full_path := path.Join(path.Dir(file), last)
-	log.Print(direction, ": file='last' full_path='", full_path, "'")
+	Log(fmt.Sprintf("%s: file='last' full_path='%s'", direction, full_path), "debug")
 	return full_path
 }
 
 func CheckLastFile(file string, perms int) {
 	if _, err := os.Stat(file); err != nil {
-		log.Print("in: Last File: ", file, " does not exist.")
+		Log(fmt.Sprintf("in: file='last' file='%s' does_not_exist='true'", file), "debug")
 		WriteFile("This is a blank file.\n", file, perms, "in")
 	}
 }

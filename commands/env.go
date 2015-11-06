@@ -1,29 +1,30 @@
 package commands
 
 import (
-	"log"
+	kvexpress "../kvexpress/"
+	"fmt"
 	"os"
 )
 
 func ConfigEnvVars(direction string) {
 	if os.Getenv("CONSUL_SERVER") != "" {
 		ConsulServer = os.Getenv("CONSUL_SERVER")
-		log.Print(direction, ": Using CONSUL_SERVER ENV variable.")
+		kvexpress.Log(fmt.Sprintf("%s: Using CONSUL_SERVER ENV variable.", direction), "debug")
 	}
 	if os.Getenv("CONSUL_TOKEN") != "" {
 		Token = os.Getenv("CONSUL_TOKEN")
-		log.Print(direction, ": Using CONSUL_TOKEN ENV variable.")
+		kvexpress.Log(fmt.Sprintf("%s: Using CONSUL_TOKEN ENV variable.", direction), "debug")
 	}
 	if os.Getenv("DATADOG_HOST") != "" {
 		DatadogHost = os.Getenv("DATADOG_HOST")
-		log.Print(direction, ": Using DATADOG_HOST ENV variable.")
+		kvexpress.Log(fmt.Sprintf("%s: Using DATADOG_HOST ENV variable.", direction), "debug")
 	}
 	if os.Getenv("DATADOG_API_KEY") != "" {
 		DatadogAPIKey = os.Getenv("DATADOG_API_KEY")
-		log.Print(direction, ": Using DATADOG_API_KEY ENV variable.")
+		kvexpress.Log(fmt.Sprintf("%s: Using DATADOG_API_KEY ENV variable.", direction), "debug")
 	}
 	if os.Getenv("DATADOG_APP_KEY") != "" {
 		DatadogAPPKey = os.Getenv("DATADOG_APP_KEY")
-		log.Print(direction, ": Using DATADOG_APP_KEY ENV variable.")
+		kvexpress.Log(fmt.Sprintf("%s: Using DATADOG_APP_KEY ENV variable.", direction), "debug")
 	}
 }

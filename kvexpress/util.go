@@ -3,6 +3,7 @@ package kvexpress
 import (
 	"fmt"
 	"log"
+	"os"
 	"time"
 )
 
@@ -20,5 +21,17 @@ func check(e error) {
 
 func RunTime(start time.Time, location string, direction string) {
 	elapsed := time.Since(start)
-	log.Print(fmt.Sprintf("%s: location='%s', elapsed='%s'", direction, location, elapsed))
+	Log(fmt.Sprintf("%s: location='%s', elapsed='%s'", direction, location, elapsed), "info")
+}
+
+func Log(message, priority string) {
+	switch {
+	case priority == "debug":
+		if os.Getenv("KVEXPRESS_DEBUG") != "" {
+			log.Print(message)
+		}
+	default:
+		log.Print(message)
+	}
+
 }

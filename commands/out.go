@@ -4,7 +4,6 @@ import (
 	kvexpress "../kvexpress/"
 	"fmt"
 	"github.com/spf13/cobra"
-	"log"
 	"os"
 	"strconv"
 	"time"
@@ -34,14 +33,14 @@ func outRun(cmd *cobra.Command, args []string) {
 	StopKeyData := kvexpress.Get(c, KeyStop, Direction)
 
 	if StopKeyData != "" && IgnoreStop == false {
-		log.Print(Direction, ": Stop Key is present - stopping. Reason: ", StopKeyData)
+		kvexpress.Log(fmt.Sprintf("%s: Stop Key is present - stopping. Reason: %s", Direction, StopKeyData), "info")
 		kvexpress.RunTime(start, "stop_key", Direction)
 		os.Exit(0)
 	} else {
 		if IgnoreStop {
-			log.Print(Direction, ": Ignoring any stop key.")
+			kvexpress.Log(fmt.Sprintf("%s: Ignoring any stop key.", Direction), "info")
 		} else {
-			log.Print(Direction, ": Stop Key is NOT present - continuing.")
+			kvexpress.Log(fmt.Sprintf("%s: Stop Key is NOT present - continuing.", Direction), "debug")
 		}
 	}
 
@@ -53,11 +52,11 @@ func outRun(cmd *cobra.Command, args []string) {
 
 	// Is the data long enough?
 	longEnough := kvexpress.LengthCheck(KVData, MinFileLength, Direction)
-	log.Print(Direction, ": longEnough='", strconv.FormatBool(longEnough), "'")
+	kvexpress.Log(fmt.Sprintf("%s: longEnough='%s'", Direction, strconv.FormatBool(longEnough)), "debug")
 
 	// Does the checksum match?
 	checksumMatch := kvexpress.ChecksumCompare(KVData, Checksum, Direction)
-	log.Print(Direction, ": checksumMatch='", strconv.FormatBool(checksumMatch), "'")
+	kvexpress.Log(fmt.Sprintf("%s: checksumMatch='%s'", Direction, strconv.FormatBool(checksumMatch)), "debug")
 
 	// If the data is long enough and the checksum matches, write the file.
 	if longEnough && checksumMatch {
@@ -71,19 +70,19 @@ func outRun(cmd *cobra.Command, args []string) {
 			kvexpress.StatsdOut(KeyOutLocation)
 		}
 	} else {
-		log.Print(Direction, ": Could not write file.")
+		kvexpress.Log(fmt.Sprintf("%s: Could not write file.", Direction), "debug")
 	}
 
 	// Run this command after the file is written.
 	if PostExec != "" {
-		log.Print(Direction, ": exec='", PostExec, "'")
+		kvexpress.Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
 		kvexpress.RunCommand(PostExec)
 	}
 	kvexpress.RunTime(start, "complete", Direction)
 }
 
 func checkOutFlags(direction string) {
-	log.Print(direction, ": Checking cli flags.")
+	kvexpress.Log(fmt.Sprintf("%s: Checking cli flags.", direction), "debug")
 	if KeyOutLocation == "" {
 		fmt.Println("Need a key location in -k")
 		os.Exit(1)
@@ -93,16 +92,12 @@ func checkOutFlags(direction string) {
 		os.Exit(1)
 	}
 	if DogStatsd {
-		log.Print(direction, ": Enabling Dogstatsd metrics.")
+		kvexpress.Log(fmt.Sprintf("%s: Enabling Dogstatsd metrics.", direction), "debug")
 	}
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		log.Print(direction, ": Enabling Datadog API.")
-		if os.Getenv("DATADOG_HOST") != "" {
-			DatadogHost = os.Getenv("DATADOG_HOST")
-			log.Print(direction, ": Using custom Datadog host: ", DatadogHost)
-		}
+		kvexpress.Log(fmt.Sprintf("%s: Enabling Datadog API.", direction), "debug")
 	}
-	log.Print(direction, ": Required cli flags present.")
+	kvexpress.Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
 }
 
 var (

@@ -3,7 +3,6 @@ package kvexpress
 import (
 	"fmt"
 	consul "github.com/hashicorp/consul/api"
-	"log"
 	"strings"
 )
 
@@ -16,7 +15,7 @@ func Connect(server, token, direction string) (*consul.Client, error) {
 		cleanedToken = cleanupToken(token)
 	}
 	consul, _ := consul.NewClient(config)
-	log.Print(direction, ": address='", server, "' token='", cleanedToken, "'")
+	Log(fmt.Sprintf("%s: server='%s' token='%s'", direction, server, cleanedToken), "debug")
 	return consul, nil
 }
 
@@ -32,7 +31,7 @@ func Get(c *consul.Client, key, direction string) string {
 		} else {
 			value = ""
 		}
-		log.Print(direction, ": key='", key)
+		Log(fmt.Sprintf("%s: action='get' key='%s'", direction, key), "debug")
 	}
 	return value
 }
@@ -50,6 +49,7 @@ func Set(c *consul.Client, key, value, direction string) bool {
 	if err != nil {
 		panic(err)
 	} else {
+		Log(fmt.Sprintf("%s: action='set' key='%s'", direction, key), "debug")
 		return true
 	}
 	return true

@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"github.com/aryann/difflib"
-	"log"
 	"os/exec"
 	"strings"
 )
@@ -16,7 +15,7 @@ func init() {
 
 func LengthCheck(data string, min_length int, direction string) bool {
 	length := LineCount(data)
-	log.Print(direction, ": length='", length, "' min_length='", min_length, "'")
+	Log(fmt.Sprintf("%s: length='%d' min_length='%d'", direction, length, min_length), "debug")
 	if length >= min_length {
 		return true
 	} else {
@@ -38,13 +37,13 @@ func ComputeChecksum(data string, direction string) string {
 	data_bytes := []byte(data)
 	computed_checksum := sha256.Sum256(data_bytes)
 	final_checksum := fmt.Sprintf("%x\n", computed_checksum)
-	log.Print(direction, ": computed_checksum='", final_checksum, "'")
+	Log(fmt.Sprintf("%s: computed_checksum='%s'", direction, final_checksum), "debug")
 	return final_checksum
 }
 
 func ChecksumCompare(data string, checksum string, direction string) bool {
 	computed_checksum := ComputeChecksum(data, direction)
-	log.Print(direction, ": checksum='", checksum, "' computed_checksum='", computed_checksum, "'")
+	Log(fmt.Sprintf("%s: checksum='%s' computed_checksum='%s'", direction, checksum, computed_checksum), "debug")
 	if strings.TrimSpace(computed_checksum) == strings.TrimSpace(checksum) {
 		return true
 	} else {
@@ -62,7 +61,7 @@ func Diff(last string, current string) string {
 	diff := difflib.Diff(last_strings, current_strings)
 	diffString := fmt.Sprintf("%v", diff)
 
-	log.Print("in: Doing the diff.")
+	Log("in: doing the diff", "debug")
 	buffer.WriteString(diffString)
 	return buffer.String()
 }
@@ -76,7 +75,7 @@ func RunCommand(command string) bool {
 	cmd.Stdout = &out
 	err := cmd.Run()
 	if err != nil {
-		log.Print(err)
+		Log(fmt.Sprintf("exec='error' message='%v'", err), "info")
 		return false
 	} else {
 		return true

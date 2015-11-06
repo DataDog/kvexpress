@@ -8,6 +8,7 @@ import (
 )
 
 func StatsdIn(key string, data_length int, data string) {
+	Log(fmt.Sprintf("in: dogstatsd='true' key='%s'", key), "debug")
 	statsd, _ := godspeed.NewDefault()
 	defer statsd.Conn.Close()
 	statsdTags := []string{fmt.Sprintf("kvkey:%s", key)}
@@ -17,6 +18,7 @@ func StatsdIn(key string, data_length int, data string) {
 }
 
 func StatsdOut(key string) {
+	Log(fmt.Sprintf("out: dogstatsd='true' key='%s'", key), "debug")
 	statsd, _ := godspeed.NewDefault()
 	defer statsd.Conn.Close()
 	statsdTags := []string{fmt.Sprintf("kvkey:%s", key)}
@@ -42,6 +44,7 @@ func makeTags(key, direction string) []string {
 
 // TODO: These three functions are ripe for refactoring to be more Golang like.
 func DDStopEvent(dd *datadog.Client, key, value, direction string) {
+	Log(fmt.Sprintf("%s: datadog='true' DDStopEvent='true' key='%s'", direction, key), "debug")
 	tags := makeTags(key, direction)
 	tags = append(tags, "kvexpress:stop")
 	title := fmt.Sprintf("Stop key is present: %s. Stopping.", key)
@@ -53,6 +56,7 @@ func DDStopEvent(dd *datadog.Client, key, value, direction string) {
 }
 
 func DDSaveDataEvent(dd *datadog.Client, key, value, direction string) {
+	Log(fmt.Sprintf("%s: datadog='true' DDSaveDataEvent='true' key='%s'", direction, key), "debug")
 	tags := makeTags(key, direction)
 	tags = append(tags, "kvexpress:success")
 	title := fmt.Sprintf("Updated: %s", key)
@@ -64,6 +68,7 @@ func DDSaveDataEvent(dd *datadog.Client, key, value, direction string) {
 }
 
 func DDSaveStopEvent(dd *datadog.Client, key, value, direction string) {
+	Log(fmt.Sprintf("%s: datadog='true' DDSaveStopEvent='true' key='%s'", direction, key), "debug")
 	tags := makeTags(key, direction)
 	tags = append(tags, "kvexpress:stop_set")
 	title := fmt.Sprintf("Set Stop Key: %s", key)

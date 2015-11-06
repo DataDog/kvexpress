@@ -3,9 +3,8 @@ package commands
 import (
 	kvexpress "../kvexpress/"
 	"fmt"
-	"github.com/zorkian/go-datadog-api"
 	"github.com/spf13/cobra"
-	"log"
+	"github.com/zorkian/go-datadog-api"
 	"os"
 	"time"
 )
@@ -37,7 +36,7 @@ func stopRun(cmd *cobra.Command, args []string) {
 	saved := kvexpress.Set(c, KeyStop, KeyStopReason, Direction)
 
 	if saved {
-		log.Print(Direction, ": KeyStop='", KeyStop, "' saved='true' KeyStopReason='", KeyStopReason, "'")
+		kvexpress.Log(fmt.Sprintf("%s: KeyStop='%s' saved='true' KeyStopReason='%s'", Direction, KeyStop, KeyStopReason), "info")
 		if DatadogAPIKey != "" && DatadogAPPKey != "" {
 			kvexpress.DDSaveStopEvent(dog, KeyStop, KeyStopReason, Direction)
 		}
@@ -45,14 +44,14 @@ func stopRun(cmd *cobra.Command, args []string) {
 
 	// Run this command after the key is stopped.
 	if PostExec != "" {
-		log.Print(Direction, ": exec='", PostExec, "'")
+		kvexpress.Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
 		kvexpress.RunCommand(PostExec)
 	}
 	kvexpress.RunTime(start, "complete", Direction)
 }
 
 func checkStopFlags(direction string) {
-	log.Print(direction, ": Checking cli flags.")
+	kvexpress.Log(fmt.Sprintf("%s: Checking cli flags.", direction), "debug")
 	if KeyStopLocation == "" {
 		fmt.Println("Need a key to stop in -k")
 		os.Exit(1)
@@ -61,7 +60,7 @@ func checkStopFlags(direction string) {
 		fmt.Println("Need a reason to stop in -r")
 		os.Exit(1)
 	}
-	log.Print(direction, ": Required cli flags present.")
+	kvexpress.Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
 }
 
 var (

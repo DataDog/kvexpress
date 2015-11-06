@@ -4,7 +4,6 @@ import (
 	kvexpress "../kvexpress/"
 	"fmt"
 	"github.com/spf13/cobra"
-	"log"
 	"os"
 	"time"
 )
@@ -33,19 +32,19 @@ func cleanRun(cmd *cobra.Command, args []string) {
 
 	// Run this command after the files are cleaned.
 	if PostExec != "" {
-		log.Print(Direction, ": exec='", PostExec, "'")
+		kvexpress.Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
 		kvexpress.RunCommand(PostExec)
 	}
 	kvexpress.RunTime(start, "complete", Direction)
 }
 
 func checkCleanFlags(direction string) {
-	log.Print(direction, ": Checking cli flags.")
+	kvexpress.Log(fmt.Sprintf("%s: Checking cli flags.", direction), "debug")
 	if FiletoClean == "" {
 		fmt.Println("Need a file to clean in -f")
 		os.Exit(1)
 	}
-	log.Print(direction, ": Required cli flags present.")
+	kvexpress.Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
 }
 
 var (
