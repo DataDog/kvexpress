@@ -13,6 +13,7 @@ Vagrant.configure(2) do |config|
 export GOROOT="/opt/go"
 export GOPATH="/home/vagrant/gocode"
 export PATH="/opt/go/bin://home/vagrant/gocode/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+export KVEXPRESS_DEBUG=1
 EOF
   SHELL
 end
