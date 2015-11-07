@@ -18,10 +18,10 @@ var cleanCmd = &cobra.Command{
 func cleanRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
 	var Direction = "clean"
-	checkCleanFlags(Direction)
 	if EnvVars {
 		ConfigEnvVars(Direction)
 	}
+	checkCleanFlags(Direction)
 
 	CompareFile := kvexpress.CompareFilename(FiletoClean, Direction)
 	LastFile := kvexpress.LastFilename(FiletoClean, Direction)

@@ -20,17 +20,17 @@ func stopRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
 	var dog = new(datadog.Client)
 	var Direction = "stop"
-	checkStopFlags(Direction)
 	if EnvVars {
 		ConfigEnvVars(Direction)
 	}
+	checkStopFlags(Direction)
 
 	KeyStop := kvexpress.KeyStopPath(KeyStopLocation, PrefixLocation, Direction)
 
 	c, _ := kvexpress.Connect(ConsulServer, Token, Direction)
 
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		dog = kvexpress.DDAPIConnect(DatadogAPIKey, DatadogAPPKey, DatadogHost)
+		dog = kvexpress.DDAPIConnect(DatadogAPIKey, DatadogAPPKey)
 	}
 
 	saved := kvexpress.Set(c, KeyStop, KeyStopReason, Direction)
@@ -59,6 +59,9 @@ func checkStopFlags(direction string) {
 	if KeyStopReason == "" {
 		fmt.Println("Need a reason to stop in -r")
 		os.Exit(1)
+	}
+	if DatadogAPIKey != "" && DatadogAPPKey != "" {
+		kvexpress.Log(fmt.Sprintf("%s: Enabling Datadog API.", direction), "debug")
 	}
 	kvexpress.Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
 }

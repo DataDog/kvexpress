@@ -20,10 +20,10 @@ func inRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
 	var dog = new(datadog.Client)
 	var Direction = "in"
-	checkInFlags(Direction)
 	if EnvVars {
 		ConfigEnvVars(Direction)
 	}
+	checkInFlags(Direction)
 
 	KeyStop := kvexpress.KeyStopPath(KeyInLocation, PrefixLocation, Direction)
 	KeyData := kvexpress.KeyDataPath(KeyInLocation, PrefixLocation, Direction)
@@ -39,7 +39,7 @@ func inRun(cmd *cobra.Command, args []string) {
 	c, _ := kvexpress.Connect(ConsulServer, Token, Direction)
 
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		dog = kvexpress.DDAPIConnect(DatadogAPIKey, DatadogAPPKey, DatadogHost)
+		dog = kvexpress.DDAPIConnect(DatadogAPIKey, DatadogAPPKey)
 	}
 
 	StopKeyData := kvexpress.Get(c, KeyStop, Direction)

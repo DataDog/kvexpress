@@ -19,10 +19,10 @@ var outCmd = &cobra.Command{
 func outRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
 	var Direction = "out"
-	checkOutFlags(Direction)
 	if EnvVars {
 		ConfigEnvVars(Direction)
 	}
+	checkOutFlags(Direction)
 
 	KeyData := kvexpress.KeyDataPath(KeyOutLocation, PrefixLocation, Direction)
 	KeyChecksum := kvexpress.KeyChecksumPath(KeyOutLocation, PrefixLocation, Direction)

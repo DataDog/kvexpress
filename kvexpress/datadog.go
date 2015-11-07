@@ -25,7 +25,7 @@ func StatsdOut(key string) {
 	statsd.Incr("kvexpress.out", statsdTags)
 }
 
-func DDAPIConnect(api, app, host string) *datadog.Client {
+func DDAPIConnect(api, app string) *datadog.Client {
 	client := datadog.NewClient(api, app)
 	return client
 }

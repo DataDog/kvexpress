@@ -27,7 +27,6 @@ var (
 	DogStatsdAddress string
 	DatadogAPIKey    string
 	DatadogAPPKey    string
-	DatadogHost      string
 )
 
 func init() {
@@ -42,5 +41,4 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&DogStatsdAddress, "dogstatsd_addr", "D", "localhost:8125", "address for dogstatsd server")
 	RootCmd.PersistentFlags().StringVarP(&DatadogAPIKey, "datadog_api", "a", "", "Datadog API Key")
 	RootCmd.PersistentFlags().StringVarP(&DatadogAPPKey, "datadog_app", "A", "", "Datadog App Key")
-	RootCmd.PersistentFlags().StringVarP(&DatadogHost, "datadog_host", "", "https://app.datadoghq.com", "Datadog Host")
 }
