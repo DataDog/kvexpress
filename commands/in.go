@@ -100,9 +100,9 @@ func inRun(cmd *cobra.Command, args []string) {
 
 	// If they're different - let's update things.
 	if CompareChecksum != LastChecksum {
-		kvexpress.Log(fmt.Sprintf("%s: file checksums are different - let's update some stuff!", Direction), "info")
+		kvexpress.Log(fmt.Sprintf("%s: file checksum='different' update='true'", Direction), "info")
 	} else {
-		kvexpress.Log(fmt.Sprintf("%s: checksums='match' saved='false'", Direction), "info")
+		kvexpress.Log(fmt.Sprintf("%s: file checksum='match' update='false'", Direction), "info")
 		kvexpress.RunTime(start, KeyInLocation, "file_checksums_match", Direction, DogStatsd)
 		os.Exit(0)
 	}
@@ -118,11 +118,11 @@ func inRun(cmd *cobra.Command, args []string) {
 	CurrentChecksum := kvexpress.Get(c, KeyChecksum, Direction)
 
 	if CurrentChecksum != CompareChecksum {
-		kvexpress.Log(fmt.Sprintf("%s: current and previous Consul checksum are different - let's update the KV store.", Direction), "info")
+		kvexpress.Log(fmt.Sprintf("%s: consul checksum='different' update='true'", Direction), "info")
 		saved := kvexpress.Set(c, KeyData, CompareData, Direction)
 		if saved {
 			CompareDataBytes := len(CompareData)
-			kvexpress.Log(fmt.Sprintf("%s: KeyData='%s' saved='true' size='%d'", Direction, KeyData, CompareDataBytes), "info")
+			kvexpress.Log(fmt.Sprintf("%s: consul KeyData='%s' saved='true' size='%d'", Direction, KeyData, CompareDataBytes), "info")
 			kvexpress.Set(c, KeyChecksum, CompareChecksum, Direction)
 			if DatadogAPIKey != "" && DatadogAPPKey != "" {
 				kvexpress.DDSaveDataEvent(dog, KeyData, diff, Direction)
@@ -133,11 +133,12 @@ func inRun(cmd *cobra.Command, args []string) {
 			}
 
 		} else {
-			kvexpress.Log(fmt.Sprintf("%s: KeyData='%s' saved='false'", Direction, KeyData), "info")
+			kvexpress.Log(fmt.Sprintf("%s: consul KeyData='%s' saved='false'", Direction, KeyData), "info")
 			kvexpress.RunTime(start, KeyInLocation, "consul_checksums_match", Direction, DogStatsd)
 			os.Exit(0)
 		}
-
+	} else {
+		kvexpress.Log(fmt.Sprintf("%s: consul checksum='match' update='false'", Direction), "info")
 	}
 	// Run this command after the data is input.
 	if PostExec != "" {
