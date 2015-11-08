@@ -19,8 +19,12 @@ func check(e error) {
 	}
 }
 
-func RunTime(start time.Time, location string, direction string) {
+func RunTime(start time.Time, key string, location string, direction string, dogstatsd bool) {
 	elapsed := time.Since(start)
+	if dogstatsd {
+		milliseconds := int64(elapsed / time.Millisecond)
+		StatsdRunTime(direction, key, location, milliseconds)
+	}
 	Log(fmt.Sprintf("%s: location='%s', elapsed='%s'", direction, location, elapsed), "info")
 }
 

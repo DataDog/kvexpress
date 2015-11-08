@@ -34,7 +34,7 @@ func outRun(cmd *cobra.Command, args []string) {
 
 	if StopKeyData != "" && IgnoreStop == false {
 		kvexpress.Log(fmt.Sprintf("%s: Stop Key is present - stopping. Reason: %s", Direction, StopKeyData), "info")
-		kvexpress.RunTime(start, "stop_key", Direction)
+		kvexpress.RunTime(start, KeyOutLocation, "stop_key", Direction, DogStatsd)
 		os.Exit(0)
 	} else {
 		if IgnoreStop {
@@ -78,7 +78,7 @@ func outRun(cmd *cobra.Command, args []string) {
 		kvexpress.Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
 		kvexpress.RunCommand(PostExec)
 	}
-	kvexpress.RunTime(start, "complete", Direction)
+	kvexpress.RunTime(start, KeyOutLocation, "complete", Direction, DogStatsd)
 }
 
 func checkOutFlags(direction string) {

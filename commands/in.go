@@ -49,7 +49,7 @@ func inRun(cmd *cobra.Command, args []string) {
 		if DatadogAPIKey != "" && DatadogAPPKey != "" {
 			kvexpress.DDStopEvent(dog, KeyStop, StopKeyData, Direction)
 		}
-		kvexpress.RunTime(start, "stop_key", Direction)
+		kvexpress.RunTime(start, KeyInLocation, "stop_key", Direction, DogStatsd)
 		os.Exit(1)
 	} else {
 		kvexpress.Log(fmt.Sprintf("%s: Stop Key is NOT present - continuing.", Direction), "info")
@@ -69,7 +69,7 @@ func inRun(cmd *cobra.Command, args []string) {
 	if !longEnough {
 		kvexpress.Log(fmt.Sprintf("%s: File is NOT long enough. Stopping.", Direction), "info")
 		// TODO: Add Datadog Event here.
-		kvexpress.RunTime(start, "not_long_enough", Direction)
+		kvexpress.RunTime(start, KeyInLocation, "not_long_enough", Direction, DogStatsd)
 		os.Exit(1)
 	}
 
@@ -87,7 +87,7 @@ func inRun(cmd *cobra.Command, args []string) {
 		kvexpress.Log(fmt.Sprintf("%s: We have data - let's do the thing.", Direction), "info")
 	} else {
 		kvexpress.Log(fmt.Sprintf("%s: We do NOT have data. This should never happen.", Direction), "info")
-		kvexpress.RunTime(start, "error_no_data", Direction)
+		kvexpress.RunTime(start, KeyInLocation, "error_no_data", Direction, DogStatsd)
 		os.Exit(1)
 	}
 
@@ -100,7 +100,7 @@ func inRun(cmd *cobra.Command, args []string) {
 		kvexpress.Log(fmt.Sprintf("%s: file checksums are different - let's update some stuff!", Direction), "info")
 	} else {
 		kvexpress.Log(fmt.Sprintf("%s: checksums='match' saved='false'", Direction), "info")
-		kvexpress.RunTime(start, "file_checksums_match", Direction)
+		kvexpress.RunTime(start, KeyInLocation, "file_checksums_match", Direction, DogStatsd)
 		os.Exit(0)
 	}
 
@@ -131,7 +131,7 @@ func inRun(cmd *cobra.Command, args []string) {
 
 		} else {
 			kvexpress.Log(fmt.Sprintf("%s: KeyData='%s' saved='false'", Direction, KeyData), "info")
-			kvexpress.RunTime(start, "consul_checksums_match", Direction)
+			kvexpress.RunTime(start, KeyInLocation, "consul_checksums_match", Direction, DogStatsd)
 			os.Exit(0)
 		}
 
@@ -141,7 +141,7 @@ func inRun(cmd *cobra.Command, args []string) {
 		kvexpress.Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
 		kvexpress.RunCommand(PostExec)
 	}
-	kvexpress.RunTime(start, "complete", Direction)
+	kvexpress.RunTime(start, KeyInLocation, "complete", Direction, DogStatsd)
 }
 
 func checkInFlags(direction string) {

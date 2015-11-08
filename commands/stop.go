@@ -47,7 +47,7 @@ func stopRun(cmd *cobra.Command, args []string) {
 		kvexpress.Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
 		kvexpress.RunCommand(PostExec)
 	}
-	kvexpress.RunTime(start, "complete", Direction)
+	kvexpress.RunTime(start, KeyStopLocation, "complete", Direction, DogStatsd)
 }
 
 func checkStopFlags(direction string) {
