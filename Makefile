@@ -11,6 +11,7 @@ deps:
 	go get github.com/hashicorp/consul/api
 	go get github.com/zorkian/go-datadog-api
 	go get github.com/PagerDuty/godspeed
+	go get gopkg.in/yaml.v2
 
 format:
 	gofmt -w .
