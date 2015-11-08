@@ -3,19 +3,12 @@ package commands
 import (
 	kvexpress "../kvexpress/"
 	"fmt"
-	"gopkg.in/yaml.v2"
+	"github.com/smallfish/simpleyaml"
 	"io/ioutil"
 	"os"
 )
 
-type kvexpressConfig struct {
-	DatadogAPIKey    string `yaml:"datadog_api_key"`
-	DatadogAPPKey    string `yaml:"datadog_app_key"`
-	ConsulServer     string `yaml:"consul_server"`
-	Token            string `yaml:"token"`
-	DogStatsdAddress string `yaml:"dogstatsd_address"`
-	DatadogHost      string `yaml:"datadog_host"`
-}
+// RIPE for refactoring.
 
 func ConfigEnvVars(direction string) {
 	if os.Getenv("CONSUL_SERVER") != "" {
@@ -36,36 +29,48 @@ func ConfigEnvVars(direction string) {
 	}
 }
 
-func setConfig(value, name string) {
-	if value != "" {
-		kvexpress.Log(fmt.Sprintf("config: Setting '%s' to '%s'", name, value), "info")
-		name = value
-	}
-}
-
-// Thanks https://mlafeldt.github.io/blog/decoding-yaml-in-go/ for a clear explanataion
-// of how you did it.
-
 func LoadConfig(filename string) {
 	kvexpress.Log(fmt.Sprintf("config: filename='%s'", filename), "info")
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		data = []byte("")
 	}
-	var config kvexpressConfig
-	if err := config.Parse(data); err != nil {
-		kvexpress.Log(fmt.Sprintf("%v", err), "info")
-	}
-	if config.DatadogHost != "" {
-		os.Setenv("DATADOG_HOST", config.DatadogHost)
-	}
-	setConfig(fmt.Sprintf("%s", config.DatadogAPIKey), "DatadogAPIKey")
-	setConfig(fmt.Sprintf("%s", config.DatadogAPPKey), "DatadogAPPKey")
-	setConfig(fmt.Sprintf("%s", config.ConsulServer), "ConsulServer")
-	setConfig(fmt.Sprintf("%s", config.Token), "Token")
-	setConfig(fmt.Sprintf("%s", config.DogStatsdAddress), "DogStatsdAddress")
-}
+	config, err := simpleyaml.NewYaml(data)
 
-func (c *kvexpressConfig) Parse(data []byte) error {
-	return yaml.Unmarshal(data, c)
+	datadog_host, _ := config.Get("datadog_host").String()
+
+	if datadog_host != "" {
+		os.Setenv("DATADOG_HOST", datadog_host)
+	}
+
+	datadog_api_key, _ := config.Get("datadog_api_key").String()
+	if datadog_api_key != "" {
+		DatadogAPIKey = datadog_api_key
+	}
+
+	datadog_app_key, _ := config.Get("datadog_app_key").String()
+	if datadog_app_key != "" {
+		DatadogAPPKey = datadog_app_key
+	}
+
+	token, _ := config.Get("token").String()
+	if token != "" {
+		Token = token
+	}
+
+	consul_server, _ := config.Get("consul_server").String()
+	if consul_server != "" {
+		ConsulServer = consul_server
+	}
+
+	dogstatsd, _ := config.Get("dogstatsd").Bool()
+	if dogstatsd {
+		DogStatsd = true
+	}
+
+	dogstatsd_address, _ := config.Get("dogstatsd_address").String()
+	if dogstatsd_address != "" {
+		DogStatsdAddress = dogstatsd_address
+	}
+
 }

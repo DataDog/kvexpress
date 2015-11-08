@@ -12,6 +12,7 @@ deps:
 	go get github.com/zorkian/go-datadog-api
 	go get github.com/PagerDuty/godspeed
 	go get gopkg.in/yaml.v2
+	go get github.com/smallfish/simpleyaml
 
 format:
 	gofmt -w .
