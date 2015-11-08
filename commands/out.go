@@ -22,9 +22,6 @@ func outRun(cmd *cobra.Command, args []string) {
 	if ConfigFile != "" {
 		LoadConfig(ConfigFile)
 	}
-	if EnvVars {
-		ConfigEnvVars(Direction)
-	}
 	checkOutFlags(Direction)
 
 	KeyData := kvexpress.KeyDataPath(KeyOutLocation, PrefixLocation, Direction)

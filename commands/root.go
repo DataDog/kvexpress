@@ -23,7 +23,6 @@ var (
 	MinFileLength    int
 	FilePermissions  int
 	DogStatsd        bool
-	EnvVars          bool
 	ConfigFile       string
 	DogStatsdAddress string
 	DatadogAPIKey    string
@@ -32,7 +31,6 @@ var (
 
 func init() {
 	RootCmd.PersistentFlags().StringVarP(&ConfigFile, "config", "C", "", "Config file location")
-	RootCmd.PersistentFlags().BoolVarP(&EnvVars, "env", "E", false, "use ENV vars for configuration.")
 	RootCmd.PersistentFlags().StringVarP(&ConsulServer, "server", "s", "localhost:8500", "Consul server location")
 	RootCmd.PersistentFlags().StringVarP(&Token, "token", "t", "", "Token for Consul access")
 	RootCmd.PersistentFlags().StringVarP(&PrefixLocation, "prefix", "p", "kvexpress", "prefix for the key")

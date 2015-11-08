@@ -23,9 +23,6 @@ func inRun(cmd *cobra.Command, args []string) {
 	if ConfigFile != "" {
 		LoadConfig(ConfigFile)
 	}
-	if EnvVars {
-		ConfigEnvVars(Direction)
-	}
 	checkInFlags(Direction)
 
 	KeyStop := kvexpress.KeyStopPath(KeyInLocation, PrefixLocation, Direction)

@@ -21,9 +21,6 @@ func cleanRun(cmd *cobra.Command, args []string) {
 	if ConfigFile != "" {
 		LoadConfig(ConfigFile)
 	}
-	if EnvVars {
-		ConfigEnvVars(Direction)
-	}
 	checkCleanFlags(Direction)
 
 	CompareFile := kvexpress.CompareFilename(FiletoClean, Direction)
