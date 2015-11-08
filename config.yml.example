@@ -1,0 +1,8 @@
+---
+  datadog_api_key: api-key-goes-here
+  datadog_app_key: app-key-goes-here
+  consul_server:
+  token:
+  dogstatsd:
+  dogstatsd_address:
+  datadog_host:

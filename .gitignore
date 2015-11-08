@@ -3,3 +3,4 @@ files/
 .envrc
 .vagrant/
 sorting*
+config.yml
