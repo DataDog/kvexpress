@@ -63,8 +63,11 @@ Flags:
 
 Global Flags:
   -c, --chmod=416: permissions for the file
+  -C, --config="": Config file location
+  -a, --datadog_api_key="": Datadog API Key
+  -A, --datadog_app_key="": Datadog App Key
   -d, --dogstatsd[=false]: send metrics to dogstatsd
-  -D, --dogstatsd_addr="localhost:8125": address for dogstatsd server
+  -D, --dogstatsd_address="localhost:8125": address for dogstatsd server
   -e, --exec="": Execute this command after
   -l, --length=10: minimum amount of lines in the file
   -p, --prefix="kvexpress": prefix for the key
@@ -82,12 +85,16 @@ Usage:
 
 Flags:
   -f, --file="": where to write the data
+      --ignore_stop[=false]: ignore stop key
   -k, --key="": key to pull data from
 
 Global Flags:
   -c, --chmod=416: permissions for the file
+  -C, --config="": Config file location
+  -a, --datadog_api_key="": Datadog API Key
+  -A, --datadog_app_key="": Datadog App Key
   -d, --dogstatsd[=false]: send metrics to dogstatsd
-  -D, --dogstatsd_addr="localhost:8125": address for dogstatsd server
+  -D, --dogstatsd_address="localhost:8125": address for dogstatsd server
   -e, --exec="": Execute this command after
   -l, --length=10: minimum amount of lines in the file
   -p, --prefix="kvexpress": prefix for the key
@@ -120,11 +127,11 @@ Flags:
 
 Global Flags:
   -c, --chmod=416: permissions for the file
-  -a, --datadog_api="": Datadog API Key
-  -A, --datadog_app="": Datadog App Key
-      --datadog_host="https://app.datadoghq.com": Datadog Host
+  -C, --config="": Config file location
+  -a, --datadog_api_key="": Datadog API Key
+  -A, --datadog_app_key="": Datadog App Key
   -d, --dogstatsd[=false]: send metrics to dogstatsd
-  -D, --dogstatsd_addr="localhost:8125": address for dogstatsd server
+  -D, --dogstatsd_address="localhost:8125": address for dogstatsd server
   -e, --exec="": Execute this command after
   -l, --length=10: minimum amount of lines in the file
   -p, --prefix="kvexpress": prefix for the key
@@ -144,11 +151,11 @@ Flags:
 
 Global Flags:
   -c, --chmod=416: permissions for the file
-  -a, --datadog_api="": Datadog API Key
-  -A, --datadog_app="": Datadog App Key
-      --datadog_host="https://app.datadoghq.com": Datadog Host
+  -C, --config="": Config file location
+  -a, --datadog_api_key="": Datadog API Key
+  -A, --datadog_app_key="": Datadog App Key
   -d, --dogstatsd[=false]: send metrics to dogstatsd
-  -D, --dogstatsd_addr="localhost:8125": address for dogstatsd server
+  -D, --dogstatsd_address="localhost:8125": address for dogstatsd server
   -e, --exec="": Execute this command after
   -l, --length=10: minimum amount of lines in the file
   -p, --prefix="kvexpress": prefix for the key
