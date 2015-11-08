@@ -20,6 +20,9 @@ func stopRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
 	var dog = new(datadog.Client)
 	var Direction = "stop"
+	if ConfigFile != "" {
+		LoadConfig(ConfigFile)
+	}
 	if EnvVars {
 		ConfigEnvVars(Direction)
 	}

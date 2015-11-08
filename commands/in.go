@@ -20,6 +20,9 @@ func inRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
 	var dog = new(datadog.Client)
 	var Direction = "in"
+	if ConfigFile != "" {
+		LoadConfig(ConfigFile)
+	}
 	if EnvVars {
 		ConfigEnvVars(Direction)
 	}
