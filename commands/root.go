@@ -38,7 +38,7 @@ func init() {
 	RootCmd.PersistentFlags().IntVarP(&MinFileLength, "length", "l", 10, "minimum amount of lines in the file")
 	RootCmd.PersistentFlags().IntVarP(&FilePermissions, "chmod", "c", 0640, "permissions for the file")
 	RootCmd.PersistentFlags().BoolVarP(&DogStatsd, "dogstatsd", "d", false, "send metrics to dogstatsd")
-	RootCmd.PersistentFlags().StringVarP(&DogStatsdAddress, "dogstatsd_addr", "D", "localhost:8125", "address for dogstatsd server")
-	RootCmd.PersistentFlags().StringVarP(&DatadogAPIKey, "datadog_api", "a", "", "Datadog API Key")
-	RootCmd.PersistentFlags().StringVarP(&DatadogAPPKey, "datadog_app", "A", "", "Datadog App Key")
+	RootCmd.PersistentFlags().StringVarP(&DogStatsdAddress, "dogstatsd_address", "D", "localhost:8125", "address for dogstatsd server")
+	RootCmd.PersistentFlags().StringVarP(&DatadogAPIKey, "datadog_api_key", "a", "", "Datadog API Key")
+	RootCmd.PersistentFlags().StringVarP(&DatadogAPPKey, "datadog_app_key", "A", "", "Datadog App Key")
 }
