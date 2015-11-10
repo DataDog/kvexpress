@@ -51,6 +51,11 @@ func ChecksumCompare(data string, checksum string, direction string) bool {
 	}
 }
 
+func UnixDiff(old, new string) string {
+	diff, _ := exec.Command("diff","-u",old,new).Output()
+	return string(diff)
+}
+
 func Diff(last string, current string) string {
 	var buffer bytes.Buffer
 

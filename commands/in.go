@@ -104,12 +104,12 @@ func inRun(cmd *cobra.Command, args []string) {
 		os.Exit(0)
 	}
 
+	// Diff the files.
+	diff := kvexpress.UnixDiff(LastFile, CompareFile)
+
 	// If we get this far - copy the CompareData to the .last file.
 	// This handles the case detailed in https://github.com/darron/kvexpress/issues/33
 	kvexpress.WriteFile(CompareData, LastFile, FilePermissions, Direction)
-
-	// Diff the file data.
-	diff := kvexpress.Diff(LastData, CompareData)
 
 	// Get the checksum from Consul.
 	CurrentChecksum := kvexpress.Get(c, KeyChecksum, Direction)
