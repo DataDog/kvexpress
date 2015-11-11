@@ -11,30 +11,28 @@ func StatsdIn(key string, data_length int, data string) {
 	Log(fmt.Sprintf("in: dogstatsd='true' key='%s' stats='in'", key), "debug")
 	statsd, _ := godspeed.NewDefault()
 	defer statsd.Conn.Close()
-	statsdTags := []string{fmt.Sprintf("kvkey:%s", key)}
-	statsd.Incr("kvexpress.in", statsdTags)
-	statsd.Gauge("kvexpress.bytes", float64(data_length), statsdTags)
-	statsd.Gauge("kvexpress.lines", float64(LineCount(data)), statsdTags)
+	tags := makeTags(key, "in")
+	statsd.Incr("kvexpress.in", tags)
+	statsd.Gauge("kvexpress.bytes", float64(data_length), tags)
+	statsd.Gauge("kvexpress.lines", float64(LineCount(data)), tags)
 }
 
 func StatsdOut(key string) {
 	Log(fmt.Sprintf("out: dogstatsd='true' key='%s' stats='out'", key), "debug")
 	statsd, _ := godspeed.NewDefault()
 	defer statsd.Conn.Close()
-	statsdTags := []string{fmt.Sprintf("kvkey:%s", key)}
-	statsd.Incr("kvexpress.out", statsdTags)
+	tags := makeTags(key, "out")
+	statsd.Incr("kvexpress.out", tags)
 }
 
 func StatsdRunTime(direction string, key string, location string, msec int64) {
 	Log(fmt.Sprintf("%s: dogstatsd='true' key='%s' location='%s' msec='%d'", direction, key, location, msec), "debug")
 	statsd, _ := godspeed.NewDefault()
 	defer statsd.Conn.Close()
-	statsdTags := []string{fmt.Sprintf("direction:%s", direction)}
+	tags := makeTags(key, direction)
 	locationTag := fmt.Sprintf("location:%s", location)
-	keyTag := fmt.Sprintf("key:%s", key)
-	statsdTags = append(statsdTags, locationTag)
-	statsdTags = append(statsdTags, keyTag)
-	statsd.Gauge("kvexpress.time", float64(msec), statsdTags)
+	tags = append(tags, locationTag)
+	statsd.Gauge("kvexpress.time", float64(msec), tags)
 }
 
 func DDAPIConnect(api, app string) *datadog.Client {
