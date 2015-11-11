@@ -53,7 +53,17 @@ func ChecksumCompare(data string, checksum string, direction string) bool {
 
 func UnixDiff(old, new string) string {
 	diff, _ := exec.Command("diff", "-u", old, new).Output()
-	return string(diff)
+	text := string(diff)
+	finalText := removeLines(text, 3)
+	return finalText
+}
+
+func removeLines(text string, number int) string {
+	lines := strings.Split(text, "\n")
+	cleaned := make([]string, 0)
+	cleaned = append(cleaned, lines[number:]...)
+	finalText := strings.Join(cleaned, "\n")
+	return finalText
 }
 
 func Diff(last string, current string) string {
