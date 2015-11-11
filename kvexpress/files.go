@@ -57,7 +57,7 @@ func CheckFiletoWrite(filename, checksum, direction string) {
 		data, _ := ioutil.ReadFile(filename)
 		computedChecksum := ComputeChecksum(string(data), direction)
 		if computedChecksum == checksum {
-			Log(fmt.Sprintf("%s: already a file with the same checksum. Stopping.", direction), "info")
+			Log(fmt.Sprintf("%s: '%s' has the same checksum. Stopping.", direction, filename), "info")
 			os.Exit(0)
 		}
 	}
