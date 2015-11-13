@@ -141,6 +141,11 @@ func inRun(cmd *cobra.Command, args []string) {
 				kvexpress.StatsdIn(KeyInLocation, CompareDataBytes, CompareData)
 			}
 
+			if UrltoRead != "" {
+				urlOutput := fmt.Sprintf("\nURL: %s\n\nWhat was inserted into: '%s'\n===================\n%s\n===================\n", UrltoRead, KeyData, CompareData)
+				fmt.Println(urlOutput)
+			}
+
 		} else {
 			kvexpress.Log(fmt.Sprintf("%s: consul KeyData='%s' saved='false'", Direction, KeyData), "info")
 			kvexpress.RunTime(start, KeyInLocation, "consul_checksums_match", Direction, DogStatsd)
@@ -172,6 +177,10 @@ func checkInFlags(direction string) {
 			fmt.Println(direction, ": File ", FiletoRead, " does not exist.")
 			os.Exit(1)
 		}
+	}
+	if FiletoRead != "" && UrltoRead != "" {
+		fmt.Println(direction, ": You cannot use both -f and -u.")
+		os.Exit(1)
 	}
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
 		kvexpress.Log(fmt.Sprintf("%s: Enabling Datadog API.", direction), "debug")
