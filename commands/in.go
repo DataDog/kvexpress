@@ -20,6 +20,9 @@ func inRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
 	var dog = new(datadog.Client)
 	var Direction = "in"
+	var CompareFile = ""
+	var LastFile = ""
+	var FileString = ""
 	if ConfigFile != "" {
 		LoadConfig(ConfigFile)
 	}
@@ -29,8 +32,13 @@ func inRun(cmd *cobra.Command, args []string) {
 	KeyData := kvexpress.KeyDataPath(KeyInLocation, PrefixLocation, Direction)
 	KeyChecksum := kvexpress.KeyChecksumPath(KeyInLocation, PrefixLocation, Direction)
 
-	CompareFile := kvexpress.CompareFilename(FiletoRead, Direction)
-	LastFile := kvexpress.LastFilename(FiletoRead, Direction)
+	if FiletoRead != "" {
+		CompareFile = kvexpress.CompareFilename(FiletoRead, Direction)
+		LastFile = kvexpress.LastFilename(FiletoRead, Direction)
+	} else {
+		CompareFile = kvexpress.RandomTmpFile(Direction)
+		LastFile = kvexpress.LastFilename(CompareFile, Direction)
+	}
 
 	// Let's double check those files are safe to write.
 	kvexpress.CheckFiletoWrite(CompareFile, "", Direction)
@@ -56,7 +64,11 @@ func inRun(cmd *cobra.Command, args []string) {
 	}
 
 	// Read the file - if it's to be sorted - then make sure to sort.
-	FileString := kvexpress.ReadFile(FiletoRead)
+	if FiletoRead != "" {
+		FileString = kvexpress.ReadFile(FiletoRead)
+	} else {
+		FileString = kvexpress.ReadUrl(UrltoRead)
+	}
 
 	// Sorting also removes any blank lines.
 	if Sorted {
@@ -151,13 +163,15 @@ func checkInFlags(direction string) {
 		fmt.Println(direction, ": Need a key location in -k")
 		os.Exit(1)
 	}
-	if FiletoRead == "" {
-		fmt.Println(direction, ": Need a file to read in -f")
+	if FiletoRead == "" && UrltoRead == "" {
+		fmt.Println(direction, ": Need a file -f or url -u to read from.")
 		os.Exit(1)
 	}
-	if _, err := os.Stat(FiletoRead); err != nil {
-		fmt.Println(direction, ": File ", FiletoRead, " does not exist.")
-		os.Exit(1)
+	if FiletoRead != "" {
+		if _, err := os.Stat(FiletoRead); err != nil {
+			fmt.Println(direction, ": File ", FiletoRead, " does not exist.")
+			os.Exit(1)
+		}
 	}
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
 		kvexpress.Log(fmt.Sprintf("%s: Enabling Datadog API.", direction), "debug")
@@ -172,11 +186,13 @@ var (
 	KeyInLocation string
 	FiletoRead    string
 	Sorted        bool
+	UrltoRead     string
 )
 
 func init() {
 	RootCmd.AddCommand(inCmd)
 	inCmd.Flags().StringVarP(&KeyInLocation, "key", "k", "", "key to push data to")
 	inCmd.Flags().StringVarP(&FiletoRead, "file", "f", "", "filename to read data from")
+	inCmd.Flags().StringVarP(&UrltoRead, "url", "u", "", "url to read data from")
 	inCmd.Flags().BoolVarP(&Sorted, "sorted", "S", false, "sort the input file")
 }

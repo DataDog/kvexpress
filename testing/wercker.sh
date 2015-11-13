@@ -47,6 +47,15 @@ bin/kvexpress clean -f ignored
 echo "Checksum : $CHECKSUM"
 echo "Predicted: $PREDICTED_CHECKSUM"
 
+echo "Let's try a URL based test."
+bin/kvexpress in -k url -u https://gist.githubusercontent.com/darron/9753b203b32667484105/raw/e66ea4c28c59e54aa8234d742368ccf93527dce5/gistfile1.txt
+bin/kvexpress out -k url -f url
+
+export URL_CHECKSUM=$(shasum -a 256 url | cut -d ' ' -f 1)
+
+echo "Predicted URL Checksum: '307b198c768b7a174b11e00c70bb1bd7b32597a86790279f763c4544dc12d1ff'"
+echo "   Actual URL Checksum: '$URL_CHECKSUM'"
+
 if [[ "$CHECKSUM" == "$PREDICTED_CHECKSUM" ]]; then
   echo "Looks good."
   exit 0

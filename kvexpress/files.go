@@ -84,6 +84,16 @@ func RemoveFile(filename string, direction string) {
 	}
 }
 
+func RandomTmpFile(direction string) string {
+	file, err := ioutil.TempFile(os.TempDir(), "kvexpress")
+	if err != nil {
+		panic(err)
+	}
+	fileName := file.Name()
+	Log(fmt.Sprintf("%s: tempfile='%s'", direction, fileName), "debug")
+	return fileName
+}
+
 func CompareFilename(file string, direction string) string {
 	compare := fmt.Sprintf("%s.compare", path.Base(file))
 	full_path := path.Join(path.Dir(file), compare)

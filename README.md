@@ -67,6 +67,7 @@ Flags:
   -f, --file="": filename to read data from
   -k, --key="": key to push data to
   -S, --sorted[=false]: sort the input file
+  -u, --url="": url to read data from
 
 Global Flags:
   -c, --chmod=416: permissions for the file

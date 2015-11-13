@@ -5,6 +5,8 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"github.com/aryann/difflib"
+	"io/ioutil"
+	"net/http"
 	"os/exec"
 	"strings"
 )
@@ -21,6 +23,16 @@ func LengthCheck(data string, min_length int, direction string) bool {
 	} else {
 		return false
 	}
+}
+
+func ReadUrl(url string) string {
+	resp, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	return string(body)
 }
 
 func LineCount(data string) int {
