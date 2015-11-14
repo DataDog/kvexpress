@@ -93,8 +93,10 @@ Usage:
 
 Flags:
   -f, --file="": where to write the data
+  -g, --group="": group to write the file as
       --ignore_stop[=false]: ignore stop key
   -k, --key="": key to pull data from
+  -o, --owner="": who to write the file as
 
 Global Flags:
   -c, --chmod=416: permissions for the file
