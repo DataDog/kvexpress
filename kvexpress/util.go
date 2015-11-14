@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/user"
+	"strconv"
 	"time"
 )
 
@@ -37,5 +39,34 @@ func Log(message, priority string) {
 	default:
 		log.Print(message)
 	}
+}
 
+func GetOwnerId(owner string) int {
+	var uid = ""
+	usr, err := user.Lookup(owner)
+	if err != nil {
+		usr, _ = user.Current()
+		uid = usr.Uid
+		Log(fmt.Sprintf("out: owner='%s' status='not_found' uid='%s'", owner, uid), "debug")
+	} else {
+		uid = usr.Uid
+		Log(fmt.Sprintf("out: owner='%s' status='found' uid='%s'", owner, uid), "debug")
+	}
+	uidInt, err := strconv.ParseInt(uid, 10, 64)
+	return int(uidInt)
+}
+
+func GetGroupId(group string) int {
+	var gid = ""
+	usr, err := user.Lookup(group)
+	if err != nil {
+		usr, _ = user.Current()
+		gid = usr.Gid
+		Log(fmt.Sprintf("out: group='%s' status='not_found' gid='%s'", group, gid), "debug")
+	} else {
+		gid = usr.Gid
+		Log(fmt.Sprintf("out: group='%s' status='found' gid='%s'", group, gid), "debug")
+	}
+	gidInt, err := strconv.ParseInt(gid, 10, 64)
+	return int(gidInt)
 }

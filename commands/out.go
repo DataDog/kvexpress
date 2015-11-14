@@ -65,7 +65,7 @@ func outRun(cmd *cobra.Command, args []string) {
 		kvexpress.CheckFiletoWrite(FiletoWrite, Checksum, Direction)
 
 		// Acually write the file.
-		kvexpress.WriteFile(KVData, FiletoWrite, FilePermissions, Direction)
+		kvexpress.WriteFile(KVData, FiletoWrite, FilePermissions, Owner, Group, Direction)
 		if DogStatsd {
 			kvexpress.StatsdOut(KeyOutLocation)
 		}
@@ -103,6 +103,8 @@ func checkOutFlags(direction string) {
 var (
 	KeyOutLocation string
 	FiletoWrite    string
+	Owner          string
+	Group          string
 	IgnoreStop     bool
 )
 
@@ -110,5 +112,7 @@ func init() {
 	RootCmd.AddCommand(outCmd)
 	outCmd.Flags().StringVarP(&KeyOutLocation, "key", "k", "", "key to pull data from")
 	outCmd.Flags().StringVarP(&FiletoWrite, "file", "f", "", "where to write the data")
+	outCmd.Flags().StringVarP(&Owner, "owner", "o", "", "who to write the file as")
+	outCmd.Flags().StringVarP(&Group, "group", "g", "", "group to write the file as")
 	outCmd.Flags().BoolVarP(&IgnoreStop, "ignore_stop", "", false, "ignore stop key")
 }
