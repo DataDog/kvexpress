@@ -40,8 +40,8 @@ func WriteFile(data string, filepath string, perms int, owner string, group stri
 	var fileChown = false
 	err := ioutil.WriteFile(filepath, []byte(data), os.FileMode(perms))
 	check(err)
-	oid := GetOwnerId(owner)
-	gid := GetGroupId(group)
+	oid := GetOwnerId(owner, direction)
+	gid := GetGroupId(group, direction)
 	err = os.Chown(filepath, oid, gid)
 	if err != nil {
 		fileChown = false

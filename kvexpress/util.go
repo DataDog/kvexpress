@@ -41,32 +41,36 @@ func Log(message, priority string) {
 	}
 }
 
-func GetOwnerId(owner string) int {
+func GetOwnerId(owner, direction string) int {
 	var uid = ""
+	var status = ""
 	usr, err := user.Lookup(owner)
 	if err != nil {
 		usr, _ = user.Current()
 		uid = usr.Uid
-		Log(fmt.Sprintf("out: owner='%s' status='not_found' uid='%s'", owner, uid), "debug")
+		status = "not_found"
 	} else {
 		uid = usr.Uid
-		Log(fmt.Sprintf("out: owner='%s' status='found' uid='%s'", owner, uid), "debug")
+		status = "found"
 	}
+	Log(fmt.Sprintf("%s: owner='%s' status='%s' uid='%s'", direction, owner, status, uid), "debug")
 	uidInt, err := strconv.ParseInt(uid, 10, 64)
 	return int(uidInt)
 }
 
-func GetGroupId(group string) int {
+func GetGroupId(group, direction string) int {
 	var gid = ""
+	var status = ""
 	usr, err := user.Lookup(group)
 	if err != nil {
 		usr, _ = user.Current()
 		gid = usr.Gid
-		Log(fmt.Sprintf("out: group='%s' status='not_found' gid='%s'", group, gid), "debug")
+		status = "not_found"
 	} else {
 		gid = usr.Gid
-		Log(fmt.Sprintf("out: group='%s' status='found' gid='%s'", group, gid), "debug")
+		status = "found"
 	}
+	Log(fmt.Sprintf("%s: group='%s' status='%s' gid='%s'", direction, group, status, gid), "debug")
 	gidInt, err := strconv.ParseInt(gid, 10, 64)
 	return int(gidInt)
 }
