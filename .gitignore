@@ -4,3 +4,4 @@ files/
 .vagrant/
 sorting*
 config.yml
+kvexpress.yaml
