@@ -23,6 +23,7 @@ var (
 	MinFileLength    int
 	FilePermissions  int
 	DogStatsd        bool
+	Owner            string
 	ConfigFile       string
 	DogStatsdAddress string
 	DatadogAPIKey    string
@@ -41,4 +42,5 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&DogStatsdAddress, "dogstatsd_address", "D", "localhost:8125", "address for dogstatsd server")
 	RootCmd.PersistentFlags().StringVarP(&DatadogAPIKey, "datadog_api_key", "a", "", "Datadog API Key")
 	RootCmd.PersistentFlags().StringVarP(&DatadogAPPKey, "datadog_app_key", "A", "", "Datadog App Key")
+	RootCmd.PersistentFlags().StringVarP(&Owner, "owner", "o", "", "who to write the file as")
 }

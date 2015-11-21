@@ -36,12 +36,12 @@ func BlankLineStrip(data []string) []string {
 	return stripped
 }
 
-func WriteFile(data string, filepath string, perms int, owner string, group string, direction string) {
+func WriteFile(data string, filepath string, perms int, owner string, direction string) {
 	var fileChown = false
 	err := ioutil.WriteFile(filepath, []byte(data), os.FileMode(perms))
 	check(err)
 	oid := GetOwnerId(owner, direction)
-	gid := GetGroupId(group, direction)
+	gid := GetGroupId(owner, direction)
 	err = os.Chown(filepath, oid, gid)
 	if err != nil {
 		fileChown = false
@@ -118,9 +118,9 @@ func LastFilename(file string, direction string) string {
 	return full_path
 }
 
-func CheckLastFile(file string, perms int) {
+func CheckLastFile(file string, perms int, owner string) {
 	if _, err := os.Stat(file); err != nil {
 		Log(fmt.Sprintf("in: file='last' file='%s' does_not_exist='true'", file), "debug")
-		WriteFile("This is a blank file.\n", file, perms, "", "", "in")
+		WriteFile("This is a blank file.\n", file, perms, owner, "in")
 	}
 }

@@ -86,10 +86,10 @@ func inRun(cmd *cobra.Command, args []string) {
 	}
 
 	// Write the .compare file.
-	kvexpress.WriteFile(FileString, CompareFile, FilePermissions, "", "", Direction)
+	kvexpress.WriteFile(FileString, CompareFile, FilePermissions, Owner, Direction)
 
 	// Check for the .last file - touch if it doesn't exist.
-	kvexpress.CheckLastFile(LastFile, FilePermissions)
+	kvexpress.CheckLastFile(LastFile, FilePermissions, Owner)
 
 	// Read compare and last files into string.
 	CompareData := kvexpress.ReadFile(CompareFile)
@@ -121,7 +121,7 @@ func inRun(cmd *cobra.Command, args []string) {
 
 	// If we get this far - copy the CompareData to the .last file.
 	// This handles the case detailed in https://github.com/darron/kvexpress/issues/33
-	kvexpress.WriteFile(CompareData, LastFile, FilePermissions, "", "", Direction)
+	kvexpress.WriteFile(CompareData, LastFile, FilePermissions, Owner, Direction)
 
 	// Get the checksum from Consul.
 	CurrentChecksum := kvexpress.Get(c, KeyChecksum, Direction)
@@ -187,6 +187,9 @@ func checkInFlags(direction string) {
 	}
 	if DogStatsd {
 		kvexpress.Log(fmt.Sprintf("%s: Enabling Dogstatsd metrics.", direction), "debug")
+	}
+	if Owner == "" {
+		Owner = kvexpress.GetCurrentUsername(direction)
 	}
 	kvexpress.Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
 }

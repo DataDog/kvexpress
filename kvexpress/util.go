@@ -41,6 +41,13 @@ func Log(message, priority string) {
 	}
 }
 
+func GetCurrentUsername(direction string) string {
+	usr, _ := user.Current()
+	username := usr.Username
+	Log(fmt.Sprintf("%s: username='%s'", direction, username), "debug")
+	return username
+}
+
 func GetOwnerId(owner, direction string) int {
 	var uid = ""
 	var status = ""
@@ -58,10 +65,10 @@ func GetOwnerId(owner, direction string) int {
 	return int(uidInt)
 }
 
-func GetGroupId(group, direction string) int {
+func GetGroupId(owner, direction string) int {
 	var gid = ""
 	var status = ""
-	usr, err := user.Lookup(group)
+	usr, err := user.Lookup(owner)
 	if err != nil {
 		usr, _ = user.Current()
 		gid = usr.Gid
@@ -70,7 +77,7 @@ func GetGroupId(group, direction string) int {
 		gid = usr.Gid
 		status = "found"
 	}
-	Log(fmt.Sprintf("%s: group='%s' status='%s' gid='%s'", direction, group, status, gid), "debug")
+	Log(fmt.Sprintf("%s: owner='%s' status='%s' gid='%s'", direction, owner, status, gid), "debug")
 	gidInt, err := strconv.ParseInt(gid, 10, 64)
 	return int(gidInt)
 }

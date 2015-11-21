@@ -81,6 +81,7 @@ Global Flags:
   -p, --prefix="kvexpress": prefix for the key
   -s, --server="localhost:8500": Consul server location
   -t, --token="": Token for Consul access
+  -o, --owner="": who to write the file as
 ```
 
 Example: `kvexpress in -d true -k hosts -f /etc/consul-template/output/hosts.consul -l 100 --sorted=true`
@@ -93,10 +94,8 @@ Usage:
 
 Flags:
   -f, --file="": where to write the data
-  -g, --group="": group to write the file as
       --ignore_stop[=false]: ignore stop key
   -k, --key="": key to pull data from
-  -o, --owner="": who to write the file as
 
 Global Flags:
   -c, --chmod=416: permissions for the file
@@ -110,6 +109,7 @@ Global Flags:
   -p, --prefix="kvexpress": prefix for the key
   -s, --server="localhost:8500": Consul server location
   -t, --token="": Token for Consul access
+  -o, --owner="": who to write the file as
 ```
 
 Example `out` as a Consul watch:
@@ -147,6 +147,7 @@ Global Flags:
   -p, --prefix="kvexpress": prefix for the key
   -s, --server="localhost:8500": Consul server location
   -t, --token="": Token for Consul access
+  -o, --owner="": who to write the file as
 ```
 
 ### `stop` command flags
@@ -171,6 +172,7 @@ Global Flags:
   -p, --prefix="kvexpress": prefix for the key
   -s, --server="localhost:8500": Consul server location
   -t, --token="": Token for Consul access
+  -o, --owner="": who to write the file as
   ```
 
 ## Consul KV Structure
