@@ -65,7 +65,7 @@ func outRun(cmd *cobra.Command, args []string) {
 		kvexpress.CheckFiletoWrite(FiletoWrite, Checksum, Direction)
 
 		// Acually write the file.
-		kvexpress.WriteFile(KVData, FiletoWrite, FilePermissions, Owner, Direction)
+		kvexpress.WriteFile(KVData, FiletoWrite, FilePermissions, Owner, Direction, DogStatsd)
 		if DogStatsd {
 			kvexpress.StatsdOut(KeyOutLocation)
 		}

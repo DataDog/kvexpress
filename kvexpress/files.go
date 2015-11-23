@@ -36,17 +36,23 @@ func BlankLineStrip(data []string) []string {
 	return stripped
 }
 
-func WriteFile(data string, filepath string, perms int, owner string, direction string) {
+func WriteFile(data string, filepath string, perms int, owner string, direction string, dogstatsd bool) {
 	var fileChown = false
 	err := ioutil.WriteFile(filepath, []byte(data), os.FileMode(perms))
 	if err != nil {
 		Log(fmt.Sprintf("%s: function='WriteFile' panic='true' file='%s'", direction, filepath), "info")
+		if dogstatsd {
+			StatsdPanic(filepath, direction, "write_file")
+		}
 	}
 	oid := GetOwnerId(owner, direction)
 	gid := GetGroupId(owner, direction)
 	err = os.Chown(filepath, oid, gid)
 	if err != nil {
 		fileChown = false
+		if dogstatsd {
+			StatsdPanic(filepath, direction, "chown_file")
+		}
 	} else {
 		fileChown = true
 	}
@@ -120,9 +126,9 @@ func LastFilename(file string, direction string) string {
 	return full_path
 }
 
-func CheckLastFile(file string, perms int, owner string) {
+func CheckLastFile(file string, perms int, owner string, dogstatsd bool) {
 	if _, err := os.Stat(file); err != nil {
 		Log(fmt.Sprintf("in: file='last' file='%s' does_not_exist='true'", file), "debug")
-		WriteFile("This is a blank file.\n", file, perms, owner, "in")
+		WriteFile("This is a blank file.\n", file, perms, owner, "in", dogstatsd)
 	}
 }
