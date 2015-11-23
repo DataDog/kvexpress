@@ -39,7 +39,9 @@ func BlankLineStrip(data []string) []string {
 func WriteFile(data string, filepath string, perms int, owner string, direction string) {
 	var fileChown = false
 	err := ioutil.WriteFile(filepath, []byte(data), os.FileMode(perms))
-	check(err)
+	if err != nil {
+		Log(fmt.Sprintf("%s: function='WriteFile' panic='true' file='%s'", direction, filepath), "info")
+	}
 	oid := GetOwnerId(owner, direction)
 	gid := GetGroupId(owner, direction)
 	err = os.Chown(filepath, oid, gid)
@@ -97,7 +99,7 @@ func RemoveFile(filename string, direction string) {
 func RandomTmpFile(direction string) string {
 	file, err := ioutil.TempFile(os.TempDir(), "kvexpress")
 	if err != nil {
-		panic(err)
+		Log(fmt.Sprintf("%s: function='RandomTmpFile' panic='true'", direction), "info")
 	}
 	fileName := file.Name()
 	Log(fmt.Sprintf("%s: tempfile='%s'", direction, fileName), "debug")

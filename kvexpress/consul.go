@@ -24,7 +24,7 @@ func Get(c *consul.Client, key, direction string) string {
 	kv := c.KV()
 	pair, _, err := kv.Get(key, nil)
 	if err != nil {
-		panic(err)
+		Log(fmt.Sprintf("%s: action='get' panic='true' key='%s'", direction, key), "info")
 	} else {
 		if pair != nil {
 			value = string(pair.Value[:])
@@ -47,7 +47,7 @@ func Set(c *consul.Client, key, value, direction string) bool {
 	kv := c.KV()
 	_, err := kv.Put(p, nil)
 	if err != nil {
-		panic(err)
+		Log(fmt.Sprintf("%s: action='set' panic='true' key='%s'", direction, key), "info")
 	} else {
 		Log(fmt.Sprintf("%s: action='set' key='%s'", direction, key), "debug")
 		return true

@@ -28,7 +28,7 @@ func LengthCheck(data string, min_length int, direction string) bool {
 func ReadUrl(url string) string {
 	resp, err := http.Get(url)
 	if err != nil {
-		panic(err)
+		Log(fmt.Sprintf("in: function='ReadUrl' panic='true' url='%s'", url), "info")
 	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
