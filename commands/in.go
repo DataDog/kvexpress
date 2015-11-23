@@ -67,7 +67,7 @@ func inRun(cmd *cobra.Command, args []string) {
 	if FiletoRead != "" {
 		FileString = kvexpress.ReadFile(FiletoRead)
 	} else {
-		FileString = kvexpress.ReadUrl(UrltoRead)
+		FileString = kvexpress.ReadUrl(UrltoRead, DogStatsd)
 	}
 
 	// Sorting also removes any blank lines.

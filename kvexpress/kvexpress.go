@@ -25,10 +25,13 @@ func LengthCheck(data string, min_length int, direction string) bool {
 	}
 }
 
-func ReadUrl(url string) string {
+func ReadUrl(url string, dogstatsd bool) string {
 	resp, err := http.Get(url)
 	if err != nil {
 		Log(fmt.Sprintf("in: function='ReadUrl' panic='true' url='%s'", url), "info")
+		if dogstatsd {
+			StatsdPanic(url, "in", "read_url")
+		}
 	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
