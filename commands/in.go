@@ -50,7 +50,7 @@ func inRun(cmd *cobra.Command, args []string) {
 		dog = kvexpress.DDAPIConnect(DatadogAPIKey, DatadogAPPKey)
 	}
 
-	StopKeyData := kvexpress.Get(c, KeyStop, Direction)
+	StopKeyData := kvexpress.Get(c, KeyStop, Direction, DogStatsd)
 
 	if StopKeyData != "" {
 		kvexpress.Log(fmt.Sprintf("%s: Stop Key is present - stopping. Reason: %s", Direction, StopKeyData), "info")
@@ -124,7 +124,7 @@ func inRun(cmd *cobra.Command, args []string) {
 	kvexpress.WriteFile(CompareData, LastFile, FilePermissions, Owner, Direction)
 
 	// Get the checksum from Consul.
-	CurrentChecksum := kvexpress.Get(c, KeyChecksum, Direction)
+	CurrentChecksum := kvexpress.Get(c, KeyChecksum, Direction, DogStatsd)
 
 	if CurrentChecksum != CompareChecksum {
 		kvexpress.Log(fmt.Sprintf("%s: consul checksum='different' update='true'", Direction), "info")

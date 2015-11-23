@@ -19,12 +19,15 @@ func Connect(server, token, direction string) (*consul.Client, error) {
 	return consul, nil
 }
 
-func Get(c *consul.Client, key, direction string) string {
+func Get(c *consul.Client, key string, direction string, dogstatsd bool) string {
 	var value string
 	kv := c.KV()
 	pair, _, err := kv.Get(key, nil)
 	if err != nil {
 		Log(fmt.Sprintf("%s: action='get' panic='true' key='%s'", direction, key), "info")
+		if dogstatsd {
+			StatsdPanic(key, direction, "consul_get")
+		}
 	} else {
 		if pair != nil {
 			value = string(pair.Value[:])

@@ -30,7 +30,7 @@ func outRun(cmd *cobra.Command, args []string) {
 
 	c, _ := kvexpress.Connect(ConsulServer, Token, Direction)
 
-	StopKeyData := kvexpress.Get(c, KeyStop, Direction)
+	StopKeyData := kvexpress.Get(c, KeyStop, Direction, DogStatsd)
 
 	if StopKeyData != "" && IgnoreStop == false {
 		kvexpress.Log(fmt.Sprintf("%s: Stop Key is present - stopping. Reason: %s", Direction, StopKeyData), "info")
@@ -45,10 +45,10 @@ func outRun(cmd *cobra.Command, args []string) {
 	}
 
 	// Get the KV data out of Consul.
-	KVData := kvexpress.Get(c, KeyData, Direction)
+	KVData := kvexpress.Get(c, KeyData, Direction, DogStatsd)
 
 	// Get the Checksum data out of Consul.
-	Checksum := kvexpress.Get(c, KeyChecksum, Direction)
+	Checksum := kvexpress.Get(c, KeyChecksum, Direction, DogStatsd)
 
 	// Is the data long enough?
 	longEnough := kvexpress.LengthCheck(KVData, MinFileLength, Direction)
