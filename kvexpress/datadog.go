@@ -41,6 +41,10 @@ func StatsdPanic(key, direction, location string) {
 	defer statsd.Conn.Close()
 	tags := makeTags(key, direction, location)
 	statsd.Incr("kvexpress.panic", tags)
+	// If we're going to panic, we might as well stop right here.
+	// Means we can't connect to Consul, download a URL or
+	// write and/or chown files.
+	os.Exit(0)
 }
 
 func DDAPIConnect(api, app string) *datadog.Client {
