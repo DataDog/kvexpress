@@ -33,7 +33,7 @@ func stopRun(cmd *cobra.Command, args []string) {
 		dog = kvexpress.DDAPIConnect(DatadogAPIKey, DatadogAPPKey)
 	}
 
-	saved := kvexpress.Set(c, KeyStop, KeyStopReason, Direction)
+	saved := kvexpress.Set(c, KeyStop, KeyStopReason, Direction, DogStatsd)
 
 	if saved {
 		kvexpress.Log(fmt.Sprintf("%s: KeyStop='%s' saved='true' KeyStopReason='%s'", Direction, KeyStop, KeyStopReason), "info")

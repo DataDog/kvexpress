@@ -45,12 +45,15 @@ func cleanupToken(token string) string {
 	return firstString
 }
 
-func Set(c *consul.Client, key, value, direction string) bool {
+func Set(c *consul.Client, key string, value string, direction string, dogstatsd bool) bool {
 	p := &consul.KVPair{Key: key, Value: []byte(value)}
 	kv := c.KV()
 	_, err := kv.Put(p, nil)
 	if err != nil {
 		Log(fmt.Sprintf("%s: action='set' panic='true' key='%s'", direction, key), "info")
+		if dogstatsd {
+			StatsdPanic(key, direction, "consul_set")
+		}
 	} else {
 		Log(fmt.Sprintf("%s: action='set' key='%s'", direction, key), "debug")
 		return true

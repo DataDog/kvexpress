@@ -128,11 +128,11 @@ func inRun(cmd *cobra.Command, args []string) {
 
 	if CurrentChecksum != CompareChecksum {
 		kvexpress.Log(fmt.Sprintf("%s: consul checksum='different' update='true'", Direction), "info")
-		saved := kvexpress.Set(c, KeyData, CompareData, Direction)
+		saved := kvexpress.Set(c, KeyData, CompareData, Direction, DogStatsd)
 		if saved {
 			CompareDataBytes := len(CompareData)
 			kvexpress.Log(fmt.Sprintf("%s: consul KeyData='%s' saved='true' size='%d'", Direction, KeyData, CompareDataBytes), "info")
-			kvexpress.Set(c, KeyChecksum, CompareChecksum, Direction)
+			kvexpress.Set(c, KeyChecksum, CompareChecksum, Direction, DogStatsd)
 			if DatadogAPIKey != "" && DatadogAPPKey != "" {
 				kvexpress.DDSaveDataEvent(dog, KeyData, diff, Direction)
 			}
