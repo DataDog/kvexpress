@@ -39,6 +39,27 @@ func Get(c *consul.Client, key string, direction string, dogstatsd bool) string 
 	return value
 }
 
+func GetRaw(c *consul.Client, prefix string, key string, direction string, dogstatsd bool) string {
+	var value string
+	kv := c.KV()
+	full_key := fmt.Sprintf("%s/%s", prefix, key)
+	pair, _, err := kv.Get(full_key, nil)
+	if err != nil {
+		Log(fmt.Sprintf("%s: action='get_raw' panic='true' key='%s'", direction, full_key), "info")
+		if dogstatsd {
+			StatsdPanic(full_key, direction, "consul_get_raw")
+		}
+	} else {
+		if pair != nil {
+			value = string(pair.Value[:])
+		} else {
+			value = ""
+		}
+		Log(fmt.Sprintf("%s: action='get_raw' key='%s'", direction, full_key), "debug")
+	}
+	return value
+}
+
 func cleanupToken(token string) string {
 	first := strings.Split(token, "-")
 	firstString := fmt.Sprintf("%s", first[0])
