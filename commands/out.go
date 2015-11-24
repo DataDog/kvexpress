@@ -11,8 +11,8 @@ import (
 
 var outCmd = &cobra.Command{
 	Use:   "out",
-	Short: "Write a file based on key data.",
-	Long:  `out is for writing a file based on a Consul key.`,
+	Short: "Write a file based on kvexpress organized data stored in Consul.",
+	Long:  `out is for writing a file based on a Consul kvexpress key and checksum.`,
 	Run:   outRun,
 }
 
@@ -70,7 +70,8 @@ func outRun(cmd *cobra.Command, args []string) {
 			kvexpress.StatsdOut(KeyOutLocation)
 		}
 	} else {
-		kvexpress.Log(fmt.Sprintf("%s: Could not write file.", Direction), "debug")
+		kvexpress.Log(fmt.Sprintf("%s: longEnough='no'", Direction), "info")
+		os.Exit(0)
 	}
 
 	// Run this command after the file is written.
