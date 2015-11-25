@@ -38,7 +38,7 @@ func rawRun(cmd *cobra.Command, args []string) {
 		// Acually write the file.
 		kvexpress.WriteFile(KVData, RawFiletoWrite, FilePermissions, Owner, Direction, DogStatsd)
 		if DogStatsd {
-			kvexpress.StatsdOut(KeyOutLocation)
+			kvexpress.StatsdRaw(RawKeyOutLocation)
 		}
 	} else {
 		kvexpress.Log(fmt.Sprintf("%s: longEnough='no'", Direction), "info")

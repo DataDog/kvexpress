@@ -25,6 +25,14 @@ func StatsdOut(key string) {
 	statsd.Incr("kvexpress.out", tags)
 }
 
+func StatsdRaw(key string) {
+	Log(fmt.Sprintf("out: dogstatsd='true' key='%s' stats='raw'", key), "debug")
+	statsd, _ := godspeed.NewDefault()
+	defer statsd.Conn.Close()
+	tags := makeTags(key, "raw", "complete")
+	statsd.Incr("kvexpress.raw", tags)
+}
+
 func StatsdRunTime(direction string, key string, location string, msec int64) {
 	Log(fmt.Sprintf("%s: dogstatsd='true' key='%s' location='%s' msec='%d'", direction, key, location, msec), "debug")
 	statsd, _ := godspeed.NewDefault()
