@@ -7,6 +7,7 @@ import (
 	"path"
 	"sort"
 	"strings"
+	"strconv"
 )
 
 func ReadFile(filepath string) string {
@@ -56,7 +57,7 @@ func WriteFile(data string, filepath string, perms int, owner string, direction 
 	} else {
 		fileChown = true
 	}
-	Log(fmt.Sprintf("%s: file_wrote='true' location='%s' permissions='%d'", direction, filepath, perms), "debug")
+	Log(fmt.Sprintf("%s: file_wrote='true' location='%s' permissions='%s'", direction, filepath, strconv.FormatInt(int64(perms), 8)), "debug")
 	Log(fmt.Sprintf("%s: file_chown='%t' location='%s' owner='%d' group='%d'", direction, fileChown, filepath, oid, gid), "debug")
 }
 
