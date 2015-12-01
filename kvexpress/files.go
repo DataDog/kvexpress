@@ -6,8 +6,8 @@ import (
 	"os"
 	"path"
 	"sort"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 func ReadFile(filepath string) string {

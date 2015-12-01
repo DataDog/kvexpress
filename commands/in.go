@@ -128,6 +128,10 @@ func inRun(cmd *cobra.Command, args []string) {
 
 	if CurrentChecksum != CompareChecksum {
 		kvexpress.Log(fmt.Sprintf("%s: consul checksum='different' update='true'", Direction), "info")
+		// Compress data here.
+		if Compress {
+			CompareData = kvexpress.Compress(CompareData, Direction)
+		}
 		saved := kvexpress.Set(c, KeyData, CompareData, Direction, DogStatsd)
 		if saved {
 			CompareDataBytes := len(CompareData)

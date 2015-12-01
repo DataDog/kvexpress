@@ -1,11 +1,16 @@
 package kvexpress
 
 import (
+	"bytes"
+	"compress/gzip"
+	"encoding/base64"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/user"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -80,4 +85,25 @@ func GetGroupId(owner, direction string) int {
 	Log(fmt.Sprintf("%s: owner='%s' status='%s' gid='%s'", direction, owner, status, gid), "debug")
 	gidInt, err := strconv.ParseInt(gid, 10, 64)
 	return int(gidInt)
+}
+
+func Compress(data, direction string) string {
+	var compressed bytes.Buffer
+	gz := gzip.NewWriter(&compressed)
+	gz.Write([]byte(data))
+	gz.Flush()
+	gz.Close()
+	encoded := base64.StdEncoding.EncodeToString(compressed.Bytes())
+	Log(fmt.Sprintf("%s: compressing='true' full_size='%d' compressed_size='%d'", direction, len(data), len(encoded)), "info")
+	return encoded
+}
+
+func Decompress(data, direction string) string {
+	// If it's been compressed, it's been base64 encoded.
+	raw, _ := base64.StdEncoding.DecodeString(data)
+	// gunzip the string.
+	unzipped, _ := gzip.NewReader(strings.NewReader(string(raw)))
+	uncompressed, _ := ioutil.ReadAll(unzipped)
+	Log(fmt.Sprintf("%s: decompressing='true' size='%d'", direction, len(uncompressed)), "info")
+	return string(uncompressed)
 }

@@ -47,6 +47,11 @@ func outRun(cmd *cobra.Command, args []string) {
 	// Get the KV data out of Consul.
 	KVData := kvexpress.Get(c, KeyData, Direction, DogStatsd)
 
+	// Decompress here if necessary.
+	if Compress {
+		KVData = kvexpress.Decompress(KVData, Direction)
+	}
+
 	// Get the Checksum data out of Consul.
 	Checksum := kvexpress.Get(c, KeyChecksum, Direction, DogStatsd)
 
