@@ -99,6 +99,19 @@ func DDSaveDataEvent(dd *datadog.Client, key, value, direction string) {
 	}
 }
 
+func DDCopyDataEvent(dd *datadog.Client, keyFrom, keyTo, direction string) {
+	Log(fmt.Sprintf("%s: datadog='true' DDCopyDataEvent='true' keyFrom='%s' keyTo='%s'", direction, keyFrom, keyTo), "debug")
+	tags := makeTags(keyTo, direction, "complete")
+	tags = append(tags, "kvexpress:success")
+	tags = append(tags, fmt.Sprintf("keyFrom:%s", keyFrom))
+	title := fmt.Sprintf("Copy: %s to %s", keyFrom, keyTo)
+	event := datadog.Event{Title: title, Text: title, AlertType: "info", Tags: tags}
+	post, _ := dd.PostEvent(&event)
+	if post != nil {
+
+	}
+}
+
 func DDSaveStopEvent(dd *datadog.Client, key, value, direction string) {
 	Log(fmt.Sprintf("%s: datadog='true' DDSaveStopEvent='true' key='%s'", direction, key), "debug")
 	tags := makeTags(key, direction, "stop_key_save")
