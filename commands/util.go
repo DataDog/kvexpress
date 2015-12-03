@@ -26,16 +26,17 @@ func check(e error) {
 	}
 }
 
-func RunTime(start time.Time, key string, location string, direction string, dogstatsd bool) {
+func RunTime(start time.Time, key string, location string, dogstatsd bool) {
 	elapsed := time.Since(start)
 	if dogstatsd {
 		milliseconds := int64(elapsed / time.Millisecond)
-		StatsdRunTime(direction, key, location, milliseconds)
+		StatsdRunTime(key, location, milliseconds)
 	}
-	Log(fmt.Sprintf("%s: location='%s', elapsed='%s'", direction, location, elapsed), "info")
+	Log(fmt.Sprintf("location='%s', elapsed='%s'", location, elapsed), "info")
 }
 
 func Log(message, priority string) {
+	message = fmt.Sprintf("%s: %s", Direction, message)
 	switch {
 	case priority == "debug":
 		if os.Getenv("KVEXPRESS_DEBUG") != "" {
@@ -46,14 +47,14 @@ func Log(message, priority string) {
 	}
 }
 
-func GetCurrentUsername(direction string) string {
+func GetCurrentUsername() string {
 	usr, _ := user.Current()
 	username := usr.Username
-	Log(fmt.Sprintf("%s: username='%s'", direction, username), "debug")
+	Log(fmt.Sprintf("username='%s'", username), "debug")
 	return username
 }
 
-func GetOwnerId(owner, direction string) int {
+func GetOwnerId(owner string) int {
 	var uid = ""
 	var status = ""
 	usr, err := user.Lookup(owner)
@@ -65,12 +66,12 @@ func GetOwnerId(owner, direction string) int {
 		uid = usr.Uid
 		status = "found"
 	}
-	Log(fmt.Sprintf("%s: owner='%s' status='%s' uid='%s'", direction, owner, status, uid), "debug")
+	Log(fmt.Sprintf("owner='%s' status='%s' uid='%s'", owner, status, uid), "debug")
 	uidInt, err := strconv.ParseInt(uid, 10, 64)
 	return int(uidInt)
 }
 
-func GetGroupId(owner, direction string) int {
+func GetGroupId(owner string) int {
 	var gid = ""
 	var status = ""
 	usr, err := user.Lookup(owner)
@@ -82,28 +83,28 @@ func GetGroupId(owner, direction string) int {
 		gid = usr.Gid
 		status = "found"
 	}
-	Log(fmt.Sprintf("%s: owner='%s' status='%s' gid='%s'", direction, owner, status, gid), "debug")
+	Log(fmt.Sprintf("owner='%s' status='%s' gid='%s'", owner, status, gid), "debug")
 	gidInt, err := strconv.ParseInt(gid, 10, 64)
 	return int(gidInt)
 }
 
-func CompressData(data, direction string) string {
+func CompressData(data string) string {
 	var compressed bytes.Buffer
 	gz := gzip.NewWriter(&compressed)
 	gz.Write([]byte(data))
 	gz.Flush()
 	gz.Close()
 	encoded := base64.StdEncoding.EncodeToString(compressed.Bytes())
-	Log(fmt.Sprintf("%s: compressing='true' full_size='%d' compressed_size='%d'", direction, len(data), len(encoded)), "info")
+	Log(fmt.Sprintf("compressing='true' full_size='%d' compressed_size='%d'", len(data), len(encoded)), "info")
 	return encoded
 }
 
-func DecompressData(data, direction string) string {
+func DecompressData(data string) string {
 	// If it's been compressed, it's been base64 encoded.
 	raw, _ := base64.StdEncoding.DecodeString(data)
 	// gunzip the string.
 	unzipped, _ := gzip.NewReader(strings.NewReader(string(raw)))
 	uncompressed, _ := ioutil.ReadAll(unzipped)
-	Log(fmt.Sprintf("%s: decompressing='true' size='%d'", direction, len(uncompressed)), "info")
+	Log(fmt.Sprintf("decompressing='true' size='%d'", len(uncompressed)), "info")
 	return string(uncompressed)
 }

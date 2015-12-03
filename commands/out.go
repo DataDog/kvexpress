@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -20,73 +19,73 @@ func outRun(cmd *cobra.Command, args []string) {
 	if ConfigFile != "" {
 		LoadConfig(ConfigFile)
 	}
-	checkOutFlags(Direction)
+	checkOutFlags()
 
-	KeyData := KeyDataPath(KeyOutLocation, PrefixLocation, Direction)
-	KeyChecksum := KeyChecksumPath(KeyOutLocation, PrefixLocation, Direction)
-	KeyStop := KeyStopPath(KeyOutLocation, PrefixLocation, Direction)
+	KeyData := KeyDataPath(KeyOutLocation, PrefixLocation)
+	KeyChecksum := KeyChecksumPath(KeyOutLocation, PrefixLocation)
+	KeyStop := KeyStopPath(KeyOutLocation, PrefixLocation)
 
-	c, _ := Connect(ConsulServer, Token, Direction)
+	c, _ := Connect(ConsulServer, Token)
 
-	StopKeyData := Get(c, KeyStop, Direction, DogStatsd)
+	StopKeyData := Get(c, KeyStop, DogStatsd)
 
 	if StopKeyData != "" && IgnoreStop == false {
-		Log(fmt.Sprintf("%s: Stop Key is present - stopping. Reason: %s", Direction, StopKeyData), "info")
-		RunTime(start, KeyOutLocation, "stop_key", Direction, DogStatsd)
+		Log(fmt.Sprintf("Stop Key is present - stopping. Reason: %s", StopKeyData), "info")
+		RunTime(start, KeyOutLocation, "stop_key", DogStatsd)
 		os.Exit(0)
 	} else {
 		if IgnoreStop {
-			Log(fmt.Sprintf("%s: Ignoring any stop key.", Direction), "info")
+			Log("Ignoring any stop key.", "info")
 		} else {
-			Log(fmt.Sprintf("%s: Stop Key is NOT present - continuing.", Direction), "debug")
+			Log("Stop Key is NOT present - continuing.", "debug")
 		}
 	}
 
 	// Get the KV data out of Consul.
-	KVData := Get(c, KeyData, Direction, DogStatsd)
+	KVData := Get(c, KeyData, DogStatsd)
 
 	// Decompress here if necessary.
 	if Compress {
-		KVData = DecompressData(KVData, Direction)
+		KVData = DecompressData(KVData)
 	}
 
 	// Get the Checksum data out of Consul.
-	Checksum := Get(c, KeyChecksum, Direction, DogStatsd)
+	Checksum := Get(c, KeyChecksum, DogStatsd)
 
 	// Is the data long enough?
-	longEnough := LengthCheck(KVData, MinFileLength, Direction)
-	Log(fmt.Sprintf("%s: longEnough='%s'", Direction, strconv.FormatBool(longEnough)), "debug")
+	longEnough := LengthCheck(KVData, MinFileLength)
+	Log(fmt.Sprintf("longEnough='%t'", longEnough), "debug")
 
 	// Does the checksum match?
-	checksumMatch := ChecksumCompare(KVData, Checksum, Direction)
-	Log(fmt.Sprintf("%s: checksumMatch='%s'", Direction, strconv.FormatBool(checksumMatch)), "debug")
+	checksumMatch := ChecksumCompare(KVData, Checksum)
+	Log(fmt.Sprintf("checksumMatch='%t'", checksumMatch), "debug")
 
 	// If the data is long enough and the checksum matches, write the file.
 	if longEnough && checksumMatch {
 		// Does the file already present in FiletoWrite have the same checksum?
 		// Is it directory? Does it exist?
-		CheckFiletoWrite(FiletoWrite, Checksum, Direction)
+		CheckFiletoWrite(FiletoWrite, Checksum)
 
 		// Acually write the file.
-		WriteFile(KVData, FiletoWrite, FilePermissions, Owner, Direction, DogStatsd)
+		WriteFile(KVData, FiletoWrite, FilePermissions, Owner, DogStatsd)
 		if DogStatsd {
 			StatsdOut(KeyOutLocation)
 		}
 	} else {
-		Log(fmt.Sprintf("%s: longEnough='no'", Direction), "info")
+		Log("longEnough='no'", "info")
 		os.Exit(0)
 	}
 
 	// Run this command after the file is written.
 	if PostExec != "" {
-		Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
+		Log(fmt.Sprintf("exec='%s'", PostExec), "debug")
 		RunCommand(PostExec)
 	}
-	RunTime(start, KeyOutLocation, "complete", Direction, DogStatsd)
+	RunTime(start, KeyOutLocation, "complete", DogStatsd)
 }
 
-func checkOutFlags(direction string) {
-	Log(fmt.Sprintf("%s: Checking cli flags.", direction), "debug")
+func checkOutFlags() {
+	Log("Checking cli flags.", "debug")
 	if KeyOutLocation == "" {
 		fmt.Println("Need a key location in -k")
 		os.Exit(1)
@@ -96,15 +95,15 @@ func checkOutFlags(direction string) {
 		os.Exit(1)
 	}
 	if DogStatsd {
-		Log(fmt.Sprintf("%s: Enabling Dogstatsd metrics.", direction), "debug")
+		Log("Enabling Dogstatsd metrics.", "debug")
 	}
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		Log(fmt.Sprintf("%s: Enabling Datadog API.", direction), "debug")
+		Log("Enabling Datadog API.", "debug")
 	}
 	if Owner == "" {
-		Owner = GetCurrentUsername(direction)
+		Owner = GetCurrentUsername()
 	}
-	Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
+	Log("Required cli flags present.", "debug")
 }
 
 var (

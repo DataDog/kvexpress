@@ -19,7 +19,7 @@ func ReadFile(filepath string) string {
 }
 
 func SortFile(file string) string {
-	Log("in: sorting='true'", "debug")
+	Log("sorting='true'", "debug")
 	lines := strings.Split(file, "\n")
 	lines = BlankLineStrip(lines)
 	sort.Strings(lines)
@@ -37,46 +37,46 @@ func BlankLineStrip(data []string) []string {
 	return stripped
 }
 
-func WriteFile(data string, filepath string, perms int, owner string, direction string, dogstatsd bool) {
+func WriteFile(data string, filepath string, perms int, owner string, dogstatsd bool) {
 	var fileChown = false
 	err := ioutil.WriteFile(filepath, []byte(data), os.FileMode(perms))
 	if err != nil {
-		Log(fmt.Sprintf("%s: function='WriteFile' panic='true' file='%s'", direction, filepath), "info")
+		Log(fmt.Sprintf("function='WriteFile' panic='true' file='%s'", filepath), "info")
 		if dogstatsd {
-			StatsdPanic(filepath, direction, "write_file")
+			StatsdPanic(filepath, "write_file")
 		}
 	}
-	oid := GetOwnerId(owner, direction)
-	gid := GetGroupId(owner, direction)
+	oid := GetOwnerId(owner)
+	gid := GetGroupId(owner)
 	err = os.Chown(filepath, oid, gid)
 	if err != nil {
 		fileChown = false
 		if dogstatsd {
-			StatsdPanic(filepath, direction, "chown_file")
+			StatsdPanic(filepath, "chown_file")
 		}
 	} else {
 		fileChown = true
 	}
-	Log(fmt.Sprintf("%s: file_wrote='true' location='%s' permissions='%s'", direction, filepath, strconv.FormatInt(int64(perms), 8)), "debug")
-	Log(fmt.Sprintf("%s: file_chown='%t' location='%s' owner='%d' group='%d'", direction, fileChown, filepath, oid, gid), "debug")
+	Log(fmt.Sprintf("file_wrote='true' location='%s' permissions='%s'", filepath, strconv.FormatInt(int64(perms), 8)), "debug")
+	Log(fmt.Sprintf("file_chown='%t' location='%s' owner='%d' group='%d'", fileChown, filepath, oid, gid), "debug")
 }
 
-func CheckFiletoWrite(filename, checksum, direction string) {
+func CheckFiletoWrite(filename, checksum string) {
 	// Try to open the file.
 	file, err := os.Open(filename)
 	f, err := file.Stat()
 	switch {
 	case err != nil:
-		Log(fmt.Sprintf("%s: there is NO file at %s", direction, filename), "debug")
+		Log(fmt.Sprintf("there is NO file at %s", filename), "debug")
 		break
 	case f.IsDir():
-		Log(fmt.Sprintf("%s: Can NOT write a directory %s", direction, filename), "info")
+		Log(fmt.Sprintf("Can NOT write a directory %s", filename), "info")
 		os.Exit(1)
 	default:
 		data, _ := ioutil.ReadFile(filename)
-		computedChecksum := ComputeChecksum(string(data), direction)
+		computedChecksum := ComputeChecksum(string(data))
 		if computedChecksum == checksum {
-			Log(fmt.Sprintf("%s: '%s' has the same checksum. Stopping.", direction, filename), "info")
+			Log(fmt.Sprintf("'%s' has the same checksum. Stopping.", filename), "info")
 			os.Exit(0)
 		}
 	}
@@ -84,52 +84,52 @@ func CheckFiletoWrite(filename, checksum, direction string) {
 	// If there's no file - then great - there's nothing to check
 }
 
-func RemoveFile(filename string, direction string) {
+func RemoveFile(filename string) {
 	file, err := os.Open(filename)
 	f, err := file.Stat()
 	switch {
 	case err != nil:
-		Log(fmt.Sprintf("%s: Could NOT stat %s", direction, filename), "debug")
+		Log(fmt.Sprintf("Could NOT stat %s", filename), "debug")
 	case f.IsDir():
-		Log(fmt.Sprintf("%s: Would NOT remove a directory %s", direction, filename), "info")
+		Log(fmt.Sprintf("Would NOT remove a directory %s", filename), "info")
 		os.Exit(1)
 	default:
 		err = os.Remove(filename)
 		if err != nil {
-			Log(fmt.Sprintf("%s: Could NOT remove %s", direction, filename), "info")
+			Log(fmt.Sprintf("Could NOT remove %s", filename), "info")
 		} else {
-			Log(fmt.Sprintf("%s: Removed %s", direction, filename), "info")
+			Log(fmt.Sprintf("Removed %s", filename), "info")
 		}
 	}
 }
 
-func RandomTmpFile(direction string) string {
+func RandomTmpFile() string {
 	file, err := ioutil.TempFile(os.TempDir(), "kvexpress")
 	if err != nil {
-		Log(fmt.Sprintf("%s: function='RandomTmpFile' panic='true'", direction), "info")
+		Log("function='RandomTmpFile' panic='true'", "info")
 	}
 	fileName := file.Name()
-	Log(fmt.Sprintf("%s: tempfile='%s'", direction, fileName), "debug")
+	Log(fmt.Sprintf("tempfile='%s'", fileName), "debug")
 	return fileName
 }
 
-func CompareFilename(file string, direction string) string {
+func CompareFilename(file string) string {
 	compare := fmt.Sprintf("%s.compare", path.Base(file))
 	full_path := path.Join(path.Dir(file), compare)
-	Log(fmt.Sprintf("%s: file='compare' full_path='%s'", direction, full_path), "debug")
+	Log(fmt.Sprintf("file='compare' full_path='%s'", full_path), "debug")
 	return full_path
 }
 
-func LastFilename(file string, direction string) string {
+func LastFilename(file string) string {
 	last := fmt.Sprintf("%s.last", path.Base(file))
 	full_path := path.Join(path.Dir(file), last)
-	Log(fmt.Sprintf("%s: file='last' full_path='%s'", direction, full_path), "debug")
+	Log(fmt.Sprintf("file='last' full_path='%s'", full_path), "debug")
 	return full_path
 }
 
 func CheckLastFile(file string, perms int, owner string, dogstatsd bool) {
 	if _, err := os.Stat(file); err != nil {
-		Log(fmt.Sprintf("in: file='last' file='%s' does_not_exist='true'", file), "debug")
-		WriteFile("This is a blank file.\n", file, perms, owner, "in", dogstatsd)
+		Log(fmt.Sprintf("file='last' file='%s' does_not_exist='true'", file), "debug")
+		WriteFile("This is a blank file.\n", file, perms, owner, dogstatsd)
 	}
 }

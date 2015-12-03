@@ -20,39 +20,39 @@ func rawRun(cmd *cobra.Command, args []string) {
 	if ConfigFile != "" {
 		LoadConfig(ConfigFile)
 	}
-	checkRawFlags(Direction)
+	checkRawFlags()
 
-	c, _ := Connect(ConsulServer, Token, Direction)
+	c, _ := Connect(ConsulServer, Token)
 
 	// Get the KV data out of Consul.
-	KVData := GetRaw(c, PrefixLocation, RawKeyOutLocation, Direction, DogStatsd)
+	KVData := GetRaw(c, PrefixLocation, RawKeyOutLocation, DogStatsd)
 
 	// Is the data long enough?
-	longEnough := LengthCheck(KVData, MinFileLength, Direction)
-	Log(fmt.Sprintf("%s: longEnough='%s'", Direction, strconv.FormatBool(longEnough)), "debug")
+	longEnough := LengthCheck(KVData, MinFileLength)
+	Log(fmt.Sprintf("longEnough='%s'", strconv.FormatBool(longEnough)), "debug")
 
 	// If the data is long enough, write the file.
 	if longEnough {
 		// Acually write the file.
-		WriteFile(KVData, RawFiletoWrite, FilePermissions, Owner, Direction, DogStatsd)
+		WriteFile(KVData, RawFiletoWrite, FilePermissions, Owner, DogStatsd)
 		if DogStatsd {
 			StatsdRaw(RawKeyOutLocation)
 		}
 	} else {
-		Log(fmt.Sprintf("%s: longEnough='no'", Direction), "info")
+		Log("longEnough='no'", "info")
 		os.Exit(0)
 	}
 
 	// Run this command after the file is written.
 	if PostExec != "" {
-		Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
+		Log(fmt.Sprintf("exec='%s'", PostExec), "debug")
 		RunCommand(PostExec)
 	}
-	RunTime(start, RawKeyOutLocation, "complete", Direction, DogStatsd)
+	RunTime(start, RawKeyOutLocation, "complete", DogStatsd)
 }
 
-func checkRawFlags(direction string) {
-	Log(fmt.Sprintf("%s: Checking cli flags.", direction), "debug")
+func checkRawFlags() {
+	Log("Checking cli flags.", "debug")
 	if RawKeyOutLocation == "" {
 		fmt.Println("Need a key location in -k")
 		os.Exit(1)
@@ -62,15 +62,15 @@ func checkRawFlags(direction string) {
 		os.Exit(1)
 	}
 	if DogStatsd {
-		Log(fmt.Sprintf("%s: Enabling Dogstatsd metrics.", direction), "debug")
+		Log("Enabling Dogstatsd metrics.", "debug")
 	}
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		Log(fmt.Sprintf("%s: Enabling Datadog API.", direction), "debug")
+		Log("Enabling Datadog API.", "debug")
 	}
 	if Owner == "" {
-		Owner = GetCurrentUsername(direction)
+		Owner = GetCurrentUsername()
 	}
-	Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
+	Log("Required cli flags present.", "debug")
 }
 
 var (
