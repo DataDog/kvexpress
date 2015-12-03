@@ -1,7 +1,6 @@
 package commands
 
 import (
-	kvexpress "../kvexpress/"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
@@ -24,37 +23,37 @@ func rawRun(cmd *cobra.Command, args []string) {
 	}
 	checkRawFlags(Direction)
 
-	c, _ := kvexpress.Connect(ConsulServer, Token, Direction)
+	c, _ := Connect(ConsulServer, Token, Direction)
 
 	// Get the KV data out of Consul.
-	KVData := kvexpress.GetRaw(c, PrefixLocation, RawKeyOutLocation, Direction, DogStatsd)
+	KVData := GetRaw(c, PrefixLocation, RawKeyOutLocation, Direction, DogStatsd)
 
 	// Is the data long enough?
-	longEnough := kvexpress.LengthCheck(KVData, MinFileLength, Direction)
-	kvexpress.Log(fmt.Sprintf("%s: longEnough='%s'", Direction, strconv.FormatBool(longEnough)), "debug")
+	longEnough := LengthCheck(KVData, MinFileLength, Direction)
+	Log(fmt.Sprintf("%s: longEnough='%s'", Direction, strconv.FormatBool(longEnough)), "debug")
 
 	// If the data is long enough, write the file.
 	if longEnough {
 		// Acually write the file.
-		kvexpress.WriteFile(KVData, RawFiletoWrite, FilePermissions, Owner, Direction, DogStatsd)
+		WriteFile(KVData, RawFiletoWrite, FilePermissions, Owner, Direction, DogStatsd)
 		if DogStatsd {
-			kvexpress.StatsdRaw(RawKeyOutLocation)
+			StatsdRaw(RawKeyOutLocation)
 		}
 	} else {
-		kvexpress.Log(fmt.Sprintf("%s: longEnough='no'", Direction), "info")
+		Log(fmt.Sprintf("%s: longEnough='no'", Direction), "info")
 		os.Exit(0)
 	}
 
 	// Run this command after the file is written.
 	if PostExec != "" {
-		kvexpress.Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
-		kvexpress.RunCommand(PostExec)
+		Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
+		RunCommand(PostExec)
 	}
-	kvexpress.RunTime(start, RawKeyOutLocation, "complete", Direction, DogStatsd)
+	RunTime(start, RawKeyOutLocation, "complete", Direction, DogStatsd)
 }
 
 func checkRawFlags(direction string) {
-	kvexpress.Log(fmt.Sprintf("%s: Checking cli flags.", direction), "debug")
+	Log(fmt.Sprintf("%s: Checking cli flags.", direction), "debug")
 	if RawKeyOutLocation == "" {
 		fmt.Println("Need a key location in -k")
 		os.Exit(1)
@@ -64,15 +63,15 @@ func checkRawFlags(direction string) {
 		os.Exit(1)
 	}
 	if DogStatsd {
-		kvexpress.Log(fmt.Sprintf("%s: Enabling Dogstatsd metrics.", direction), "debug")
+		Log(fmt.Sprintf("%s: Enabling Dogstatsd metrics.", direction), "debug")
 	}
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		kvexpress.Log(fmt.Sprintf("%s: Enabling Datadog API.", direction), "debug")
+		Log(fmt.Sprintf("%s: Enabling Datadog API.", direction), "debug")
 	}
 	if Owner == "" {
-		Owner = kvexpress.GetCurrentUsername(direction)
+		Owner = GetCurrentUsername(direction)
 	}
-	kvexpress.Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
+	Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
 }
 
 var (

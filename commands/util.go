@@ -1,4 +1,4 @@
-package kvexpress
+package commands
 
 import (
 	"bytes"
@@ -87,7 +87,7 @@ func GetGroupId(owner, direction string) int {
 	return int(gidInt)
 }
 
-func Compress(data, direction string) string {
+func CompressData(data, direction string) string {
 	var compressed bytes.Buffer
 	gz := gzip.NewWriter(&compressed)
 	gz.Write([]byte(data))
@@ -98,7 +98,7 @@ func Compress(data, direction string) string {
 	return encoded
 }
 
-func Decompress(data, direction string) string {
+func DecompressData(data, direction string) string {
 	// If it's been compressed, it's been base64 encoded.
 	raw, _ := base64.StdEncoding.DecodeString(data)
 	// gunzip the string.

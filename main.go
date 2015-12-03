@@ -2,7 +2,6 @@ package main
 
 import (
 	"./commands/"
-	"./kvexpress/"
 	"fmt"
 	"log"
 	"log/syslog"
@@ -19,7 +18,7 @@ func main() {
 	if e == nil {
 		log.SetOutput(logwriter)
 	}
-	kvexpress.Log(fmt.Sprintf("main: kvexpress version:%s git:%s date:%s", Version, GitCommit, CompileDate), "info")
+	commands.Log(fmt.Sprintf("main: kvexpress version:%s git:%s date:%s", Version, GitCommit, CompileDate), "info")
 
 	args := os.Args[1:]
 	for _, arg := range args {

@@ -1,7 +1,6 @@
 package commands
 
 import (
-	kvexpress "../kvexpress/"
 	"fmt"
 	"github.com/smallfish/simpleyaml"
 	"io/ioutil"
@@ -11,7 +10,7 @@ import (
 // RIPE for refactoring.
 
 func LoadConfig(filename string) {
-	kvexpress.Log(fmt.Sprintf("config: filename='%s'", filename), "info")
+	Log(fmt.Sprintf("config: filename='%s'", filename), "info")
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		data = []byte("")

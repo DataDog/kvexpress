@@ -1,7 +1,6 @@
 package commands
 
 import (
-	kvexpress "../kvexpress/"
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/zorkian/go-datadog-api"
@@ -25,33 +24,33 @@ func stopRun(cmd *cobra.Command, args []string) {
 	}
 	checkStopFlags(Direction)
 
-	KeyStop := kvexpress.KeyStopPath(KeyStopLocation, PrefixLocation, Direction)
+	KeyStop := KeyStopPath(KeyStopLocation, PrefixLocation, Direction)
 
-	c, _ := kvexpress.Connect(ConsulServer, Token, Direction)
+	c, _ := Connect(ConsulServer, Token, Direction)
 
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		dog = kvexpress.DDAPIConnect(DatadogAPIKey, DatadogAPPKey)
+		dog = DDAPIConnect(DatadogAPIKey, DatadogAPPKey)
 	}
 
-	saved := kvexpress.Set(c, KeyStop, KeyStopReason, Direction, DogStatsd)
+	saved := Set(c, KeyStop, KeyStopReason, Direction, DogStatsd)
 
 	if saved {
-		kvexpress.Log(fmt.Sprintf("%s: KeyStop='%s' saved='true' KeyStopReason='%s'", Direction, KeyStop, KeyStopReason), "info")
+		Log(fmt.Sprintf("%s: KeyStop='%s' saved='true' KeyStopReason='%s'", Direction, KeyStop, KeyStopReason), "info")
 		if DatadogAPIKey != "" && DatadogAPPKey != "" {
-			kvexpress.DDSaveStopEvent(dog, KeyStop, KeyStopReason, Direction)
+			DDSaveStopEvent(dog, KeyStop, KeyStopReason, Direction)
 		}
 	}
 
 	// Run this command after the key is stopped.
 	if PostExec != "" {
-		kvexpress.Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
-		kvexpress.RunCommand(PostExec)
+		Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
+		RunCommand(PostExec)
 	}
-	kvexpress.RunTime(start, KeyStopLocation, "complete", Direction, DogStatsd)
+	RunTime(start, KeyStopLocation, "complete", Direction, DogStatsd)
 }
 
 func checkStopFlags(direction string) {
-	kvexpress.Log(fmt.Sprintf("%s: Checking cli flags.", direction), "debug")
+	Log(fmt.Sprintf("%s: Checking cli flags.", direction), "debug")
 	if KeyStopLocation == "" {
 		fmt.Println("Need a key to stop in -k")
 		os.Exit(1)
@@ -61,9 +60,9 @@ func checkStopFlags(direction string) {
 		os.Exit(1)
 	}
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		kvexpress.Log(fmt.Sprintf("%s: Enabling Datadog API.", direction), "debug")
+		Log(fmt.Sprintf("%s: Enabling Datadog API.", direction), "debug")
 	}
-	kvexpress.Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
+	Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
 }
 
 var (

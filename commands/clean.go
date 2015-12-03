@@ -1,7 +1,6 @@
 package commands
 
 import (
-	kvexpress "../kvexpress/"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
@@ -23,28 +22,28 @@ func cleanRun(cmd *cobra.Command, args []string) {
 	}
 	checkCleanFlags(Direction)
 
-	CompareFile := kvexpress.CompareFilename(FiletoClean, Direction)
-	LastFile := kvexpress.LastFilename(FiletoClean, Direction)
+	CompareFile := CompareFilename(FiletoClean, Direction)
+	LastFile := LastFilename(FiletoClean, Direction)
 
-	kvexpress.RemoveFile(FiletoClean, Direction)
-	kvexpress.RemoveFile(CompareFile, Direction)
-	kvexpress.RemoveFile(LastFile, Direction)
+	RemoveFile(FiletoClean, Direction)
+	RemoveFile(CompareFile, Direction)
+	RemoveFile(LastFile, Direction)
 
 	// Run this command after the files are cleaned.
 	if PostExec != "" {
-		kvexpress.Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
-		kvexpress.RunCommand(PostExec)
+		Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
+		RunCommand(PostExec)
 	}
-	kvexpress.RunTime(start, "none", "complete", Direction, DogStatsd)
+	RunTime(start, "none", "complete", Direction, DogStatsd)
 }
 
 func checkCleanFlags(direction string) {
-	kvexpress.Log(fmt.Sprintf("%s: Checking cli flags.", direction), "debug")
+	Log(fmt.Sprintf("%s: Checking cli flags.", direction), "debug")
 	if FiletoClean == "" {
 		fmt.Println("Need a file to clean in -f")
 		os.Exit(1)
 	}
-	kvexpress.Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
+	Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
 }
 
 var (
