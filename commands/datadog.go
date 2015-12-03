@@ -7,13 +7,13 @@ import (
 	"os"
 )
 
-func StatsdIn(key string, data_length int, data string) {
+func StatsdIn(key string, dataLength int, data string) {
 	Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='in'", key), "debug")
 	statsd, _ := godspeed.NewDefault()
 	defer statsd.Conn.Close()
 	tags := makeTags(key, "complete")
 	statsd.Incr("kvexpress.in", tags)
-	statsd.Gauge("kvexpress.bytes", float64(data_length), tags)
+	statsd.Gauge("kvexpress.bytes", float64(dataLength), tags)
 	statsd.Gauge("kvexpress.lines", float64(LineCount(data)), tags)
 }
 
