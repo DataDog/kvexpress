@@ -17,7 +17,6 @@ var outCmd = &cobra.Command{
 
 func outRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
-	var Direction = "out"
 	if ConfigFile != "" {
 		LoadConfig(ConfigFile)
 	}

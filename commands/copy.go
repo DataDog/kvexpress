@@ -18,7 +18,6 @@ var copyCmd = &cobra.Command{
 func copyRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
 	var dog = new(datadog.Client)
-	var Direction = "copy"
 	if ConfigFile != "" {
 		LoadConfig(ConfigFile)
 	}

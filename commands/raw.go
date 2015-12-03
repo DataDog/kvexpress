@@ -17,7 +17,6 @@ var rawCmd = &cobra.Command{
 
 func rawRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
-	var Direction = "raw"
 	if ConfigFile != "" {
 		LoadConfig(ConfigFile)
 	}

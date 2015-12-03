@@ -16,7 +16,6 @@ var cleanCmd = &cobra.Command{
 
 func cleanRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
-	var Direction = "clean"
 	if ConfigFile != "" {
 		LoadConfig(ConfigFile)
 	}

@@ -18,7 +18,6 @@ var inCmd = &cobra.Command{
 func inRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
 	var dog = new(datadog.Client)
-	var Direction = "in"
 	var CompareFile = ""
 	var LastFile = ""
 	var FileString = ""
