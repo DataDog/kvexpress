@@ -107,9 +107,17 @@ func checkOutFlags() {
 }
 
 var (
+	// KeyOutLocation This Consul key is the location we want to pull data from.
+	// This data MUST be in the standard kvexpress structure of:
+	//  /PrefixLocation/KeyOutLocation/data
+	//  /PrefixLocation/KeyOutLocation/checksum
 	KeyOutLocation string
-	FiletoWrite    string
-	IgnoreStop     bool
+
+	// FiletoWrite is the location we want to write the data to.
+	FiletoWrite string
+
+	// IgnoreStop is a special command to pull data EVEN if there's a stop key present.
+	IgnoreStop bool
 )
 
 func init() {

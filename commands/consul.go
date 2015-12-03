@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// Connect to the Consul server and hand back a client object.
 func Connect(server, token string) (*consul.Client, error) {
 	var cleanedToken = ""
 	config := consul.DefaultConfig()
@@ -19,6 +20,9 @@ func Connect(server, token string) (*consul.Client, error) {
 	return consul, nil
 }
 
+// TODO: Can likely refactor the following two functions into one.
+
+// Get the value from a kvexpress formatted key in the Consul KV store.
 func Get(c *consul.Client, key string, dogstatsd bool) string {
 	var value string
 	kv := c.KV()
@@ -39,15 +43,16 @@ func Get(c *consul.Client, key string, dogstatsd bool) string {
 	return value
 }
 
+// GetRaw the value from any key in the Consul KV store.
 func GetRaw(c *consul.Client, prefix string, key string, dogstatsd bool) string {
 	var value string
 	kv := c.KV()
-	full_key := fmt.Sprintf("%s/%s", prefix, key)
-	pair, _, err := kv.Get(full_key, nil)
+	fullKey := fmt.Sprintf("%s/%s", prefix, key)
+	pair, _, err := kv.Get(fullKey, nil)
 	if err != nil {
-		Log(fmt.Sprintf("action='get_raw' panic='true' key='%s'", full_key), "info")
+		Log(fmt.Sprintf("action='get_raw' panic='true' key='%s'", fullKey), "info")
 		if dogstatsd {
-			StatsdPanic(full_key, "consul_get_raw")
+			StatsdPanic(fullKey, "consul_get_raw")
 		}
 	} else {
 		if pair != nil {
@@ -55,7 +60,7 @@ func GetRaw(c *consul.Client, prefix string, key string, dogstatsd bool) string 
 		} else {
 			value = ""
 		}
-		Log(fmt.Sprintf("action='get_raw' key='%s'", full_key), "debug")
+		Log(fmt.Sprintf("action='get_raw' key='%s'", fullKey), "debug")
 	}
 	return value
 }
@@ -66,6 +71,7 @@ func cleanupToken(token string) string {
 	return firstString
 }
 
+// Set a value in a kvexpress formatted key in the Consul KV store.
 func Set(c *consul.Client, key string, value string, dogstatsd bool) bool {
 	p := &consul.KVPair{Key: key, Value: []byte(value)}
 	kv := c.KV()

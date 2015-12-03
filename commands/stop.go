@@ -65,8 +65,11 @@ func checkStopFlags() {
 }
 
 var (
+	// KeyStopLocation This Consul key is the one we want to halt all updates and distribution of.
 	KeyStopLocation string
-	KeyStopReason   string
+
+	// KeyStopReason This is the reason that we are stopping distribution of the key.
+	KeyStopReason string
 )
 
 func init() {

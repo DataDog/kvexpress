@@ -46,6 +46,7 @@ func checkCleanFlags() {
 }
 
 var (
+	// FiletoClean is the file we want to erase.
 	FiletoClean string
 )
 

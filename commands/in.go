@@ -65,7 +65,7 @@ func inRun(cmd *cobra.Command, args []string) {
 	if FiletoRead != "" {
 		FileString = ReadFile(FiletoRead)
 	} else {
-		FileString = ReadUrl(UrltoRead, DogStatsd)
+		FileString = ReadURL(UrltoRead, DogStatsd)
 	}
 
 	// Sorting also removes any blank lines.
@@ -197,10 +197,21 @@ func checkInFlags() {
 }
 
 var (
+	// KeyInLocation is the key in the Consul KV data store where we want to store the data.
+	// This configuration variable will save data into:
+	//  /PrefixLocation/KeyInLocation/data
+	//  /PrefixLocation/KeyInLocation/checksum
 	KeyInLocation string
-	FiletoRead    string
-	Sorted        bool
-	UrltoRead     string
+
+	// FiletoRead is the file to read to get the data.
+	FiletoRead string
+
+	// Sorted is an option to sort the file alphabetically. Doesn't work on many types
+	// of files. But works great on files with many blank lines where ordering doesn't matter.
+	Sorted bool
+
+	// UrltoRead is an HTTP URL to read data from using ReadURL().
+	UrltoRead string
 )
 
 func init() {

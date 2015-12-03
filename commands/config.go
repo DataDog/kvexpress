@@ -9,6 +9,8 @@ import (
 
 // RIPE for refactoring.
 
+// LoadConfig opens a file and reads the yaml formatted configuration data.
+// It will set configuration globals and/or ENV variables as required.
 func LoadConfig(filename string) {
 	Log(fmt.Sprintf("config: filename='%s'", filename), "info")
 	data, err := ioutil.ReadFile(filename)
@@ -17,20 +19,20 @@ func LoadConfig(filename string) {
 	}
 	config, err := simpleyaml.NewYaml(data)
 
-	datadog_host, _ := config.Get("datadog_host").String()
+	datadogHost, _ := config.Get("datadog_host").String()
 
-	if datadog_host != "" {
-		os.Setenv("DATADOG_HOST", datadog_host)
+	if datadogHost != "" {
+		os.Setenv("DATADOG_HOST", datadogHost)
 	}
 
-	datadog_api_key, _ := config.Get("datadog_api_key").String()
-	if datadog_api_key != "" {
-		DatadogAPIKey = datadog_api_key
+	datadogAPIKey, _ := config.Get("datadog_api_key").String()
+	if datadogAPIKey != "" {
+		DatadogAPIKey = datadogAPIKey
 	}
 
-	datadog_app_key, _ := config.Get("datadog_app_key").String()
-	if datadog_app_key != "" {
-		DatadogAPPKey = datadog_app_key
+	datadogAPPKey, _ := config.Get("datadog_app_key").String()
+	if datadogAPPKey != "" {
+		DatadogAPPKey = datadogAPPKey
 	}
 
 	token, _ := config.Get("token").String()
@@ -38,9 +40,9 @@ func LoadConfig(filename string) {
 		Token = token
 	}
 
-	consul_server, _ := config.Get("consul_server").String()
-	if consul_server != "" {
-		ConsulServer = consul_server
+	consulServer, _ := config.Get("consul_server").String()
+	if consulServer != "" {
+		ConsulServer = consulServer
 	}
 
 	dogstatsd, _ := config.Get("dogstatsd").Bool()
@@ -48,9 +50,9 @@ func LoadConfig(filename string) {
 		DogStatsd = true
 	}
 
-	dogstatsd_address, _ := config.Get("dogstatsd_address").String()
-	if dogstatsd_address != "" {
-		DogStatsdAddress = dogstatsd_address
+	dogstatsdAddress, _ := config.Get("dogstatsd_address").String()
+	if dogstatsdAddress != "" {
+		DogStatsdAddress = dogstatsdAddress
 	}
 
 }

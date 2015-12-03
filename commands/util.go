@@ -14,10 +14,11 @@ import (
 	"time"
 )
 
+// ReturnCurrentUTC returns the current UTC time in RFC3339 format.
 func ReturnCurrentUTC() string {
 	t := time.Now().UTC()
-	date_updated := (t.Format(time.RFC3339))
-	return date_updated
+	dateUpdated := (t.Format(time.RFC3339))
+	return dateUpdated
 }
 
 func check(e error) {
@@ -26,6 +27,8 @@ func check(e error) {
 	}
 }
 
+// RunTime sends time coded logs and dogstatsd metrics when called.
+// Location is set when the RunTime function is called.
 func RunTime(start time.Time, key string, location string, dogstatsd bool) {
 	elapsed := time.Since(start)
 	if dogstatsd {
@@ -35,6 +38,8 @@ func RunTime(start time.Time, key string, location string, dogstatsd bool) {
 	Log(fmt.Sprintf("location='%s', elapsed='%s'", location, elapsed), "info")
 }
 
+// Log adds the global Direction to a message and sends to syslog.
+// Syslog is setup in main.go
 func Log(message, priority string) {
 	message = fmt.Sprintf("%s: %s", Direction, message)
 	switch {
@@ -47,6 +52,7 @@ func Log(message, priority string) {
 	}
 }
 
+// GetCurrentUsername grabs the current user running the kvexpress binary.
 func GetCurrentUsername() string {
 	usr, _ := user.Current()
 	username := usr.Username
@@ -54,7 +60,8 @@ func GetCurrentUsername() string {
 	return username
 }
 
-func GetOwnerId(owner string) int {
+// GetOwnerID looks up the User Id for the owner passed.
+func GetOwnerID(owner string) int {
 	var uid = ""
 	var status = ""
 	usr, err := user.Lookup(owner)
@@ -71,7 +78,8 @@ func GetOwnerId(owner string) int {
 	return int(uidInt)
 }
 
-func GetGroupId(owner string) int {
+// GetGroupID looks up the Group Id for the owner passed.
+func GetGroupID(owner string) int {
 	var gid = ""
 	var status = ""
 	usr, err := user.Lookup(owner)
@@ -88,6 +96,7 @@ func GetGroupId(owner string) int {
 	return int(gidInt)
 }
 
+// CompressData compresses and base64 encodes a string to place into Consul's KV store.
 func CompressData(data string) string {
 	var compressed bytes.Buffer
 	gz := gzip.NewWriter(&compressed)
@@ -99,6 +108,7 @@ func CompressData(data string) string {
 	return encoded
 }
 
+// DecompressData base64 decodes and decompresses a string taken from Consul's KV store.
 func DecompressData(data string) string {
 	// If it's been compressed, it's been base64 encoded.
 	raw, _ := base64.StdEncoding.DecodeString(data)

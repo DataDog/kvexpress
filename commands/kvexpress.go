@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"fmt"
-	"github.com/aryann/difflib"
 	"io/ioutil"
 	"net/http"
 	"os/exec"
@@ -15,20 +14,21 @@ func init() {
 	// Nothing happens here.
 }
 
-func LengthCheck(data string, min_length int) bool {
+// LengthCheck makes sure a string has at least minLength lines.
+func LengthCheck(data string, minLength int) bool {
 	length := LineCount(data)
-	Log(fmt.Sprintf("length='%d' min_length='%d'", length, min_length), "debug")
-	if length >= min_length {
+	Log(fmt.Sprintf("length='%d' minLength='%d'", length, minLength), "debug")
+	if length >= minLength {
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
-func ReadUrl(url string, dogstatsd bool) string {
+// ReadURL grabs a URL and returns the string from the body.
+func ReadURL(url string, dogstatsd bool) string {
 	resp, err := http.Get(url)
 	if err != nil {
-		Log(fmt.Sprintf("function='ReadUrl' panic='true' url='%s'", url), "info")
+		Log(fmt.Sprintf("function='ReadURL' panic='true' url='%s'", url), "info")
 		if dogstatsd {
 			StatsdPanic(url, "read_url")
 		}
@@ -38,6 +38,7 @@ func ReadUrl(url string, dogstatsd bool) string {
 	return string(body)
 }
 
+// LineCount splits a string by linebreak and returns the number of lines.
 func LineCount(data string) int {
 	var length int
 	if strings.ContainsAny(data, "\n") {
@@ -48,24 +49,27 @@ func LineCount(data string) int {
 	return length
 }
 
+// ComputeChecksum takes a string and computes a SHA256 checksum.
 func ComputeChecksum(data string) string {
-	data_bytes := []byte(data)
-	computed_checksum := sha256.Sum256(data_bytes)
-	final_checksum := fmt.Sprintf("%x\n", computed_checksum)
-	Log(fmt.Sprintf("computed_checksum='%s'", final_checksum), "debug")
-	return final_checksum
+	dataBytes := []byte(data)
+	computedChecksum := sha256.Sum256(dataBytes)
+	finalChecksum := fmt.Sprintf("%x\n", computedChecksum)
+	Log(fmt.Sprintf("computedChecksum='%s'", finalChecksum), "debug")
+	return finalChecksum
 }
 
+// ChecksumCompare takes a string, generates a SHA256 checksum and compares
+// against the passed checksum to see if they match.
 func ChecksumCompare(data string, checksum string) bool {
-	computed_checksum := ComputeChecksum(data)
-	Log(fmt.Sprintf("checksum='%s' computed_checksum='%s'", checksum, computed_checksum), "debug")
-	if strings.TrimSpace(computed_checksum) == strings.TrimSpace(checksum) {
+	computedChecksum := ComputeChecksum(data)
+	Log(fmt.Sprintf("checksum='%s' computedChecksum='%s'", checksum, computedChecksum), "debug")
+	if strings.TrimSpace(computedChecksum) == strings.TrimSpace(checksum) {
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
+// UnixDiff runs diff to generate text for the Datadog events.
 func UnixDiff(old, new string) string {
 	diff, _ := exec.Command("diff", "-u", old, new).Output()
 	text := string(diff)
@@ -73,29 +77,16 @@ func UnixDiff(old, new string) string {
 	return finalText
 }
 
+// removeLines trims the top n number of lines from a string.
 func removeLines(text string, number int) string {
 	lines := strings.Split(text, "\n")
-	cleaned := make([]string, 0)
+	var cleaned []string
 	cleaned = append(cleaned, lines[number:]...)
 	finalText := strings.Join(cleaned, "\n")
 	return finalText
 }
 
-func Diff(last string, current string) string {
-	var buffer bytes.Buffer
-
-	// Split lines.
-	last_strings := strings.Split(string(last), "\n")
-	current_strings := strings.Split(string(current), "\n")
-
-	diff := difflib.Diff(last_strings, current_strings)
-	diffString := fmt.Sprintf("%v", diff)
-
-	Log("doing the diff", "debug")
-	buffer.WriteString(diffString)
-	return buffer.String()
-}
-
+// RunCommand runs a cli command with arguments.
 func RunCommand(command string) bool {
 	parts := strings.Fields(command)
 	cli := parts[0]
@@ -107,7 +98,6 @@ func RunCommand(command string) bool {
 	if err != nil {
 		Log(fmt.Sprintf("exec='error' message='%v'", err), "info")
 		return false
-	} else {
-		return true
 	}
+	return true
 }

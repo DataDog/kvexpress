@@ -10,6 +10,7 @@ import (
 	"strings"
 )
 
+// ReadFile reads a file in the filesystem and returns a string.
 func ReadFile(filepath string) string {
 	dat, err := ioutil.ReadFile(filepath)
 	if err != nil {
@@ -18,6 +19,8 @@ func ReadFile(filepath string) string {
 	return string(dat)
 }
 
+// SortFile takes a string, splits it into lines, removes all blank lines using
+// BlankLineStrip() and then sorts the remaining lines.
 func SortFile(file string) string {
 	Log("sorting='true'", "debug")
 	lines := strings.Split(file, "\n")
@@ -26,6 +29,8 @@ func SortFile(file string) string {
 	return strings.Join(lines, "\n")
 }
 
+// BlankLineStrip takes a slice of strings, ranges over them and only returns
+// a slice of strings where the lines weren't blank.
 func BlankLineStrip(data []string) []string {
 	Log(fmt.Sprintf("in: stripping_blank_lines='true'"), "debug")
 	var stripped []string
@@ -37,6 +42,8 @@ func BlankLineStrip(data []string) []string {
 	return stripped
 }
 
+// WriteFile writes a string to a filepath. It also chowns the file to the owner and group
+// of the user running the program if it's not set as a different user.
 func WriteFile(data string, filepath string, perms int, owner string, dogstatsd bool) {
 	var fileChown = false
 	err := ioutil.WriteFile(filepath, []byte(data), os.FileMode(perms))
@@ -46,8 +53,8 @@ func WriteFile(data string, filepath string, perms int, owner string, dogstatsd 
 			StatsdPanic(filepath, "write_file")
 		}
 	}
-	oid := GetOwnerId(owner)
-	gid := GetGroupId(owner)
+	oid := GetOwnerID(owner)
+	gid := GetGroupID(owner)
 	err = os.Chown(filepath, oid, gid)
 	if err != nil {
 		fileChown = false
@@ -61,6 +68,8 @@ func WriteFile(data string, filepath string, perms int, owner string, dogstatsd 
 	Log(fmt.Sprintf("file_chown='%t' location='%s' owner='%d' group='%d'", fileChown, filepath, oid, gid), "debug")
 }
 
+// CheckFiletoWrite takes a filename and checksum and stops execution if
+// there is a directory OR the file has the same checksum.
 func CheckFiletoWrite(filename, checksum string) {
 	// Try to open the file.
 	file, err := os.Open(filename)
@@ -80,10 +89,11 @@ func CheckFiletoWrite(filename, checksum string) {
 			os.Exit(0)
 		}
 	}
-
 	// If there's no file - then great - there's nothing to check
 }
 
+// RemoveFile takes a filename and stops if it's a directory. It will log success
+// or failure of removal.
 func RemoveFile(filename string) {
 	file, err := os.Open(filename)
 	f, err := file.Stat()
@@ -103,6 +113,7 @@ func RemoveFile(filename string) {
 	}
 }
 
+// RandomTmpFile is used to create a .compare or .last file for UrltoRead()
 func RandomTmpFile() string {
 	file, err := ioutil.TempFile(os.TempDir(), "kvexpress")
 	if err != nil {
@@ -113,20 +124,23 @@ func RandomTmpFile() string {
 	return fileName
 }
 
+// CompareFilename returns a .compare filename based on the passed file.
 func CompareFilename(file string) string {
 	compare := fmt.Sprintf("%s.compare", path.Base(file))
-	full_path := path.Join(path.Dir(file), compare)
-	Log(fmt.Sprintf("file='compare' full_path='%s'", full_path), "debug")
-	return full_path
+	fullPath := path.Join(path.Dir(file), compare)
+	Log(fmt.Sprintf("file='compare' fullPath='%s'", fullPath), "debug")
+	return fullPath
 }
 
+// LastFilename returns a .last filename based on the passed file.
 func LastFilename(file string) string {
 	last := fmt.Sprintf("%s.last", path.Base(file))
-	full_path := path.Join(path.Dir(file), last)
-	Log(fmt.Sprintf("file='last' full_path='%s'", full_path), "debug")
-	return full_path
+	fullPath := path.Join(path.Dir(file), last)
+	Log(fmt.Sprintf("file='last' fullPath='%s'", fullPath), "debug")
+	return fullPath
 }
 
+// CheckLastFile creates a .last file if it doesn't exist.
 func CheckLastFile(file string, perms int, owner string, dogstatsd bool) {
 	if _, err := os.Stat(file); err != nil {
 		Log(fmt.Sprintf("file='last' file='%s' does_not_exist='true'", file), "debug")

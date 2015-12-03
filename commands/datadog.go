@@ -7,6 +7,7 @@ import (
 	"os"
 )
 
+// StatsdIn sends metrics to Dogstatsd on an `kvexpress in` operation.
 func StatsdIn(key string, dataLength int, data string) {
 	Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='in'", key), "debug")
 	statsd, _ := godspeed.NewDefault()
@@ -17,6 +18,7 @@ func StatsdIn(key string, dataLength int, data string) {
 	statsd.Gauge("kvexpress.lines", float64(LineCount(data)), tags)
 }
 
+// StatsdOut sends metrics to Dogstatsd on an `kvexpress out` operation.
 func StatsdOut(key string) {
 	Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='out'", key), "debug")
 	statsd, _ := godspeed.NewDefault()
@@ -25,6 +27,7 @@ func StatsdOut(key string) {
 	statsd.Incr("kvexpress.out", tags)
 }
 
+// StatsdRaw sends metrics to Dogstatsd on an `kvexpress raw` operation.
 func StatsdRaw(key string) {
 	Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='raw'", key), "debug")
 	statsd, _ := godspeed.NewDefault()
@@ -33,6 +36,7 @@ func StatsdRaw(key string) {
 	statsd.Incr("kvexpress.raw", tags)
 }
 
+// StatsdRunTime sends metrics to Dogstatsd on various operations.
 func StatsdRunTime(key string, location string, msec int64) {
 	Log(fmt.Sprintf("dogstatsd='true' key='%s' location='%s' msec='%d'", key, location, msec), "debug")
 	statsd, _ := godspeed.NewDefault()
@@ -43,6 +47,8 @@ func StatsdRunTime(key string, location string, msec int64) {
 	statsd.Gauge("kvexpress.time", float64(msec), tags)
 }
 
+// StatsdPanic sends metrics to Dogstatsd when something really bad happens.
+// It also stops the execution of kvexpress.
 func StatsdPanic(key, location string) {
 	Log(fmt.Sprintf("dogstatsd='true' key='%s' location='%s' stats='panic'", key, location), "debug")
 	statsd, _ := godspeed.NewDefault()
@@ -55,11 +61,13 @@ func StatsdPanic(key, location string) {
 	os.Exit(0)
 }
 
+// DDAPIConnect connects to the Datadog API and returns a client object.
 func DDAPIConnect(api, app string) *datadog.Client {
 	client := datadog.NewClient(api, app)
 	return client
 }
 
+// makeTags creates some standard tags for use with Dogstatsd and the Datadog API.
 func makeTags(key, location string) []string {
 	tags := make([]string, 4)
 	keyTag := fmt.Sprintf("key:%s", key)
@@ -75,6 +83,8 @@ func makeTags(key, location string) []string {
 }
 
 // TODO: These three functions are ripe for refactoring to be more Golang like.
+
+// DDStopEvent sends a Datadog event to the API when there's a stop key present.
 func DDStopEvent(dd *datadog.Client, key, value string) {
 	Log(fmt.Sprintf("datadog='true' DDStopEvent='true' key='%s'", key), "debug")
 	tags := makeTags(key, "stop_key_present")
@@ -87,6 +97,7 @@ func DDStopEvent(dd *datadog.Client, key, value string) {
 	}
 }
 
+// DDSaveDataEvent sends a Datadog event to the API when we have updated a Consul key.
 func DDSaveDataEvent(dd *datadog.Client, key, value string) {
 	Log(fmt.Sprintf("datadog='true' DDSaveDataEvent='true' key='%s'", key), "debug")
 	tags := makeTags(key, "complete")
@@ -99,6 +110,8 @@ func DDSaveDataEvent(dd *datadog.Client, key, value string) {
 	}
 }
 
+// DDCopyDataEvent sends a Datadog event to the API when we have used `kvexpress copy`
+// to copy a Consul key.
 func DDCopyDataEvent(dd *datadog.Client, keyFrom, keyTo string) {
 	Log(fmt.Sprintf("datadog='true' DDCopyDataEvent='true' keyFrom='%s' keyTo='%s'", keyFrom, keyTo), "debug")
 	tags := makeTags(keyTo, "complete")
@@ -112,6 +125,7 @@ func DDCopyDataEvent(dd *datadog.Client, keyFrom, keyTo string) {
 	}
 }
 
+// DDSaveStopEvent sends a Datadog event when we have added a stop key to Consul.
 func DDSaveStopEvent(dd *datadog.Client, key, value string) {
 	Log(fmt.Sprintf("datadog='true' DDSaveStopEvent='true' key='%s'", key), "debug")
 	tags := makeTags(key, "stop_key_save")

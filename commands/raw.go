@@ -74,8 +74,13 @@ func checkRawFlags() {
 }
 
 var (
+	// RawKeyOutLocation This Consul key is the location we want to pull data from.
+	// This data can be ANY Consul key and doesn't have to be in any particular format or structure.
+	// It doesn't have to have a Checksum either - it can be any Consul key at all.
 	RawKeyOutLocation string
-	RawFiletoWrite    string
+
+	// RawFiletoWrite is the location we want to write the data to.
+	RawFiletoWrite string
 )
 
 func init() {

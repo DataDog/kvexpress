@@ -114,8 +114,17 @@ func checkCopyFlags() {
 }
 
 var (
+	// KeyFrom is the key in the Consul KV data store where we want to pull data.
+	// This configuration variable will pull data from:
+	//  /PrefixLocation/KeyFrom/data
+	//  /PrefixLocation/KeyFrom/checksum
 	KeyFrom string
-	KeyTo   string
+
+	// KeyTo is the key in the Consul KV data store where we want to send data to.
+	// This configuration variable will save data into:
+	//  /PrefixLocation/KeyTo/data
+	//  /PrefixLocation/KeyTo/checksum
+	KeyTo string
 )
 
 func init() {
