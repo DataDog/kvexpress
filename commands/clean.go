@@ -19,30 +19,30 @@ func cleanRun(cmd *cobra.Command, args []string) {
 	if ConfigFile != "" {
 		LoadConfig(ConfigFile)
 	}
-	checkCleanFlags(Direction)
+	checkCleanFlags()
 
-	CompareFile := CompareFilename(FiletoClean, Direction)
-	LastFile := LastFilename(FiletoClean, Direction)
+	CompareFile := CompareFilename(FiletoClean)
+	LastFile := LastFilename(FiletoClean)
 
-	RemoveFile(FiletoClean, Direction)
-	RemoveFile(CompareFile, Direction)
-	RemoveFile(LastFile, Direction)
+	RemoveFile(FiletoClean)
+	RemoveFile(CompareFile)
+	RemoveFile(LastFile)
 
 	// Run this command after the files are cleaned.
 	if PostExec != "" {
-		Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
+		Log(fmt.Sprintf("exec='%s'", PostExec), "debug")
 		RunCommand(PostExec)
 	}
-	RunTime(start, "none", "complete", Direction, DogStatsd)
+	RunTime(start, "none", "complete", DogStatsd)
 }
 
-func checkCleanFlags(direction string) {
-	Log(fmt.Sprintf("%s: Checking cli flags.", direction), "debug")
+func checkCleanFlags() {
+	Log("Checking cli flags.", "debug")
 	if FiletoClean == "" {
 		fmt.Println("Need a file to clean in -f")
 		os.Exit(1)
 	}
-	Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
+	Log("Required cli flags present.", "debug")
 }
 
 var (

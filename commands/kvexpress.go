@@ -15,9 +15,9 @@ func init() {
 	// Nothing happens here.
 }
 
-func LengthCheck(data string, min_length int, direction string) bool {
+func LengthCheck(data string, min_length int) bool {
 	length := LineCount(data)
-	Log(fmt.Sprintf("%s: length='%d' min_length='%d'", direction, length, min_length), "debug")
+	Log(fmt.Sprintf("length='%d' min_length='%d'", length, min_length), "debug")
 	if length >= min_length {
 		return true
 	} else {
@@ -28,9 +28,9 @@ func LengthCheck(data string, min_length int, direction string) bool {
 func ReadUrl(url string, dogstatsd bool) string {
 	resp, err := http.Get(url)
 	if err != nil {
-		Log(fmt.Sprintf("in: function='ReadUrl' panic='true' url='%s'", url), "info")
+		Log(fmt.Sprintf("function='ReadUrl' panic='true' url='%s'", url), "info")
 		if dogstatsd {
-			StatsdPanic(url, "in", "read_url")
+			StatsdPanic(url, "read_url")
 		}
 	}
 	defer resp.Body.Close()
@@ -48,17 +48,17 @@ func LineCount(data string) int {
 	return length
 }
 
-func ComputeChecksum(data string, direction string) string {
+func ComputeChecksum(data string) string {
 	data_bytes := []byte(data)
 	computed_checksum := sha256.Sum256(data_bytes)
 	final_checksum := fmt.Sprintf("%x\n", computed_checksum)
-	Log(fmt.Sprintf("%s: computed_checksum='%s'", direction, final_checksum), "debug")
+	Log(fmt.Sprintf("computed_checksum='%s'", final_checksum), "debug")
 	return final_checksum
 }
 
-func ChecksumCompare(data string, checksum string, direction string) bool {
-	computed_checksum := ComputeChecksum(data, direction)
-	Log(fmt.Sprintf("%s: checksum='%s' computed_checksum='%s'", direction, checksum, computed_checksum), "debug")
+func ChecksumCompare(data string, checksum string) bool {
+	computed_checksum := ComputeChecksum(data)
+	Log(fmt.Sprintf("checksum='%s' computed_checksum='%s'", checksum, computed_checksum), "debug")
 	if strings.TrimSpace(computed_checksum) == strings.TrimSpace(checksum) {
 		return true
 	} else {
@@ -91,7 +91,7 @@ func Diff(last string, current string) string {
 	diff := difflib.Diff(last_strings, current_strings)
 	diffString := fmt.Sprintf("%v", diff)
 
-	Log("in: doing the diff", "debug")
+	Log("doing the diff", "debug")
 	buffer.WriteString(diffString)
 	return buffer.String()
 }

@@ -21,35 +21,35 @@ func stopRun(cmd *cobra.Command, args []string) {
 	if ConfigFile != "" {
 		LoadConfig(ConfigFile)
 	}
-	checkStopFlags(Direction)
+	checkStopFlags()
 
-	KeyStop := KeyStopPath(KeyStopLocation, PrefixLocation, Direction)
+	KeyStop := KeyStopPath(KeyStopLocation, PrefixLocation)
 
-	c, _ := Connect(ConsulServer, Token, Direction)
+	c, _ := Connect(ConsulServer, Token)
 
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
 		dog = DDAPIConnect(DatadogAPIKey, DatadogAPPKey)
 	}
 
-	saved := Set(c, KeyStop, KeyStopReason, Direction, DogStatsd)
+	saved := Set(c, KeyStop, KeyStopReason, DogStatsd)
 
 	if saved {
-		Log(fmt.Sprintf("%s: KeyStop='%s' saved='true' KeyStopReason='%s'", Direction, KeyStop, KeyStopReason), "info")
+		Log(fmt.Sprintf("KeyStop='%s' saved='true' KeyStopReason='%s'", KeyStop, KeyStopReason), "info")
 		if DatadogAPIKey != "" && DatadogAPPKey != "" {
-			DDSaveStopEvent(dog, KeyStop, KeyStopReason, Direction)
+			DDSaveStopEvent(dog, KeyStop, KeyStopReason)
 		}
 	}
 
 	// Run this command after the key is stopped.
 	if PostExec != "" {
-		Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
+		Log(fmt.Sprintf("exec='%s'", PostExec), "debug")
 		RunCommand(PostExec)
 	}
-	RunTime(start, KeyStopLocation, "complete", Direction, DogStatsd)
+	RunTime(start, KeyStopLocation, "complete", DogStatsd)
 }
 
-func checkStopFlags(direction string) {
-	Log(fmt.Sprintf("%s: Checking cli flags.", direction), "debug")
+func checkStopFlags() {
+	Log("Checking cli flags.", "debug")
 	if KeyStopLocation == "" {
 		fmt.Println("Need a key to stop in -k")
 		os.Exit(1)
@@ -59,9 +59,9 @@ func checkStopFlags(direction string) {
 		os.Exit(1)
 	}
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		Log(fmt.Sprintf("%s: Enabling Datadog API.", direction), "debug")
+		Log("Enabling Datadog API.", "debug")
 	}
-	Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
+	Log("Required cli flags present.", "debug")
 }
 
 var (

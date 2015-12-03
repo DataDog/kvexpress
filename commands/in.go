@@ -24,41 +24,41 @@ func inRun(cmd *cobra.Command, args []string) {
 	if ConfigFile != "" {
 		LoadConfig(ConfigFile)
 	}
-	checkInFlags(Direction)
+	checkInFlags()
 
-	KeyStop := KeyStopPath(KeyInLocation, PrefixLocation, Direction)
-	KeyData := KeyDataPath(KeyInLocation, PrefixLocation, Direction)
-	KeyChecksum := KeyChecksumPath(KeyInLocation, PrefixLocation, Direction)
+	KeyStop := KeyStopPath(KeyInLocation, PrefixLocation)
+	KeyData := KeyDataPath(KeyInLocation, PrefixLocation)
+	KeyChecksum := KeyChecksumPath(KeyInLocation, PrefixLocation)
 
 	if FiletoRead != "" {
-		CompareFile = CompareFilename(FiletoRead, Direction)
-		LastFile = LastFilename(FiletoRead, Direction)
+		CompareFile = CompareFilename(FiletoRead)
+		LastFile = LastFilename(FiletoRead)
 	} else {
-		CompareFile = RandomTmpFile(Direction)
-		LastFile = LastFilename(CompareFile, Direction)
+		CompareFile = RandomTmpFile()
+		LastFile = LastFilename(CompareFile)
 	}
 
 	// Let's double check those files are safe to write.
-	CheckFiletoWrite(CompareFile, "", Direction)
-	CheckFiletoWrite(LastFile, "", Direction)
+	CheckFiletoWrite(CompareFile, "")
+	CheckFiletoWrite(LastFile, "")
 
-	c, _ := Connect(ConsulServer, Token, Direction)
+	c, _ := Connect(ConsulServer, Token)
 
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
 		dog = DDAPIConnect(DatadogAPIKey, DatadogAPPKey)
 	}
 
-	StopKeyData := Get(c, KeyStop, Direction, DogStatsd)
+	StopKeyData := Get(c, KeyStop, DogStatsd)
 
 	if StopKeyData != "" {
-		Log(fmt.Sprintf("%s: Stop Key is present - stopping. Reason: %s", Direction, StopKeyData), "info")
+		Log(fmt.Sprintf("Stop Key is present - stopping. Reason: %s", StopKeyData), "info")
 		if DatadogAPIKey != "" && DatadogAPPKey != "" {
-			DDStopEvent(dog, KeyStop, StopKeyData, Direction)
+			DDStopEvent(dog, KeyStop, StopKeyData)
 		}
-		RunTime(start, KeyInLocation, "stop_key", Direction, DogStatsd)
+		RunTime(start, KeyInLocation, "stop_key", DogStatsd)
 		os.Exit(1)
 	} else {
-		Log(fmt.Sprintf("%s: Stop Key is NOT present - continuing.", Direction), "info")
+		Log("Stop Key is NOT present - continuing.", "info")
 	}
 
 	// Read the file - if it's to be sorted - then make sure to sort.
@@ -74,17 +74,17 @@ func inRun(cmd *cobra.Command, args []string) {
 	}
 
 	// Is it long enough?
-	longEnough := LengthCheck(FileString, MinFileLength, Direction)
+	longEnough := LengthCheck(FileString, MinFileLength)
 
 	if !longEnough {
-		Log(fmt.Sprintf("%s: File is NOT long enough. Stopping.", Direction), "info")
+		Log("File is NOT long enough. Stopping.", "info")
 		// TODO: Add Datadog Event here.
-		RunTime(start, KeyInLocation, "not_long_enough", Direction, DogStatsd)
+		RunTime(start, KeyInLocation, "not_long_enough", DogStatsd)
 		os.Exit(1)
 	}
 
 	// Write the .compare file.
-	WriteFile(FileString, CompareFile, FilePermissions, Owner, Direction, DogStatsd)
+	WriteFile(FileString, CompareFile, FilePermissions, Owner, DogStatsd)
 
 	// Check for the .last file - touch if it doesn't exist.
 	CheckLastFile(LastFile, FilePermissions, Owner, DogStatsd)
@@ -94,23 +94,23 @@ func inRun(cmd *cobra.Command, args []string) {
 	LastData := ReadFile(LastFile)
 
 	if CompareData != "" && LastData != "" {
-		Log(fmt.Sprintf("%s: We have data - let's do the thing.", Direction), "info")
+		Log("We have data - let's do the thing.", "info")
 	} else {
-		Log(fmt.Sprintf("%s: We do NOT have data. This should never happen.", Direction), "info")
-		RunTime(start, KeyInLocation, "error_no_data", Direction, DogStatsd)
+		Log("We do NOT have data. This should never happen.", "info")
+		RunTime(start, KeyInLocation, "error_no_data", DogStatsd)
 		os.Exit(1)
 	}
 
 	// Get SHA256 values for each string.
-	CompareChecksum := ComputeChecksum(CompareData, Direction)
-	LastChecksum := ComputeChecksum(LastData, Direction)
+	CompareChecksum := ComputeChecksum(CompareData)
+	LastChecksum := ComputeChecksum(LastData)
 
 	// If they're different - let's update things.
 	if CompareChecksum != LastChecksum {
-		Log(fmt.Sprintf("%s: file checksum='different' update='true'", Direction), "info")
+		Log("file checksum='different' update='true'", "info")
 	} else {
-		Log(fmt.Sprintf("%s: file checksum='match' update='false'", Direction), "info")
-		RunTime(start, KeyInLocation, "file_checksums_match", Direction, DogStatsd)
+		Log("file checksum='match' update='false'", "info")
+		RunTime(start, KeyInLocation, "file_checksums_match", DogStatsd)
 		os.Exit(0)
 	}
 
@@ -119,24 +119,24 @@ func inRun(cmd *cobra.Command, args []string) {
 
 	// If we get this far - copy the CompareData to the .last file.
 	// This handles the case detailed in https://github.com/darron/kvexpress/issues/33
-	WriteFile(CompareData, LastFile, FilePermissions, Owner, Direction, DogStatsd)
+	WriteFile(CompareData, LastFile, FilePermissions, Owner, DogStatsd)
 
 	// Get the checksum from Consul.
-	CurrentChecksum := Get(c, KeyChecksum, Direction, DogStatsd)
+	CurrentChecksum := Get(c, KeyChecksum, DogStatsd)
 
 	if CurrentChecksum != CompareChecksum {
-		Log(fmt.Sprintf("%s: consul checksum='different' update='true'", Direction), "info")
+		Log("consul checksum='different' update='true'", "info")
 		// Compress data here.
 		if Compress {
-			CompareData = CompressData(CompareData, Direction)
+			CompareData = CompressData(CompareData)
 		}
-		saved := Set(c, KeyData, CompareData, Direction, DogStatsd)
+		saved := Set(c, KeyData, CompareData, DogStatsd)
 		if saved {
 			CompareDataBytes := len(CompareData)
-			Log(fmt.Sprintf("%s: consul KeyData='%s' saved='true' size='%d'", Direction, KeyData, CompareDataBytes), "info")
-			Set(c, KeyChecksum, CompareChecksum, Direction, DogStatsd)
+			Log(fmt.Sprintf("consul KeyData='%s' saved='true' size='%d'", KeyData, CompareDataBytes), "info")
+			Set(c, KeyChecksum, CompareChecksum, DogStatsd)
 			if DatadogAPIKey != "" && DatadogAPPKey != "" {
-				DDSaveDataEvent(dog, KeyData, diff, Direction)
+				DDSaveDataEvent(dog, KeyData, diff)
 			}
 
 			if DogStatsd {
@@ -149,51 +149,51 @@ func inRun(cmd *cobra.Command, args []string) {
 			}
 
 		} else {
-			Log(fmt.Sprintf("%s: consul KeyData='%s' saved='false'", Direction, KeyData), "info")
-			RunTime(start, KeyInLocation, "consul_checksums_match", Direction, DogStatsd)
+			Log(fmt.Sprintf("consul KeyData='%s' saved='false'", KeyData), "info")
+			RunTime(start, KeyInLocation, "consul_checksums_match", DogStatsd)
 			os.Exit(0)
 		}
 	} else {
-		Log(fmt.Sprintf("%s: consul checksum='match' update='false'", Direction), "info")
+		Log("consul checksum='match' update='false'", "info")
 	}
 	// Run this command after the data is input.
 	if PostExec != "" {
-		Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
+		Log(fmt.Sprintf("exec='%s'", PostExec), "debug")
 		RunCommand(PostExec)
 	}
-	RunTime(start, KeyInLocation, "complete", Direction, DogStatsd)
+	RunTime(start, KeyInLocation, "complete", DogStatsd)
 }
 
-func checkInFlags(direction string) {
-	Log(fmt.Sprintf("%s: Checking cli flags.", direction), "debug")
+func checkInFlags() {
+	Log("Checking cli flags.", "debug")
 	if KeyInLocation == "" {
-		fmt.Println(direction, ": Need a key location in -k")
+		fmt.Println("Need a key location in -k")
 		os.Exit(1)
 	}
 	if FiletoRead == "" && UrltoRead == "" {
-		fmt.Println(direction, ": Need a file -f or url -u to read from.")
+		fmt.Println("Need a file -f or url -u to read from.")
 		os.Exit(1)
 	}
 	if FiletoRead != "" {
 		if _, err := os.Stat(FiletoRead); err != nil {
-			fmt.Println(direction, ": File ", FiletoRead, " does not exist.")
+			fmt.Println("File ", FiletoRead, " does not exist.")
 			os.Exit(1)
 		}
 	}
 	if FiletoRead != "" && UrltoRead != "" {
-		fmt.Println(direction, ": You cannot use both -f and -u.")
+		fmt.Println("You cannot use both -f and -u.")
 		os.Exit(1)
 	}
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		Log(fmt.Sprintf("%s: Enabling Datadog API.", direction), "debug")
+		Log("Enabling Datadog API.", "debug")
 	}
 	if DogStatsd {
-		Log(fmt.Sprintf("%s: Enabling Dogstatsd metrics.", direction), "debug")
+		Log("Enabling Dogstatsd metrics.", "debug")
 	}
 	if Owner == "" {
-		Owner = GetCurrentUsername(direction)
+		Owner = GetCurrentUsername()
 	}
-	Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
+	Log("Required cli flags present.", "debug")
 }
 
 var (

@@ -21,78 +21,78 @@ func copyRun(cmd *cobra.Command, args []string) {
 	if ConfigFile != "" {
 		LoadConfig(ConfigFile)
 	}
-	checkCopyFlags(Direction)
+	checkCopyFlags()
 
 	// Set the source key locations.
-	KeyData := KeyDataPath(KeyFrom, PrefixLocation, Direction)
-	KeyChecksum := KeyChecksumPath(KeyFrom, PrefixLocation, Direction)
+	KeyData := KeyDataPath(KeyFrom, PrefixLocation)
+	KeyChecksum := KeyChecksumPath(KeyFrom, PrefixLocation)
 
-	c, _ := Connect(ConsulServer, Token, Direction)
+	c, _ := Connect(ConsulServer, Token)
 
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
 		dog = DDAPIConnect(DatadogAPIKey, DatadogAPPKey)
 	}
 
 	// Get the KV data out of Consul.
-	KVData := Get(c, KeyData, Direction, DogStatsd)
+	KVData := Get(c, KeyData, DogStatsd)
 
 	// Decompress here if necessary.
 	if Compress {
-		KVData = DecompressData(KVData, Direction)
+		KVData = DecompressData(KVData)
 	}
 
 	// Get the Checksum data out of Consul.
-	Checksum := Get(c, KeyChecksum, Direction, DogStatsd)
+	Checksum := Get(c, KeyChecksum, DogStatsd)
 
 	// Is the data long enough?
-	longEnough := LengthCheck(KVData, MinFileLength, Direction)
-	Log(fmt.Sprintf("%s: longEnough='%t'", Direction, longEnough), "debug")
+	longEnough := LengthCheck(KVData, MinFileLength)
+	Log(fmt.Sprintf("longEnough='%t'", longEnough), "debug")
 
 	// Does the checksum match?
-	checksumMatch := ChecksumCompare(KVData, Checksum, Direction)
-	Log(fmt.Sprintf("%s: checksumMatch='%t'", Direction, checksumMatch), "debug")
+	checksumMatch := ChecksumCompare(KVData, Checksum)
+	Log(fmt.Sprintf("checksumMatch='%t'", checksumMatch), "debug")
 
 	// If the data is long enough and the checksum matches, save to the new key location.
 	if longEnough && checksumMatch {
-		Log(fmt.Sprintf("%s: copy='true' keyFrom='%s' keyTo='%s'", Direction, KeyFrom, KeyTo), "info")
+		Log(fmt.Sprintf("copy='true' keyFrom='%s' keyTo='%s'", KeyFrom, KeyTo), "info")
 		if Compress {
-			KVData = CompressData(KVData, Direction)
+			KVData = CompressData(KVData)
 		}
 		// New destination key Locations
-		KeyData = KeyDataPath(KeyTo, PrefixLocation, Direction)
-		KeyChecksum = KeyChecksumPath(KeyTo, PrefixLocation, Direction)
+		KeyData = KeyDataPath(KeyTo, PrefixLocation)
+		KeyChecksum = KeyChecksumPath(KeyTo, PrefixLocation)
 		// Save it.
-		saved := Set(c, KeyData, KVData, Direction, DogStatsd)
+		saved := Set(c, KeyData, KVData, DogStatsd)
 		if saved {
 			KVDataBytes := len(KVData)
-			Log(fmt.Sprintf("%s: consul KeyData='%s' saved='true' size='%d'", Direction, KeyData, KVDataBytes), "info")
-			Set(c, KeyChecksum, Checksum, Direction, DogStatsd)
+			Log(fmt.Sprintf("consul KeyData='%s' saved='true' size='%d'", KeyData, KVDataBytes), "info")
+			Set(c, KeyChecksum, Checksum, DogStatsd)
 			if DatadogAPIKey != "" && DatadogAPPKey != "" {
-				DDCopyDataEvent(dog, KeyFrom, KeyTo, Direction)
+				DDCopyDataEvent(dog, KeyFrom, KeyTo)
 			}
 			if DogStatsd {
 				StatsdIn(KeyTo, KVDataBytes, KVData)
 			}
 		} else {
-			Log(fmt.Sprintf("%s: consul KeyData='%s' saved='false'", Direction, KeyData), "info")
-			RunTime(start, KeyTo, "consul_checksums_match", Direction, DogStatsd)
+			Log(fmt.Sprintf("consul KeyData='%s' saved='false'", KeyData), "info")
+			RunTime(start, KeyTo, "consul_checksums_match", DogStatsd)
 			os.Exit(0)
 		}
 	} else {
-		Log(fmt.Sprintf("%s: longEnough='%t' checksumMatch='%t'", Direction, longEnough, checksumMatch), "info")
+		Log(fmt.Sprintf("longEnough='%t' checksumMatch='%t'", longEnough, checksumMatch), "info")
 		os.Exit(0)
 	}
 
 	// Run this command after the file is written.
 	if PostExec != "" {
-		Log(fmt.Sprintf("%s: exec='%s'", Direction, PostExec), "debug")
+		Log(fmt.Sprintf("exec='%s'", PostExec), "debug")
 		RunCommand(PostExec)
 	}
-	RunTime(start, RawKeyOutLocation, "complete", Direction, DogStatsd)
+	RunTime(start, RawKeyOutLocation, "complete", DogStatsd)
 }
 
-func checkCopyFlags(direction string) {
-	Log(fmt.Sprintf("%s: Checking cli flags.", direction), "debug")
+func checkCopyFlags() {
+	Log("Checking cli flags.", "debug")
 	if KeyFrom == "" {
 		fmt.Println("Need a key location in --keyfrom")
 		os.Exit(1)
@@ -102,15 +102,15 @@ func checkCopyFlags(direction string) {
 		os.Exit(1)
 	}
 	if DogStatsd {
-		Log(fmt.Sprintf("%s: Enabling Dogstatsd metrics.", direction), "debug")
+		Log("Enabling Dogstatsd metrics.", "debug")
 	}
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		Log(fmt.Sprintf("%s: Enabling Datadog API.", direction), "debug")
+		Log("Enabling Datadog API.", "debug")
 	}
 	if Owner == "" {
-		Owner = GetCurrentUsername(direction)
+		Owner = GetCurrentUsername()
 	}
-	Log(fmt.Sprintf("%s: Required cli flags present.", direction), "debug")
+	Log("Required cli flags present.", "debug")
 }
 
 var (
