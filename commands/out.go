@@ -21,9 +21,9 @@ func outRun(cmd *cobra.Command, args []string) {
 	}
 	checkOutFlags()
 
-	KeyData := KeyDataPath(KeyOutLocation, PrefixLocation)
-	KeyChecksum := KeyChecksumPath(KeyOutLocation, PrefixLocation)
-	KeyStop := KeyStopPath(KeyOutLocation, PrefixLocation)
+	KeyData := KeyDataPath(KeyOutLocation)
+	KeyChecksum := KeyChecksumPath(KeyOutLocation)
+	KeyStop := KeyStopPath(KeyOutLocation)
 
 	c, _ := Connect(ConsulServer, Token)
 

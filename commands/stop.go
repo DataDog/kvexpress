@@ -23,7 +23,7 @@ func stopRun(cmd *cobra.Command, args []string) {
 	}
 	checkStopFlags()
 
-	KeyStop := KeyStopPath(KeyStopLocation, PrefixLocation)
+	KeyStop := KeyStopPath(KeyStopLocation)
 
 	c, _ := Connect(ConsulServer, Token)
 

@@ -45,10 +45,10 @@ func Get(c *consul.Client, key string, dogstatsd bool) string {
 }
 
 // GetRaw the value from any key in the Consul KV store.
-func GetRaw(c *consul.Client, prefix string, key string, dogstatsd bool) string {
+func GetRaw(c *consul.Client, key string, dogstatsd bool) string {
 	var value string
 	kv := c.KV()
-	fullKey := fmt.Sprintf("%s/%s", prefix, key)
+	fullKey := fmt.Sprintf("%s/%s", PrefixLocation, key)
 	fullKey = strings.TrimPrefix(fullKey, "/")
 	pair, _, err := kv.Get(fullKey, nil)
 	if err != nil {

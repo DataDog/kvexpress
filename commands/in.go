@@ -26,9 +26,9 @@ func inRun(cmd *cobra.Command, args []string) {
 	}
 	checkInFlags()
 
-	KeyStop := KeyStopPath(KeyInLocation, PrefixLocation)
-	KeyData := KeyDataPath(KeyInLocation, PrefixLocation)
-	KeyChecksum := KeyChecksumPath(KeyInLocation, PrefixLocation)
+	KeyStop := KeyStopPath(KeyInLocation)
+	KeyData := KeyDataPath(KeyInLocation)
+	KeyChecksum := KeyChecksumPath(KeyInLocation)
 
 	if FiletoRead != "" {
 		CompareFile = CompareFilename(FiletoRead)

@@ -25,7 +25,7 @@ func rawRun(cmd *cobra.Command, args []string) {
 	c, _ := Connect(ConsulServer, Token)
 
 	// Get the KV data out of Consul.
-	KVData := GetRaw(c, PrefixLocation, RawKeyOutLocation, DogStatsd)
+	KVData := GetRaw(c, RawKeyOutLocation, DogStatsd)
 
 	// Is the data long enough?
 	longEnough := LengthCheck(KVData, MinFileLength)

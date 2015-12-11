@@ -24,8 +24,8 @@ func copyRun(cmd *cobra.Command, args []string) {
 	checkCopyFlags()
 
 	// Set the source key locations.
-	KeyData := KeyDataPath(KeyFrom, PrefixLocation)
-	KeyChecksum := KeyChecksumPath(KeyFrom, PrefixLocation)
+	KeyData := KeyDataPath(KeyFrom)
+	KeyChecksum := KeyChecksumPath(KeyFrom)
 
 	c, _ := Connect(ConsulServer, Token)
 
@@ -59,8 +59,8 @@ func copyRun(cmd *cobra.Command, args []string) {
 			KVData = CompressData(KVData)
 		}
 		// New destination key Locations
-		KeyData = KeyDataPath(KeyTo, PrefixLocation)
-		KeyChecksum = KeyChecksumPath(KeyTo, PrefixLocation)
+		KeyData = KeyDataPath(KeyTo)
+		KeyChecksum = KeyChecksumPath(KeyTo)
 		// Save it.
 		saved := Set(c, KeyData, KVData, DogStatsd)
 		if saved {
