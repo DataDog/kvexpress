@@ -67,6 +67,9 @@ var (
 
 	// Direction adds information about which command is running to the logs.
 	Direction string
+
+	// Verbose logs all output to stdout.
+	Verbose bool
 )
 
 func init() {
@@ -84,4 +87,5 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&DatadogAPIKey, "datadog_api_key", "a", "", "Datadog API Key")
 	RootCmd.PersistentFlags().StringVarP(&DatadogAPPKey, "datadog_app_key", "A", "", "Datadog App Key")
 	RootCmd.PersistentFlags().StringVarP(&Owner, "owner", "o", "", "who to write the file as")
+	RootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "", false, "log output to stdout")
 }

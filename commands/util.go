@@ -42,6 +42,10 @@ func RunTime(start time.Time, key string, location string, dogstatsd bool) {
 // Syslog is setup in main.go
 func Log(message, priority string) {
 	message = fmt.Sprintf("%s: %s", Direction, message)
+	if Verbose {
+		time := ReturnCurrentUTC()
+		fmt.Printf("%s: %s\n", time, message)
+	}
 	switch {
 	case priority == "debug":
 		if os.Getenv("KVEXPRESS_DEBUG") != "" {
