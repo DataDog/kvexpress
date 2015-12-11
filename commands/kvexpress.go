@@ -53,7 +53,7 @@ func LineCount(data string) int {
 func ComputeChecksum(data string) string {
 	dataBytes := []byte(data)
 	computedChecksum := sha256.Sum256(dataBytes)
-	finalChecksum := fmt.Sprintf("%x\n", computedChecksum)
+	finalChecksum := fmt.Sprintf("%x", computedChecksum)
 	Log(fmt.Sprintf("computedChecksum='%s'", finalChecksum), "debug")
 	return finalChecksum
 }
