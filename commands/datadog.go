@@ -9,52 +9,62 @@ import (
 
 // StatsdIn sends metrics to Dogstatsd on an `kvexpress in` operation.
 func StatsdIn(key string, dataLength int, data string) {
-	Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='in'", key), "debug")
-	statsd, _ := godspeed.NewDefault()
-	defer statsd.Conn.Close()
-	tags := makeTags(key, "complete")
-	statsd.Incr("kvexpress.in", tags)
-	statsd.Gauge("kvexpress.bytes", float64(dataLength), tags)
-	statsd.Gauge("kvexpress.lines", float64(LineCount(data)), tags)
+	if DogStatsd {
+		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='in'", key), "debug")
+		statsd, _ := godspeed.NewDefault()
+		defer statsd.Conn.Close()
+		tags := makeTags(key, "complete")
+		statsd.Incr("kvexpress.in", tags)
+		statsd.Gauge("kvexpress.bytes", float64(dataLength), tags)
+		statsd.Gauge("kvexpress.lines", float64(LineCount(data)), tags)
+	}
 }
 
 // StatsdOut sends metrics to Dogstatsd on an `kvexpress out` operation.
 func StatsdOut(key string) {
-	Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='out'", key), "debug")
-	statsd, _ := godspeed.NewDefault()
-	defer statsd.Conn.Close()
-	tags := makeTags(key, "complete")
-	statsd.Incr("kvexpress.out", tags)
+	if DogStatsd {
+		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='out'", key), "debug")
+		statsd, _ := godspeed.NewDefault()
+		defer statsd.Conn.Close()
+		tags := makeTags(key, "complete")
+		statsd.Incr("kvexpress.out", tags)
+	}
 }
 
 // StatsdRaw sends metrics to Dogstatsd on an `kvexpress raw` operation.
 func StatsdRaw(key string) {
-	Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='raw'", key), "debug")
-	statsd, _ := godspeed.NewDefault()
-	defer statsd.Conn.Close()
-	tags := makeTags(key, "complete")
-	statsd.Incr("kvexpress.raw", tags)
+	if DogStatsd {
+		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='raw'", key), "debug")
+		statsd, _ := godspeed.NewDefault()
+		defer statsd.Conn.Close()
+		tags := makeTags(key, "complete")
+		statsd.Incr("kvexpress.raw", tags)
+	}
 }
 
 // StatsdRunTime sends metrics to Dogstatsd on various operations.
 func StatsdRunTime(key string, location string, msec int64) {
-	Log(fmt.Sprintf("dogstatsd='true' key='%s' location='%s' msec='%d'", key, location, msec), "debug")
-	statsd, _ := godspeed.NewDefault()
-	defer statsd.Conn.Close()
-	tags := makeTags(key, location)
-	locationTag := fmt.Sprintf("location:%s", location)
-	tags = append(tags, locationTag)
-	statsd.Gauge("kvexpress.time", float64(msec), tags)
+	if DogStatsd {
+		Log(fmt.Sprintf("dogstatsd='true' key='%s' location='%s' msec='%d'", key, location, msec), "debug")
+		statsd, _ := godspeed.NewDefault()
+		defer statsd.Conn.Close()
+		tags := makeTags(key, location)
+		locationTag := fmt.Sprintf("location:%s", location)
+		tags = append(tags, locationTag)
+		statsd.Gauge("kvexpress.time", float64(msec), tags)
+	}
 }
 
 // StatsdPanic sends metrics to Dogstatsd when something really bad happens.
 // It also stops the execution of kvexpress.
 func StatsdPanic(key, location string) {
-	Log(fmt.Sprintf("dogstatsd='true' key='%s' location='%s' stats='panic'", key, location), "debug")
-	statsd, _ := godspeed.NewDefault()
-	defer statsd.Conn.Close()
-	tags := makeTags(key, location)
-	statsd.Incr("kvexpress.panic", tags)
+	if DogStatsd {
+		Log(fmt.Sprintf("dogstatsd='true' key='%s' location='%s' stats='panic'", key, location), "debug")
+		statsd, _ := godspeed.NewDefault()
+		defer statsd.Conn.Close()
+		tags := makeTags(key, location)
+		statsd.Incr("kvexpress.panic", tags)
+	}
 	// If we're going to panic, we might as well stop right here.
 	// Means we can't connect to Consul, download a URL or
 	// write and/or chown files.

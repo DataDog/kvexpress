@@ -23,16 +23,14 @@ func Connect(server, token string) (*consul.Client, error) {
 // TODO: Can likely refactor the following two functions into one.
 
 // Get the value from a kvexpress formatted key in the Consul KV store.
-func Get(c *consul.Client, key string, dogstatsd bool) string {
+func Get(c *consul.Client, key string) string {
 	var value string
 	kv := c.KV()
 	key = strings.TrimPrefix(key, "/")
 	pair, _, err := kv.Get(key, nil)
 	if err != nil {
 		Log(fmt.Sprintf("action='get' panic='true' key='%s'", key), "info")
-		if dogstatsd {
-			StatsdPanic(key, "consul_get")
-		}
+		StatsdPanic(key, "consul_get")
 	} else {
 		if pair != nil {
 			value = string(pair.Value[:])
@@ -45,7 +43,7 @@ func Get(c *consul.Client, key string, dogstatsd bool) string {
 }
 
 // GetRaw the value from any key in the Consul KV store.
-func GetRaw(c *consul.Client, key string, dogstatsd bool) string {
+func GetRaw(c *consul.Client, key string) string {
 	var value string
 	kv := c.KV()
 	fullKey := fmt.Sprintf("%s/%s", PrefixLocation, key)
@@ -53,9 +51,7 @@ func GetRaw(c *consul.Client, key string, dogstatsd bool) string {
 	pair, _, err := kv.Get(fullKey, nil)
 	if err != nil {
 		Log(fmt.Sprintf("action='get_raw' panic='true' key='%s'", fullKey), "info")
-		if dogstatsd {
-			StatsdPanic(fullKey, "consul_get_raw")
-		}
+		StatsdPanic(fullKey, "consul_get_raw")
 	} else {
 		if pair != nil {
 			value = string(pair.Value[:])
@@ -74,16 +70,14 @@ func cleanupToken(token string) string {
 }
 
 // Set a value in a kvexpress formatted key in the Consul KV store.
-func Set(c *consul.Client, key string, value string, dogstatsd bool) bool {
+func Set(c *consul.Client, key string, value string) bool {
 	key = strings.TrimPrefix(key, "/")
 	p := &consul.KVPair{Key: key, Value: []byte(value)}
 	kv := c.KV()
 	_, err := kv.Put(p, nil)
 	if err != nil {
 		Log(fmt.Sprintf("action='set' panic='true' key='%s'", key), "info")
-		if dogstatsd {
-			StatsdPanic(key, "consul_set")
-		}
+		StatsdPanic(key, "consul_set")
 	} else {
 		Log(fmt.Sprintf("action='set' key='%s'", key), "debug")
 		return true

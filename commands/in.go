@@ -48,14 +48,14 @@ func inRun(cmd *cobra.Command, args []string) {
 		dog = DDAPIConnect(DatadogAPIKey, DatadogAPPKey)
 	}
 
-	StopKeyData := Get(c, KeyStop, DogStatsd)
+	StopKeyData := Get(c, KeyStop)
 
 	if StopKeyData != "" {
 		Log(fmt.Sprintf("Stop Key is present - stopping. Reason: %s", StopKeyData), "info")
 		if DatadogAPIKey != "" && DatadogAPPKey != "" {
 			DDStopEvent(dog, KeyStop, StopKeyData)
 		}
-		RunTime(start, KeyInLocation, "stop_key", DogStatsd)
+		RunTime(start, KeyInLocation, "stop_key")
 		os.Exit(1)
 	} else {
 		Log("Stop Key is NOT present - continuing.", "info")
@@ -65,7 +65,7 @@ func inRun(cmd *cobra.Command, args []string) {
 	if FiletoRead != "" {
 		FileString = ReadFile(FiletoRead)
 	} else {
-		FileString = ReadURL(UrltoRead, DogStatsd)
+		FileString = ReadURL(UrltoRead)
 	}
 
 	// Sorting also removes any blank lines.
@@ -79,15 +79,15 @@ func inRun(cmd *cobra.Command, args []string) {
 	if !longEnough {
 		Log("File is NOT long enough. Stopping.", "info")
 		// TODO: Add Datadog Event here.
-		RunTime(start, KeyInLocation, "not_long_enough", DogStatsd)
+		RunTime(start, KeyInLocation, "not_long_enough")
 		os.Exit(1)
 	}
 
 	// Write the .compare file.
-	WriteFile(FileString, CompareFile, FilePermissions, Owner, DogStatsd)
+	WriteFile(FileString, CompareFile, FilePermissions, Owner)
 
 	// Check for the .last file - touch if it doesn't exist.
-	CheckLastFile(LastFile, FilePermissions, Owner, DogStatsd)
+	CheckLastFile(LastFile, FilePermissions, Owner)
 
 	// Read compare and last files into string.
 	CompareData := ReadFile(CompareFile)
@@ -97,7 +97,7 @@ func inRun(cmd *cobra.Command, args []string) {
 		Log("We have data - let's do the thing.", "info")
 	} else {
 		Log("We do NOT have data. This should never happen.", "info")
-		RunTime(start, KeyInLocation, "error_no_data", DogStatsd)
+		RunTime(start, KeyInLocation, "error_no_data")
 		os.Exit(1)
 	}
 
@@ -110,7 +110,7 @@ func inRun(cmd *cobra.Command, args []string) {
 		Log("file checksum='different' update='true'", "info")
 	} else {
 		Log("file checksum='match' update='false'", "info")
-		RunTime(start, KeyInLocation, "file_checksums_match", DogStatsd)
+		RunTime(start, KeyInLocation, "file_checksums_match")
 		os.Exit(0)
 	}
 
@@ -119,10 +119,10 @@ func inRun(cmd *cobra.Command, args []string) {
 
 	// If we get this far - copy the CompareData to the .last file.
 	// This handles the case detailed in https://github.com/darron/kvexpress/issues/33
-	WriteFile(CompareData, LastFile, FilePermissions, Owner, DogStatsd)
+	WriteFile(CompareData, LastFile, FilePermissions, Owner)
 
 	// Get the checksum from Consul.
-	CurrentChecksum := Get(c, KeyChecksum, DogStatsd)
+	CurrentChecksum := Get(c, KeyChecksum)
 
 	if CurrentChecksum != CompareChecksum {
 		Log("consul checksum='different' update='true'", "info")
@@ -130,18 +130,15 @@ func inRun(cmd *cobra.Command, args []string) {
 		if Compress {
 			CompareData = CompressData(CompareData)
 		}
-		saved := Set(c, KeyData, CompareData, DogStatsd)
+		saved := Set(c, KeyData, CompareData)
 		if saved {
 			CompareDataBytes := len(CompareData)
 			Log(fmt.Sprintf("consul KeyData='%s' saved='true' size='%d'", KeyData, CompareDataBytes), "info")
-			Set(c, KeyChecksum, CompareChecksum, DogStatsd)
+			Set(c, KeyChecksum, CompareChecksum)
 			if DatadogAPIKey != "" && DatadogAPPKey != "" {
 				DDSaveDataEvent(dog, KeyData, diff)
 			}
-
-			if DogStatsd {
-				StatsdIn(KeyInLocation, CompareDataBytes, CompareData)
-			}
+			StatsdIn(KeyInLocation, CompareDataBytes, CompareData)
 
 			if UrltoRead != "" {
 				urlOutput := fmt.Sprintf("\nURL: %s\n\nWhat was inserted into: '%s'\n===================\n%s\n===================\n", UrltoRead, KeyData, CompareData)
@@ -150,7 +147,7 @@ func inRun(cmd *cobra.Command, args []string) {
 
 		} else {
 			Log(fmt.Sprintf("consul KeyData='%s' saved='false'", KeyData), "info")
-			RunTime(start, KeyInLocation, "consul_checksums_match", DogStatsd)
+			RunTime(start, KeyInLocation, "consul_checksums_match")
 			os.Exit(0)
 		}
 	} else {
@@ -161,7 +158,7 @@ func inRun(cmd *cobra.Command, args []string) {
 		Log(fmt.Sprintf("exec='%s'", PostExec), "debug")
 		RunCommand(PostExec)
 	}
-	RunTime(start, KeyInLocation, "complete", DogStatsd)
+	RunTime(start, KeyInLocation, "complete")
 }
 
 func checkInFlags() {

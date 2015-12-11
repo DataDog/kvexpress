@@ -27,11 +27,11 @@ func outRun(cmd *cobra.Command, args []string) {
 
 	c, _ := Connect(ConsulServer, Token)
 
-	StopKeyData := Get(c, KeyStop, DogStatsd)
+	StopKeyData := Get(c, KeyStop)
 
 	if StopKeyData != "" && IgnoreStop == false {
 		Log(fmt.Sprintf("Stop Key is present - stopping. Reason: %s", StopKeyData), "info")
-		RunTime(start, KeyOutLocation, "stop_key", DogStatsd)
+		RunTime(start, KeyOutLocation, "stop_key")
 		os.Exit(0)
 	} else {
 		if IgnoreStop {
@@ -42,7 +42,7 @@ func outRun(cmd *cobra.Command, args []string) {
 	}
 
 	// Get the KV data out of Consul.
-	KVData := Get(c, KeyData, DogStatsd)
+	KVData := Get(c, KeyData)
 
 	// Decompress here if necessary.
 	if Compress {
@@ -50,7 +50,7 @@ func outRun(cmd *cobra.Command, args []string) {
 	}
 
 	// Get the Checksum data out of Consul.
-	Checksum := Get(c, KeyChecksum, DogStatsd)
+	Checksum := Get(c, KeyChecksum)
 
 	// Is the data long enough?
 	longEnough := LengthCheck(KVData, MinFileLength)
@@ -67,10 +67,8 @@ func outRun(cmd *cobra.Command, args []string) {
 		CheckFiletoWrite(FiletoWrite, Checksum)
 
 		// Acually write the file.
-		WriteFile(KVData, FiletoWrite, FilePermissions, Owner, DogStatsd)
-		if DogStatsd {
-			StatsdOut(KeyOutLocation)
-		}
+		WriteFile(KVData, FiletoWrite, FilePermissions, Owner)
+		StatsdOut(KeyOutLocation)
 	} else {
 		Log("longEnough='no'", "info")
 		os.Exit(0)
@@ -81,7 +79,7 @@ func outRun(cmd *cobra.Command, args []string) {
 		Log(fmt.Sprintf("exec='%s'", PostExec), "debug")
 		RunCommand(PostExec)
 	}
-	RunTime(start, KeyOutLocation, "complete", DogStatsd)
+	RunTime(start, KeyOutLocation, "complete")
 }
 
 func checkOutFlags() {

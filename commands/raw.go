@@ -25,7 +25,7 @@ func rawRun(cmd *cobra.Command, args []string) {
 	c, _ := Connect(ConsulServer, Token)
 
 	// Get the KV data out of Consul.
-	KVData := GetRaw(c, RawKeyOutLocation, DogStatsd)
+	KVData := GetRaw(c, RawKeyOutLocation)
 
 	// Is the data long enough?
 	longEnough := LengthCheck(KVData, MinFileLength)
@@ -34,10 +34,8 @@ func rawRun(cmd *cobra.Command, args []string) {
 	// If the data is long enough, write the file.
 	if longEnough {
 		// Acually write the file.
-		WriteFile(KVData, RawFiletoWrite, FilePermissions, Owner, DogStatsd)
-		if DogStatsd {
-			StatsdRaw(RawKeyOutLocation)
-		}
+		WriteFile(KVData, RawFiletoWrite, FilePermissions, Owner)
+		StatsdRaw(RawKeyOutLocation)
 	} else {
 		Log("longEnough='no'", "info")
 		os.Exit(0)
@@ -48,7 +46,7 @@ func rawRun(cmd *cobra.Command, args []string) {
 		Log(fmt.Sprintf("exec='%s'", PostExec), "debug")
 		RunCommand(PostExec)
 	}
-	RunTime(start, RawKeyOutLocation, "complete", DogStatsd)
+	RunTime(start, RawKeyOutLocation, "complete")
 }
 
 func checkRawFlags() {

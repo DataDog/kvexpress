@@ -29,12 +29,10 @@ func check(e error) {
 
 // RunTime sends time coded logs and dogstatsd metrics when called.
 // Location is set when the RunTime function is called.
-func RunTime(start time.Time, key string, location string, dogstatsd bool) {
+func RunTime(start time.Time, key string, location string) {
 	elapsed := time.Since(start)
-	if dogstatsd {
-		milliseconds := int64(elapsed / time.Millisecond)
-		StatsdRunTime(key, location, milliseconds)
-	}
+	milliseconds := int64(elapsed / time.Millisecond)
+	StatsdRunTime(key, location, milliseconds)
 	Log(fmt.Sprintf("location='%s', elapsed='%s'", location, elapsed), "info")
 }
 

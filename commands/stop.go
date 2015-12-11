@@ -31,7 +31,7 @@ func stopRun(cmd *cobra.Command, args []string) {
 		dog = DDAPIConnect(DatadogAPIKey, DatadogAPPKey)
 	}
 
-	saved := Set(c, KeyStop, KeyStopReason, DogStatsd)
+	saved := Set(c, KeyStop, KeyStopReason)
 
 	if saved {
 		Log(fmt.Sprintf("KeyStop='%s' saved='true' KeyStopReason='%s'", KeyStop, KeyStopReason), "info")
@@ -45,7 +45,7 @@ func stopRun(cmd *cobra.Command, args []string) {
 		Log(fmt.Sprintf("exec='%s'", PostExec), "debug")
 		RunCommand(PostExec)
 	}
-	RunTime(start, KeyStopLocation, "complete", DogStatsd)
+	RunTime(start, KeyStopLocation, "complete")
 }
 
 func checkStopFlags() {

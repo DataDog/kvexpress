@@ -33,7 +33,7 @@ func cleanRun(cmd *cobra.Command, args []string) {
 		Log(fmt.Sprintf("exec='%s'", PostExec), "debug")
 		RunCommand(PostExec)
 	}
-	RunTime(start, "none", "complete", DogStatsd)
+	RunTime(start, "none", "complete")
 }
 
 func checkCleanFlags() {

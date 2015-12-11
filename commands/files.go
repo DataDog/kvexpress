@@ -44,23 +44,19 @@ func BlankLineStrip(data []string) []string {
 
 // WriteFile writes a string to a filepath. It also chowns the file to the owner and group
 // of the user running the program if it's not set as a different user.
-func WriteFile(data string, filepath string, perms int, owner string, dogstatsd bool) {
+func WriteFile(data string, filepath string, perms int, owner string) {
 	var fileChown = false
 	err := ioutil.WriteFile(filepath, []byte(data), os.FileMode(perms))
 	if err != nil {
 		Log(fmt.Sprintf("function='WriteFile' panic='true' file='%s'", filepath), "info")
-		if dogstatsd {
-			StatsdPanic(filepath, "write_file")
-		}
+		StatsdPanic(filepath, "write_file")
 	}
 	oid := GetOwnerID(owner)
 	gid := GetGroupID(owner)
 	err = os.Chown(filepath, oid, gid)
 	if err != nil {
 		fileChown = false
-		if dogstatsd {
-			StatsdPanic(filepath, "chown_file")
-		}
+		StatsdPanic(filepath, "chown_file")
 	} else {
 		fileChown = true
 	}
@@ -141,9 +137,9 @@ func LastFilename(file string) string {
 }
 
 // CheckLastFile creates a .last file if it doesn't exist.
-func CheckLastFile(file string, perms int, owner string, dogstatsd bool) {
+func CheckLastFile(file string, perms int, owner string) {
 	if _, err := os.Stat(file); err != nil {
 		Log(fmt.Sprintf("file='last' file='%s' does_not_exist='true'", file), "debug")
-		WriteFile("This is a blank file.\n", file, perms, owner, dogstatsd)
+		WriteFile("This is a blank file.\n", file, perms, owner)
 	}
 }

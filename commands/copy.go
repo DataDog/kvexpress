@@ -34,7 +34,7 @@ func copyRun(cmd *cobra.Command, args []string) {
 	}
 
 	// Get the KV data out of Consul.
-	KVData := Get(c, KeyData, DogStatsd)
+	KVData := Get(c, KeyData)
 
 	// Decompress here if necessary.
 	if Compress {
@@ -42,7 +42,7 @@ func copyRun(cmd *cobra.Command, args []string) {
 	}
 
 	// Get the Checksum data out of Consul.
-	Checksum := Get(c, KeyChecksum, DogStatsd)
+	Checksum := Get(c, KeyChecksum)
 
 	// Is the data long enough?
 	longEnough := LengthCheck(KVData, MinFileLength)
@@ -62,20 +62,18 @@ func copyRun(cmd *cobra.Command, args []string) {
 		KeyData = KeyDataPath(KeyTo)
 		KeyChecksum = KeyChecksumPath(KeyTo)
 		// Save it.
-		saved := Set(c, KeyData, KVData, DogStatsd)
+		saved := Set(c, KeyData, KVData)
 		if saved {
 			KVDataBytes := len(KVData)
 			Log(fmt.Sprintf("consul KeyData='%s' saved='true' size='%d'", KeyData, KVDataBytes), "info")
-			Set(c, KeyChecksum, Checksum, DogStatsd)
+			Set(c, KeyChecksum, Checksum)
 			if DatadogAPIKey != "" && DatadogAPPKey != "" {
 				DDCopyDataEvent(dog, KeyFrom, KeyTo)
 			}
-			if DogStatsd {
-				StatsdIn(KeyTo, KVDataBytes, KVData)
-			}
+			StatsdIn(KeyTo, KVDataBytes, KVData)
 		} else {
 			Log(fmt.Sprintf("consul KeyData='%s' saved='false'", KeyData), "info")
-			RunTime(start, KeyTo, "consul_checksums_match", DogStatsd)
+			RunTime(start, KeyTo, "consul_checksums_match")
 			os.Exit(0)
 		}
 	} else {
@@ -88,7 +86,7 @@ func copyRun(cmd *cobra.Command, args []string) {
 		Log(fmt.Sprintf("exec='%s'", PostExec), "debug")
 		RunCommand(PostExec)
 	}
-	RunTime(start, RawKeyOutLocation, "complete", DogStatsd)
+	RunTime(start, RawKeyOutLocation, "complete")
 }
 
 func checkCopyFlags() {
