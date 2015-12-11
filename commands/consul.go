@@ -26,6 +26,7 @@ func Connect(server, token string) (*consul.Client, error) {
 func Get(c *consul.Client, key string, dogstatsd bool) string {
 	var value string
 	kv := c.KV()
+	key = strings.TrimPrefix(key, "/")
 	pair, _, err := kv.Get(key, nil)
 	if err != nil {
 		Log(fmt.Sprintf("action='get' panic='true' key='%s'", key), "info")
@@ -48,6 +49,7 @@ func GetRaw(c *consul.Client, prefix string, key string, dogstatsd bool) string 
 	var value string
 	kv := c.KV()
 	fullKey := fmt.Sprintf("%s/%s", prefix, key)
+	fullKey = strings.TrimPrefix(fullKey, "/")
 	pair, _, err := kv.Get(fullKey, nil)
 	if err != nil {
 		Log(fmt.Sprintf("action='get_raw' panic='true' key='%s'", fullKey), "info")
@@ -73,6 +75,7 @@ func cleanupToken(token string) string {
 
 // Set a value in a kvexpress formatted key in the Consul KV store.
 func Set(c *consul.Client, key string, value string, dogstatsd bool) bool {
+	key = strings.TrimPrefix(key, "/")
 	p := &consul.KVPair{Key: key, Value: []byte(value)}
 	kv := c.KV()
 	_, err := kv.Put(p, nil)
