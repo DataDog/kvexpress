@@ -84,3 +84,17 @@ func Set(c *consul.Client, key string, value string) bool {
 	}
 	return true
 }
+
+// Del removes a key from the Consul KV store.
+func Del(c *consul.Client, key string) bool {
+	kv := c.KV()
+	key = strings.TrimPrefix(key, "/")
+	_, err := kv.Delete(key, nil)
+	if err != nil {
+		Log(fmt.Sprintf("action='Del' panic='true' key='%s'", key), "info")
+		StatsdPanic(key, "consul_del")
+		return false
+	}
+	Log(fmt.Sprintf("action='Del' panic='false' key='%s'", key), "info")
+	return true
+}

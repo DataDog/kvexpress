@@ -112,3 +112,10 @@ func LockFile(key string) bool {
 	}
 	return false
 }
+
+// UnlockFile removes a key in Consul so that a particular file can be updated. See commands/unlock.go
+func UnlockFile(key string) bool {
+	c, _ := Connect(ConsulServer, Token)
+	value := Del(c, key)
+	return value
+}
