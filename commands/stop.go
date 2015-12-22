@@ -11,7 +11,7 @@ import (
 var stopCmd = &cobra.Command{
 	Use:   "stop",
 	Short: "Put stop value into Consul.",
-	Long:  `stop is a convenient way to put stop values in Consul.`,
+	Long:  `stop is a convenient way to put stop values in Consul.  Stops ALL nodes from updating.`,
 	Run:   stopRun,
 }
 
