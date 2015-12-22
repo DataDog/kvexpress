@@ -120,3 +120,9 @@ func DecompressData(data string) string {
 	Log(fmt.Sprintf("decompressing='true' size='%d'", len(uncompressed)), "info")
 	return string(uncompressed)
 }
+
+// GetHostname returns the hostname.
+func GetHostname() string {
+	hostname, _ := os.Hostname()
+	return hostname
+}

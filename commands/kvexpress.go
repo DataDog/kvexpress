@@ -99,3 +99,16 @@ func RunCommand(command string) bool {
 	}
 	return true
 }
+
+// LockFile sets a key in Consul so that a particular file won't be updated. See commands/lock.go
+func LockFile(key string) bool {
+	if LockReason == "" {
+		LockReason = fmt.Sprintf("No reason given for '%s' by '%s' at '%s'.", FiletoLock, GetCurrentUsername(), ReturnCurrentUTC())
+	}
+	c, _ := Connect(ConsulServer, Token)
+	saved := Set(c, key, LockReason)
+	if saved {
+		return true
+	}
+	return false
+}

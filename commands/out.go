@@ -24,8 +24,17 @@ func outRun(cmd *cobra.Command, args []string) {
 	KeyData := KeyDataPath(KeyOutLocation)
 	KeyChecksum := KeyChecksumPath(KeyOutLocation)
 	KeyStop := KeyStopPath(KeyOutLocation)
+	KeyLock := FileLockPath(FiletoWrite)
 
 	c, _ := Connect(ConsulServer, Token)
+
+	LockKeyData := Get(c, KeyLock)
+
+	if LockKeyData != "" {
+		Log(fmt.Sprintf("Lock Key is present - will not update file. Reason: %s", LockKeyData), "info")
+		RunTime(start, FiletoWrite, "lock_key")
+		os.Exit(0)
+	}
 
 	StopKeyData := Get(c, KeyStop)
 
