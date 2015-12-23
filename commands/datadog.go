@@ -31,6 +31,28 @@ func StatsdOut(key string) {
 	}
 }
 
+// StatsdLock sends metrics to Dogstatsd on an `kvexpress lock` operation.
+func StatsdLock(key string) {
+	if DogStatsd {
+		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='lock'", key), "debug")
+		statsd, _ := godspeed.NewDefault()
+		defer statsd.Conn.Close()
+		tags := makeTags(key, "complete")
+		statsd.Incr("kvexpress.lock", tags)
+	}
+}
+
+// StatsdUnlock sends metrics to Dogstatsd on an `kvexpress unlock` operation.
+func StatsdUnlock(key string) {
+	if DogStatsd {
+		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='unlock'", key), "debug")
+		statsd, _ := godspeed.NewDefault()
+		defer statsd.Conn.Close()
+		tags := makeTags(key, "complete")
+		statsd.Incr("kvexpress.unlock", tags)
+	}
+}
+
 // StatsdRaw sends metrics to Dogstatsd on an `kvexpress raw` operation.
 func StatsdRaw(key string) {
 	if DogStatsd {

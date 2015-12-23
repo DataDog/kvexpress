@@ -108,6 +108,7 @@ func LockFile(key string) bool {
 	c, _ := Connect(ConsulServer, Token)
 	saved := Set(c, key, LockReason)
 	if saved {
+		StatsdLock(key)
 		return true
 	}
 	return false
@@ -117,5 +118,6 @@ func LockFile(key string) bool {
 func UnlockFile(key string) bool {
 	c, _ := Connect(ConsulServer, Token)
 	value := Del(c, key)
+	StatsdUnlock(key)
 	return value
 }
