@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-// StatsdIn sends metrics to Dogstatsd on an `kvexpress in` operation.
+// StatsdIn sends metrics to Dogstatsd on a `kvexpress in` operation.
 func StatsdIn(key string, dataLength int, data string) {
 	if DogStatsd {
 		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='in'", key), "debug")
@@ -20,7 +20,7 @@ func StatsdIn(key string, dataLength int, data string) {
 	}
 }
 
-// StatsdOut sends metrics to Dogstatsd on an `kvexpress out` operation.
+// StatsdOut sends metrics to Dogstatsd on a `kvexpress out` operation.
 func StatsdOut(key string) {
 	if DogStatsd {
 		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='out'", key), "debug")
@@ -31,7 +31,7 @@ func StatsdOut(key string) {
 	}
 }
 
-// StatsdLocked sends metrics to Dogstatsd on an `kvexpress out` operation
+// StatsdLocked sends metrics to Dogstatsd on a `kvexpress out` operation
 // that is blocked by a locked file.
 func StatsdLocked(file string) {
 	if DogStatsd {
@@ -43,7 +43,7 @@ func StatsdLocked(file string) {
 	}
 }
 
-// StatsdLock sends metrics to Dogstatsd on an `kvexpress lock` operation.
+// StatsdLock sends metrics to Dogstatsd on a `kvexpress lock` operation.
 func StatsdLock(key string) {
 	if DogStatsd {
 		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='lock'", key), "debug")
@@ -54,7 +54,7 @@ func StatsdLock(key string) {
 	}
 }
 
-// StatsdUnlock sends metrics to Dogstatsd on an `kvexpress unlock` operation.
+// StatsdUnlock sends metrics to Dogstatsd on a `kvexpress unlock` operation.
 func StatsdUnlock(key string) {
 	if DogStatsd {
 		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='unlock'", key), "debug")
@@ -65,7 +65,7 @@ func StatsdUnlock(key string) {
 	}
 }
 
-// StatsdRaw sends metrics to Dogstatsd on an `kvexpress raw` operation.
+// StatsdRaw sends metrics to Dogstatsd on a `kvexpress raw` operation.
 func StatsdRaw(key string) {
 	if DogStatsd {
 		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='raw'", key), "debug")
