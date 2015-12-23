@@ -17,10 +17,6 @@ var unlockCmd = &cobra.Command{
 }
 
 func unlockRun(cmd *cobra.Command, args []string) {
-	if ConfigFile != "" {
-		LoadConfig(ConfigFile)
-	}
-
 	KeyLockLocation := FileLockPath(FiletoUnlock)
 
 	result := UnlockFile(KeyLockLocation)
@@ -33,6 +29,11 @@ func unlockRun(cmd *cobra.Command, args []string) {
 }
 
 func checkUnlockFlags() {
+	// Load the config file if passed.
+	if ConfigFile != "" {
+		LoadConfig(ConfigFile)
+	}
+	AutoEnable()
 	Log("Checking cli flags.", "debug")
 	if FiletoUnlock == "" {
 		fmt.Println("Need a file to lock with -f")
