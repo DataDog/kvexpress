@@ -29,7 +29,7 @@ func main() {
 	if e == nil {
 		log.SetOutput(logwriter)
 	}
-	commands.Log(fmt.Sprintf("main: kvexpress version:%s git:%s date:%s", Version, GitCommit, CompileDate), "info")
+	commands.Log(fmt.Sprintf("kvexpress version:%s", Version), "info")
 
 	args := os.Args[1:]
 	for _, arg := range args {

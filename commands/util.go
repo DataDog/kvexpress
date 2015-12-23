@@ -27,6 +27,17 @@ func check(e error) {
 	}
 }
 
+// SetDirection returns the direction.
+func SetDirection() string {
+	direction := ""
+	if strings.HasPrefix(os.Args[1], "-") {
+		direction = "main"
+	} else {
+		direction = os.Args[1]
+	}
+	return direction
+}
+
 // RunTime sends time coded logs and dogstatsd metrics when called.
 // Location is set when the RunTime function is called.
 func RunTime(start time.Time, key string, location string) {

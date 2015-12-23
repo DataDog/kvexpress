@@ -3,7 +3,6 @@ package commands
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 // RootCmd is the default Cobra struct that starts it all off.
@@ -73,7 +72,7 @@ var (
 )
 
 func init() {
-	Direction = os.Args[1]
+	Direction = SetDirection()
 	RootCmd.PersistentFlags().StringVarP(&ConfigFile, "config", "C", "", "Config file location")
 	RootCmd.PersistentFlags().StringVarP(&ConsulServer, "server", "s", "localhost:8500", "Consul server location")
 	RootCmd.PersistentFlags().StringVarP(&Token, "token", "t", "", "Token for Consul access")
