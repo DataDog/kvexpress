@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"time"
 )
 
 var unlockCmd = &cobra.Command{
@@ -18,8 +17,6 @@ var unlockCmd = &cobra.Command{
 }
 
 func unlockRun(cmd *cobra.Command, args []string) {
-	start := time.Now()
-	//var dog = new(datadog.Client)
 	if ConfigFile != "" {
 		LoadConfig(ConfigFile)
 	}
@@ -33,8 +30,6 @@ func unlockRun(cmd *cobra.Command, args []string) {
 	} else {
 		Log(fmt.Sprintf("'%s' was NOT unlocked - something went wrong.", FiletoUnlock), "info")
 	}
-
-	RunTime(start, KeyLockLocation, "complete")
 }
 
 func checkUnlockFlags() {

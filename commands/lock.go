@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"time"
 )
 
 var lockCmd = &cobra.Command{
@@ -18,8 +17,6 @@ var lockCmd = &cobra.Command{
 }
 
 func lockRun(cmd *cobra.Command, args []string) {
-	start := time.Now()
-	//var dog = new(datadog.Client)
 	if ConfigFile != "" {
 		LoadConfig(ConfigFile)
 	}
@@ -33,8 +30,6 @@ func lockRun(cmd *cobra.Command, args []string) {
 	} else {
 		Log(fmt.Sprintf("'%s' was NOT locked - something went wrong.", FiletoLock), "info")
 	}
-
-	RunTime(start, KeyLockLocation, "complete")
 }
 
 func checkLockFlags() {
