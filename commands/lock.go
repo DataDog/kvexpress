@@ -28,6 +28,7 @@ func lockRun(cmd *cobra.Command, args []string) {
 
 	result := LockFile(KeyLockLocation)
 	if result {
+		LockFileWrite(FiletoLock)
 		Log(fmt.Sprintf("'%s' was locked.", FiletoLock), "info")
 	} else {
 		Log(fmt.Sprintf("'%s' was NOT locked - something went wrong.", FiletoLock), "info")
@@ -44,6 +45,9 @@ func checkLockFlags() {
 	}
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
 		Log("Enabling Datadog API.", "debug")
+	}
+	if Owner == "" {
+		Owner = GetCurrentUsername()
 	}
 	Log("Required cli flags present.", "debug")
 }

@@ -143,3 +143,28 @@ func CheckLastFile(file string, perms int, owner string) {
 		WriteFile("This is a blank file.\n", file, perms, owner)
 	}
 }
+
+// LockFilePath generates a filename for the `$filename.locked` files used
+// by `kvexpress lock` and `kvexpress unlock`
+func LockFilePath(file string) string {
+	lockedFile := fmt.Sprintf("%s.locked", file)
+	return lockedFile
+}
+
+// LockFileWrite writes a `$filename.locked` file with instructions for how to unlock.
+func LockFileWrite(file string) {
+	lockedFile := LockFilePath(file)
+	if _, err := os.Stat(lockedFile); err != nil {
+		Log(fmt.Sprintf("file='locked' file='%s' does_not_exist='true'", lockedFile), "debug")
+		lockedFileText := fmt.Sprintf("To unlock '%s' and allow kvexpress to write again:\n\nsudo kvexpress unlock -f %s\n\n", FiletoLock, FiletoLock)
+		WriteFile(lockedFileText, lockedFile, FilePermissions, Owner)
+	} else {
+		Log(fmt.Sprintf("file='locked' file='%s' does_not_exist='false'", lockedFile), "info")
+	}
+}
+
+// LockFileRemove removes a `$filename.locked` when running `kvexpress unlock`.
+func LockFileRemove(file string) {
+	lockedFile := LockFilePath(file)
+	RemoveFile(lockedFile)
+}

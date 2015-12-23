@@ -28,6 +28,7 @@ func unlockRun(cmd *cobra.Command, args []string) {
 
 	result := UnlockFile(KeyLockLocation)
 	if result {
+		LockFileRemove(FiletoUnlock)
 		Log(fmt.Sprintf("'%s' was unlocked.", FiletoUnlock), "info")
 	} else {
 		Log(fmt.Sprintf("'%s' was NOT unlocked - something went wrong.", FiletoUnlock), "info")
@@ -44,6 +45,9 @@ func checkUnlockFlags() {
 	}
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
 		Log("Enabling Datadog API.", "debug")
+	}
+	if Owner == "" {
+		Owner = GetCurrentUsername()
 	}
 	Log("Required cli flags present.", "debug")
 }
