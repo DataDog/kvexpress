@@ -29,6 +29,7 @@ func ReadURL(url string) string {
 	resp, err := http.Get(url)
 	if err != nil {
 		Log(fmt.Sprintf("function='ReadURL' panic='true' url='%s'", url), "info")
+		fmt.Printf("Panic: Could not open URL: '%s'\n", url)
 		StatsdPanic(url, "read_url")
 	}
 	defer resp.Body.Close()

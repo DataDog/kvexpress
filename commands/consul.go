@@ -30,6 +30,7 @@ func Get(c *consul.Client, key string) string {
 	pair, _, err := kv.Get(key, nil)
 	if err != nil {
 		Log(fmt.Sprintf("action='get' panic='true' key='%s'", key), "info")
+		fmt.Printf("Panic: Could not get from Consul: '%s'\n", key)
 		StatsdPanic(key, "consul_get")
 	} else {
 		if pair != nil {
@@ -51,6 +52,7 @@ func GetRaw(c *consul.Client, key string) string {
 	pair, _, err := kv.Get(fullKey, nil)
 	if err != nil {
 		Log(fmt.Sprintf("action='get_raw' panic='true' key='%s'", fullKey), "info")
+		fmt.Printf("Panic: Could not get raw from Consul: '%s'\n", key)
 		StatsdPanic(fullKey, "consul_get_raw")
 	} else {
 		if pair != nil {
@@ -77,6 +79,7 @@ func Set(c *consul.Client, key string, value string) bool {
 	_, err := kv.Put(p, nil)
 	if err != nil {
 		Log(fmt.Sprintf("action='set' panic='true' key='%s'", key), "info")
+		fmt.Printf("Panic: Could not set in Consul: '%s'\n", key)
 		StatsdPanic(key, "consul_set")
 	} else {
 		Log(fmt.Sprintf("action='set' key='%s'", key), "debug")
@@ -92,6 +95,7 @@ func Del(c *consul.Client, key string) bool {
 	_, err := kv.Delete(key, nil)
 	if err != nil {
 		Log(fmt.Sprintf("action='Del' panic='true' key='%s'", key), "info")
+		fmt.Printf("Panic: Could not delete from Consul: '%s'\n", key)
 		StatsdPanic(key, "consul_del")
 		return false
 	}

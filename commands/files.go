@@ -49,6 +49,7 @@ func WriteFile(data string, filepath string, perms int, owner string) {
 	err := ioutil.WriteFile(filepath, []byte(data), os.FileMode(perms))
 	if err != nil {
 		Log(fmt.Sprintf("function='WriteFile' panic='true' file='%s'", filepath), "info")
+		fmt.Printf("Panic: Could not write file: '%s'\n", filepath)
 		StatsdPanic(filepath, "write_file")
 	}
 	oid := GetOwnerID(owner)
@@ -56,6 +57,7 @@ func WriteFile(data string, filepath string, perms int, owner string) {
 	err = os.Chown(filepath, oid, gid)
 	if err != nil {
 		fileChown = false
+		fmt.Printf("Panic: Could not chown file: '%s'\n", filepath)
 		StatsdPanic(filepath, "chown_file")
 	} else {
 		fileChown = true
