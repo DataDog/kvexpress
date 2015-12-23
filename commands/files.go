@@ -156,7 +156,7 @@ func LockFileWrite(file string) {
 	lockedFile := LockFilePath(file)
 	if _, err := os.Stat(lockedFile); err != nil {
 		Log(fmt.Sprintf("file='locked' file='%s' does_not_exist='true'", lockedFile), "debug")
-		lockedFileText := fmt.Sprintf("To unlock '%s' and allow kvexpress to write again:\n\nsudo kvexpress unlock -f %s\n\n", FiletoLock, FiletoLock)
+		lockedFileText := fmt.Sprintf("To unlock '%s' and allow kvexpress to write again:\n\nsudo kvexpress unlock -f %s\n\nReason Locked: %s\n\n", FiletoLock, FiletoLock, LockReason)
 		WriteFile(lockedFileText, lockedFile, FilePermissions, Owner)
 	} else {
 		Log(fmt.Sprintf("file='locked' file='%s' does_not_exist='false'", lockedFile), "info")

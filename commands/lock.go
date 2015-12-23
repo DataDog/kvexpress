@@ -44,6 +44,9 @@ func checkLockFlags() {
 	if Owner == "" {
 		Owner = GetCurrentUsername()
 	}
+	if LockReason == "" {
+		LockReason = GenerateLockReason()
+	}
 	CheckFullFilename(FiletoLock)
 	Log("Required cli flags present.", "debug")
 }
