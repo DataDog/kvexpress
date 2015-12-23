@@ -43,6 +43,30 @@ func StatsdLocked(file string) {
 	}
 }
 
+// StatsdLength sends metrics to Dogstatsd on a `kvexpress out` operation
+// where the file isn't long enough.
+func StatsdLength(key string) {
+	if DogStatsd {
+		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='not_long_enough'", key), "debug")
+		statsd, _ := godspeed.NewDefault()
+		defer statsd.Conn.Close()
+		tags := makeTags(key, "not_long_enough")
+		statsd.Incr("kvexpress.not_long_enough", tags)
+	}
+}
+
+// StatsdChecksum sends metrics to Dogstatsd on a `kvexpress out` operation
+// where the checksum doesn't match.
+func StatsdChecksum(key string) {
+	if DogStatsd {
+		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='checksum_mismatch'", key), "debug")
+		statsd, _ := godspeed.NewDefault()
+		defer statsd.Conn.Close()
+		tags := makeTags(key, "checksum_mismatch")
+		statsd.Incr("kvexpress.checksum_mismatch", tags)
+	}
+}
+
 // StatsdLock sends metrics to Dogstatsd on a `kvexpress lock` operation.
 func StatsdLock(key string) {
 	if DogStatsd {
@@ -134,6 +158,19 @@ func DDStopEvent(dd *datadog.Client, key, value string) {
 	tags := makeTags(key, "stop_key_present")
 	tags = append(tags, "kvexpress:stop")
 	title := fmt.Sprintf("Stop key is present: %s. Stopping.", key)
+	event := datadog.Event{Title: title, Text: value, AlertType: "error", Tags: tags}
+	post, _ := dd.PostEvent(&event)
+	if post != nil {
+
+	}
+}
+
+// DDLengthEvent sends a Datadog event to the API when the file/url is too short.
+func DDLengthEvent(dd *datadog.Client, key, value string) {
+	Log(fmt.Sprintf("datadog='true' DDLengthEvent='true' key='%s'", key), "debug")
+	tags := makeTags(key, "not_long_enough")
+	tags = append(tags, "kvexpress:length")
+	title := fmt.Sprintf("Not long enough: %s. Stopping.", key)
 	event := datadog.Event{Title: title, Text: value, AlertType: "error", Tags: tags}
 	post, _ := dd.PostEvent(&event)
 	if post != nil {

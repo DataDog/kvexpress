@@ -80,7 +80,14 @@ func outRun(cmd *cobra.Command, args []string) {
 		WriteFile(KVData, FiletoWrite, FilePermissions, Owner)
 		StatsdOut(KeyOutLocation)
 	} else {
-		Log("longEnough='no'", "info")
+		if !longEnough {
+			Log("longEnough='no'", "info")
+			StatsdLength(KeyOutLocation)
+		}
+		if !checksumMatch {
+			Log("checksumMismatch='yes'", "info")
+			StatsdChecksum(KeyOutLocation)
+		}
 		os.Exit(0)
 	}
 

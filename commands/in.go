@@ -78,7 +78,9 @@ func inRun(cmd *cobra.Command, args []string) {
 
 	if !longEnough {
 		Log("File is NOT long enough. Stopping.", "info")
-		// TODO: Add Datadog Event here.
+		if DatadogAPIKey != "" && DatadogAPPKey != "" {
+			DDLengthEvent(dog, KeyInLocation, FileString)
+		}
 		RunTime(start, KeyInLocation, "not_long_enough")
 		os.Exit(1)
 	}
