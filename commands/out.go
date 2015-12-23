@@ -32,6 +32,7 @@ func outRun(cmd *cobra.Command, args []string) {
 
 	if LockKeyData != "" {
 		Log(fmt.Sprintf("Lock Key is present - will not update file. Reason: %s", LockKeyData), "info")
+		StatsdLocked(FiletoWrite)
 		RunTime(start, FiletoWrite, "lock_key")
 		os.Exit(0)
 	}

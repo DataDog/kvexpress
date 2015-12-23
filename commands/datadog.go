@@ -31,6 +31,18 @@ func StatsdOut(key string) {
 	}
 }
 
+// StatsdLocked sends metrics to Dogstatsd on an `kvexpress out` operation
+// that is blocked by a locked file.
+func StatsdLocked(file string) {
+	if DogStatsd {
+		Log(fmt.Sprintf("dogstatsd='true' file='%s' stats='locked'", file), "debug")
+		statsd, _ := godspeed.NewDefault()
+		defer statsd.Conn.Close()
+		tags := makeTags(file, "complete")
+		statsd.Incr("kvexpress.locked", tags)
+	}
+}
+
 // StatsdLock sends metrics to Dogstatsd on an `kvexpress lock` operation.
 func StatsdLock(key string) {
 	if DogStatsd {
