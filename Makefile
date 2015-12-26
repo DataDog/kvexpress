@@ -39,6 +39,9 @@ release: clean build gziposx clean linux gziplinux clean
 consul:
 	consul agent -data-dir `mktemp -d`  -bootstrap -server -bind=127.0.0.1
 
+consul_kill:
+	ps auxwww | grep "[c]onsul agent.*tmp.*bind.127.*" | cut -d ' ' -f 3 | xargs kill
+
 sorting:
 	curl -s https://gist.githubusercontent.com/darron/94447bfab90617f16962/raw/d4cb39471724800ba9e731f99e5844167e93c5df/sorting.txt > sorting
 
