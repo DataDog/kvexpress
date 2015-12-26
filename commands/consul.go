@@ -20,8 +20,6 @@ func Connect(server, token string) (*consul.Client, error) {
 	return consul, nil
 }
 
-// TODO: Can likely refactor the following two functions into one.
-
 // Get the value from a kvexpress formatted key in the Consul KV store.
 func Get(c *consul.Client, key string) string {
 	var value string
@@ -39,28 +37,6 @@ func Get(c *consul.Client, key string) string {
 			value = ""
 		}
 		Log(fmt.Sprintf("action='get' key='%s'", key), "debug")
-	}
-	return value
-}
-
-// GetRaw the value from any key in the Consul KV store.
-func GetRaw(c *consul.Client, key string) string {
-	var value string
-	kv := c.KV()
-	fullKey := fmt.Sprintf("%s/%s", PrefixLocation, key)
-	fullKey = strings.TrimPrefix(fullKey, "/")
-	pair, _, err := kv.Get(fullKey, nil)
-	if err != nil {
-		Log(fmt.Sprintf("action='get_raw' panic='true' key='%s'", fullKey), "info")
-		fmt.Printf("Panic: Could not get raw from Consul: '%s'\n", key)
-		StatsdPanic(fullKey, "consul_get_raw")
-	} else {
-		if pair != nil {
-			value = string(pair.Value[:])
-		} else {
-			value = ""
-		}
-		Log(fmt.Sprintf("action='get_raw' key='%s'", fullKey), "debug")
 	}
 	return value
 }
