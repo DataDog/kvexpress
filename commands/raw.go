@@ -14,6 +14,7 @@ var rawCmd = &cobra.Command{
 	Long:  `raw is for writing a file based on any Consul key.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		checkRawFlags()
+		AutoEnable()
 	},
 	Run: rawRun,
 }

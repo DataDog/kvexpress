@@ -14,6 +14,7 @@ var copyCmd = &cobra.Command{
 	Long:  `copy is for copying already existing keys.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		checkCopyFlags()
+		AutoEnable()
 	},
 	Run: copyRun,
 }

@@ -12,6 +12,7 @@ var unlockCmd = &cobra.Command{
 	Long:  `Unlock is a convenient way to allow a previously locked file to be updated.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		checkUnlockFlags()
+		AutoEnable()
 	},
 	Run: unlockRun,
 }

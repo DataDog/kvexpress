@@ -13,6 +13,7 @@ var outCmd = &cobra.Command{
 	Long:  `out is for writing a file based on a Consul kvexpress key and checksum.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		checkOutFlags()
+		AutoEnable()
 	},
 	Run: outRun,
 }

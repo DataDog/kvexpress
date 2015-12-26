@@ -74,7 +74,6 @@ var (
 func init() {
 	// Do some setup.
 	Direction = SetDirection()
-	AutoEnable()
 	RootCmd.PersistentFlags().StringVarP(&ConfigFile, "config", "C", "", "Config file location")
 	RootCmd.PersistentFlags().StringVarP(&ConsulServer, "server", "s", "localhost:8500", "Consul server location")
 	RootCmd.PersistentFlags().StringVarP(&Token, "token", "t", "anonymous", "Token for Consul access")

@@ -9,11 +9,12 @@ import (
 var lockCmd = &cobra.Command{
 	Use:   "lock",
 	Short: "Lock a file on a single node so it stays the way it is.",
+	Long:  `Lock is a convenient way to stop a file from being updated on a single node.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		checkLockFlags()
+		AutoEnable()
 	},
-	Long: `Lock is a convenient way to stop a file from being updated on a single node.`,
-	Run:  lockRun,
+	Run: lockRun,
 }
 
 func lockRun(cmd *cobra.Command, args []string) {

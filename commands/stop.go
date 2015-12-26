@@ -14,6 +14,7 @@ var stopCmd = &cobra.Command{
 	Long:  `stop is a convenient way to put stop values in Consul.  Stops ALL nodes from updating.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		checkStopFlags()
+		AutoEnable()
 	},
 	Run: stopRun,
 }

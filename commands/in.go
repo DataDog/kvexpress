@@ -14,6 +14,7 @@ var inCmd = &cobra.Command{
 	Long:  `in is for putting data into a Consul key so that you can write it on another networked node.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		checkInFlags()
+		AutoEnable()
 	},
 	Run: inRun,
 }
