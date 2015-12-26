@@ -21,12 +21,6 @@ func ReturnCurrentUTC() string {
 	return dateUpdated
 }
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
 // SetDirection returns the direction.
 func SetDirection() string {
 	direction := ""
@@ -136,4 +130,25 @@ func DecompressData(data string) string {
 func GetHostname() string {
 	hostname, _ := os.Hostname()
 	return hostname
+}
+
+// AutoEnable helps to automatically enable flags based on cues from the environment.
+func AutoEnable() {
+	// Load the config file if passed.
+	if ConfigFile != "" {
+		LoadConfig(ConfigFile)
+	}
+	// Check for dd-agent configuration file.
+	if _, err := os.Stat("/etc/dd-agent/datadog.conf"); err == nil {
+		DogStatsd = true
+	}
+	if Owner == "" {
+		Owner = GetCurrentUsername()
+	}
+	if DogStatsd {
+		Log("Enabling Dogstatsd metrics.", "debug")
+	}
+	if DatadogAPIKey != "" && DatadogAPPKey != "" {
+		Log("Enabling Datadog API.", "debug")
+	}
 }

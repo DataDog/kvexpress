@@ -12,16 +12,15 @@ var stopCmd = &cobra.Command{
 	Use:   "stop",
 	Short: "Put stop value into Consul.",
 	Long:  `stop is a convenient way to put stop values in Consul.  Stops ALL nodes from updating.`,
-	Run:   stopRun,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		checkStopFlags()
+	},
+	Run: stopRun,
 }
 
 func stopRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
 	var dog = new(datadog.Client)
-	if ConfigFile != "" {
-		LoadConfig(ConfigFile)
-	}
-	checkStopFlags()
 
 	KeyStop := KeyStopPath(KeyStopLocation)
 
@@ -57,9 +56,6 @@ func checkStopFlags() {
 	if KeyStopReason == "" {
 		fmt.Println("Need a reason to stop in -r")
 		os.Exit(1)
-	}
-	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		Log("Enabling Datadog API.", "debug")
 	}
 	Log("Required cli flags present.", "debug")
 }

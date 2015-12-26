@@ -12,20 +12,19 @@ var rawCmd = &cobra.Command{
 	Use:   "raw",
 	Short: "Write a file pulled from any Consul KV data.",
 	Long:  `raw is for writing a file based on any Consul key.`,
-	Run:   rawRun,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		checkRawFlags()
+	},
+	Run: rawRun,
 }
 
 func rawRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
-	if ConfigFile != "" {
-		LoadConfig(ConfigFile)
-	}
-	checkRawFlags()
 
 	c, _ := Connect(ConsulServer, Token)
 
 	// Get the KV data out of Consul.
-	KVData := GetRaw(c, RawKeyOutLocation)
+	KVData := Get(c, RawKeyOutLocation)
 
 	// Is the data long enough?
 	longEnough := LengthCheck(KVData, MinFileLength)
@@ -59,15 +58,6 @@ func checkRawFlags() {
 		fmt.Println("Need a file to write in -f")
 		os.Exit(1)
 	}
-	if DogStatsd {
-		Log("Enabling Dogstatsd metrics.", "debug")
-	}
-	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		Log("Enabling Datadog API.", "debug")
-	}
-	if Owner == "" {
-		Owner = GetCurrentUsername()
-	}
 	Log("Required cli flags present.", "debug")
 }
 
@@ -75,6 +65,7 @@ var (
 	// RawKeyOutLocation This Consul key is the location we want to pull data from.
 	// This data can be ANY Consul key and doesn't have to be in any particular format or structure.
 	// It doesn't have to have a Checksum either - it can be any Consul key at all.
+	// Give the complete path - does not use PrefixLocation.
 	RawKeyOutLocation string
 
 	// RawFiletoWrite is the location we want to write the data to.
@@ -83,6 +74,6 @@ var (
 
 func init() {
 	RootCmd.AddCommand(rawCmd)
-	rawCmd.Flags().StringVarP(&RawKeyOutLocation, "key", "k", "", "key to pull data from")
+	rawCmd.Flags().StringVarP(&RawKeyOutLocation, "key", "k", "", "Raw key to pull data from")
 	rawCmd.Flags().StringVarP(&RawFiletoWrite, "file", "f", "", "where to write the data")
 }

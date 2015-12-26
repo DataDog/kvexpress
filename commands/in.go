@@ -12,7 +12,10 @@ var inCmd = &cobra.Command{
 	Use:   "in",
 	Short: "Put configuration into Consul.",
 	Long:  `in is for putting data into a Consul key so that you can write it on another networked node.`,
-	Run:   inRun,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		checkInFlags()
+	},
+	Run: inRun,
 }
 
 func inRun(cmd *cobra.Command, args []string) {
@@ -21,10 +24,6 @@ func inRun(cmd *cobra.Command, args []string) {
 	var CompareFile = ""
 	var LastFile = ""
 	var FileString = ""
-	if ConfigFile != "" {
-		LoadConfig(ConfigFile)
-	}
-	checkInFlags()
 
 	KeyStop := KeyStopPath(KeyInLocation)
 	KeyData := KeyDataPath(KeyInLocation)
@@ -182,15 +181,6 @@ func checkInFlags() {
 	if FiletoRead != "" && UrltoRead != "" {
 		fmt.Println("You cannot use both -f and -u.")
 		os.Exit(1)
-	}
-	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		Log("Enabling Datadog API.", "debug")
-	}
-	if DogStatsd {
-		Log("Enabling Dogstatsd metrics.", "debug")
-	}
-	if Owner == "" {
-		Owner = GetCurrentUsername()
 	}
 	Log("Required cli flags present.", "debug")
 }

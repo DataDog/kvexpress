@@ -11,15 +11,14 @@ var outCmd = &cobra.Command{
 	Use:   "out",
 	Short: "Write a file based on kvexpress organized data stored in Consul.",
 	Long:  `out is for writing a file based on a Consul kvexpress key and checksum.`,
-	Run:   outRun,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		checkOutFlags()
+	},
+	Run: outRun,
 }
 
 func outRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
-	if ConfigFile != "" {
-		LoadConfig(ConfigFile)
-	}
-	checkOutFlags()
 
 	KeyData := KeyDataPath(KeyOutLocation)
 	KeyChecksum := KeyChecksumPath(KeyOutLocation)
@@ -108,15 +107,6 @@ func checkOutFlags() {
 	if FiletoWrite == "" {
 		fmt.Println("Need a file to write in -f")
 		os.Exit(1)
-	}
-	if DogStatsd {
-		Log("Enabling Dogstatsd metrics.", "debug")
-	}
-	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		Log("Enabling Datadog API.", "debug")
-	}
-	if Owner == "" {
-		Owner = GetCurrentUsername()
 	}
 	Log("Required cli flags present.", "debug")
 }

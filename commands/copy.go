@@ -12,16 +12,15 @@ var copyCmd = &cobra.Command{
 	Use:   "copy",
 	Short: "Copy a Consul key to another location.",
 	Long:  `copy is for copying already existing keys.`,
-	Run:   copyRun,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		checkCopyFlags()
+	},
+	Run: copyRun,
 }
 
 func copyRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
 	var dog = new(datadog.Client)
-	if ConfigFile != "" {
-		LoadConfig(ConfigFile)
-	}
-	checkCopyFlags()
 
 	// Set the source key locations.
 	KeyData := KeyDataPath(KeyFrom)
@@ -98,15 +97,6 @@ func checkCopyFlags() {
 	if KeyTo == "" {
 		fmt.Println("Need a key destination in --keyto")
 		os.Exit(1)
-	}
-	if DogStatsd {
-		Log("Enabling Dogstatsd metrics.", "debug")
-	}
-	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		Log("Enabling Datadog API.", "debug")
-	}
-	if Owner == "" {
-		Owner = GetCurrentUsername()
 	}
 	Log("Required cli flags present.", "debug")
 }

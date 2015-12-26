@@ -11,15 +11,14 @@ var cleanCmd = &cobra.Command{
 	Use:   "clean",
 	Short: "Clean local cache files.",
 	Long:  `clean is for cleaning up local cache files.`,
-	Run:   cleanRun,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		checkCleanFlags()
+	},
+	Run: cleanRun,
 }
 
 func cleanRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
-	if ConfigFile != "" {
-		LoadConfig(ConfigFile)
-	}
-	checkCleanFlags()
 
 	CompareFile := CompareFilename(FiletoClean)
 	LastFile := LastFilename(FiletoClean)

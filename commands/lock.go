@@ -29,21 +29,10 @@ func lockRun(cmd *cobra.Command, args []string) {
 }
 
 func checkLockFlags() {
-	// Load the config file if passed.
-	if ConfigFile != "" {
-		LoadConfig(ConfigFile)
-	}
-	AutoEnable()
 	Log("Checking cli flags.", "debug")
 	if FiletoLock == "" {
 		fmt.Println("Need a file to lock with -f")
 		os.Exit(1)
-	}
-	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		Log("Enabling Datadog API.", "debug")
-	}
-	if Owner == "" {
-		Owner = GetCurrentUsername()
 	}
 	if LockReason == "" {
 		LockReason = GenerateLockReason()

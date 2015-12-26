@@ -9,11 +9,11 @@ import (
 var unlockCmd = &cobra.Command{
 	Use:   "unlock",
 	Short: "Unock a file on a single node so it updates.",
+	Long:  `Unlock is a convenient way to allow a previously locked file to be updated.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		checkUnlockFlags()
 	},
-	Long: `Unlock is a convenient way to allow a previously locked file to be updated.`,
-	Run:  unlockRun,
+	Run: unlockRun,
 }
 
 func unlockRun(cmd *cobra.Command, args []string) {
@@ -29,21 +29,10 @@ func unlockRun(cmd *cobra.Command, args []string) {
 }
 
 func checkUnlockFlags() {
-	// Load the config file if passed.
-	if ConfigFile != "" {
-		LoadConfig(ConfigFile)
-	}
-	AutoEnable()
 	Log("Checking cli flags.", "debug")
 	if FiletoUnlock == "" {
 		fmt.Println("Need a file to lock with -f")
 		os.Exit(1)
-	}
-	if DatadogAPIKey != "" && DatadogAPPKey != "" {
-		Log("Enabling Datadog API.", "debug")
-	}
-	if Owner == "" {
-		Owner = GetCurrentUsername()
 	}
 	CheckFullFilename(FiletoUnlock)
 	Log("Required cli flags present.", "debug")
