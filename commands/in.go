@@ -26,9 +26,9 @@ func inRun(cmd *cobra.Command, args []string) {
 	var LastFile = ""
 	var FileString = ""
 
-	KeyStop := KeyStopPath(KeyInLocation)
-	KeyData := KeyDataPath(KeyInLocation)
-	KeyChecksum := KeyChecksumPath(KeyInLocation)
+	KeyStop := KeyPath(KeyInLocation, "stop")
+	KeyData := KeyPath(KeyInLocation, "data")
+	KeyChecksum := KeyPath(KeyInLocation, "checksum")
 
 	if FiletoRead != "" {
 		CompareFile = CompareFilename(FiletoRead)

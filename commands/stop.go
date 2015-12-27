@@ -23,7 +23,7 @@ func stopRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
 	var dog = new(datadog.Client)
 
-	KeyStop := KeyStopPath(KeyStopLocation)
+	KeyStop := KeyPath(KeyStopLocation, "stop")
 
 	c, _ := Connect(ConsulServer, Token)
 

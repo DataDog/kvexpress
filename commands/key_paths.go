@@ -6,28 +6,14 @@ import (
 	"strings"
 )
 
-// KeyDataPath returns the key to fetch kvexpress data.
-func KeyDataPath(key string) string {
-	fullPath := fmt.Sprint(strings.TrimPrefix(PrefixLocation, "/"), "/", key, "/data")
-	Log(fmt.Sprintf("path='data' fullPath='%s'", fullPath), "debug")
+// KeyPath returns the standard kvexpress paths for data, checksum and stop.
+func KeyPath(key string, suffix string) string {
+	fullPath := fmt.Sprintf("%s/%s/%s", strings.TrimPrefix(PrefixLocation, "/"), key, suffix)
+	Log(fmt.Sprintf("path='%s' fullPath='%s'", suffix, fullPath), "debug")
 	return fullPath
 }
 
-// KeyChecksumPath returns the key to fetch kvexpress checksum.
-func KeyChecksumPath(key string) string {
-	fullPath := fmt.Sprint(strings.TrimPrefix(PrefixLocation, "/"), "/", key, "/checksum")
-	Log(fmt.Sprintf("path='checksum' fullPath='%s'", fullPath), "debug")
-	return fullPath
-}
-
-// KeyStopPath returns the key to fetch kvexpress stop information.
-func KeyStopPath(key string) string {
-	fullPath := fmt.Sprint(strings.TrimPrefix(PrefixLocation, "/"), "/", key, "/stop")
-	Log(fmt.Sprintf("path='stop' fullPath='%s'", fullPath), "debug")
-	return fullPath
-}
-
-// GenerateFileLockPath generates the path for the KV store for a particular file.
+// FileLockPath generates the path for the KV store for a particular file.
 func FileLockPath(file string) string {
 	hostname := GetHostname()
 	fileSHA := sha256.Sum256([]byte(file))

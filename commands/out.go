@@ -21,9 +21,9 @@ var outCmd = &cobra.Command{
 func outRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
 
-	KeyData := KeyDataPath(KeyOutLocation)
-	KeyChecksum := KeyChecksumPath(KeyOutLocation)
-	KeyStop := KeyStopPath(KeyOutLocation)
+	KeyData := KeyPath(KeyOutLocation, "data")
+	KeyChecksum := KeyPath(KeyOutLocation, "checksum")
+	KeyStop := KeyPath(KeyOutLocation, "stop")
 	KeyLock := FileLockPath(FiletoWrite)
 
 	c, _ := Connect(ConsulServer, Token)

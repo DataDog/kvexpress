@@ -24,8 +24,8 @@ func copyRun(cmd *cobra.Command, args []string) {
 	var dog = new(datadog.Client)
 
 	// Set the source key locations.
-	KeyData := KeyDataPath(KeyFrom)
-	KeyChecksum := KeyChecksumPath(KeyFrom)
+	KeyData := KeyPath(KeyFrom, "data")
+	KeyChecksum := KeyPath(KeyFrom, "checksum")
 
 	c, _ := Connect(ConsulServer, Token)
 
@@ -59,8 +59,8 @@ func copyRun(cmd *cobra.Command, args []string) {
 			KVData = CompressData(KVData)
 		}
 		// New destination key Locations
-		KeyData = KeyDataPath(KeyTo)
-		KeyChecksum = KeyChecksumPath(KeyTo)
+		KeyData = KeyPath(KeyTo, "data")
+		KeyChecksum = KeyPath(KeyTo, "checksum")
 		// Save it.
 		saved := Set(c, KeyData, KVData)
 		if saved {
