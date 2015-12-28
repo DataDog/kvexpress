@@ -199,6 +199,8 @@ There is an optional `stop` key - that if present - will cause all `in` and `out
 
 To build: `make deps && make`
 
+To run integration tests: `make deps && make && make test`
+
 To build for Linux: `make deps && make linux`
 
 To launch an empty [Consul](https://www.consul.io/) instance: `make consul`
