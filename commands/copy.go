@@ -86,7 +86,7 @@ func copyRun(cmd *cobra.Command, args []string) {
 		Log(fmt.Sprintf("exec='%s'", PostExec), "debug")
 		RunCommand(PostExec)
 	}
-	RunTime(start, RawKeyOutLocation, "complete")
+	RunTime(start, KeyTo, "complete")
 }
 
 func checkCopyFlags() {
