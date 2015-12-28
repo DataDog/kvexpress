@@ -2,6 +2,9 @@
 
 set -e
 
+# Kill Consul once this exits.
+trap "make consul_kill" INT TERM EXIT
+
 export PREDICTED_CHECKSUM="0ab71a1c8fef24ade8d650e2cc248aac1e499a45a0e9456ba0b47901f99176d8"
 export KVEXPRESS_DEBUG=1
 
@@ -107,4 +110,3 @@ bin/kvexpress clean -f url
 
 # Kill Consul
 echo "Killing spawned Consul."
-make consul_kill
