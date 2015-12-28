@@ -6,13 +6,14 @@ BUILD_FLAGS=-X main.CompileDate=$(COMPILE_DATE) -X main.GitCommit=$(GIT_COMMIT) 
 all: build
 
 deps:
-	go get github.com/aryann/difflib
-	go get github.com/spf13/cobra
-	go get github.com/hashicorp/consul/api
-	go get github.com/zorkian/go-datadog-api
-	go get github.com/PagerDuty/godspeed
-	go get gopkg.in/yaml.v2
-	go get github.com/smallfish/simpleyaml
+	go get -u github.com/spf13/cobra
+	go get -u github.com/hashicorp/consul/api
+	go get -u github.com/zorkian/go-datadog-api
+	go get -u github.com/PagerDuty/godspeed
+	go get -u gopkg.in/yaml.v2
+	go get -u github.com/smallfish/simpleyaml
+	go get -u github.com/progrium/basht
+	go get -u github.com/CiscoCloud/consul-cli
 
 format:
 	gofmt -w .
@@ -37,7 +38,7 @@ gziplinux:
 release: clean build gziposx clean linux gziplinux clean
 
 consul:
-	consul agent -data-dir `mktemp -d`  -bootstrap -server -bind=127.0.0.1
+	consul agent -data-dir `mktemp -d` -bootstrap -server -bind=127.0.0.1 1>/dev/null &
 
 consul_kill:
 	ps auxwww | grep "[c]onsul agent.*tmp.*bind.127.*" | cut -d ' ' -f 3 | xargs kill
@@ -45,5 +46,9 @@ consul_kill:
 sorting:
 	curl -s https://gist.githubusercontent.com/darron/94447bfab90617f16962/raw/d4cb39471724800ba9e731f99e5844167e93c5df/sorting.txt > sorting
 
-wercker:
-	testing/wercker.sh
+wercker_clean:
+	bin/kvexpress clean -f sorting
+	rm -f output ignored lock-test lock-test.locked url raw_checksum
+
+wercker: consul sorting
+	basht testing/tests.bash
