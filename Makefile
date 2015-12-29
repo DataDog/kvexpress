@@ -46,7 +46,10 @@ consul_kill:
 sorting:
 	curl -s https://gist.githubusercontent.com/darron/94447bfab90617f16962/raw/d4cb39471724800ba9e731f99e5844167e93c5df/sorting.txt > sorting
 
-test: wercker
+unit:
+	cd commands && go test -v
+
+test: unit wercker
 
 wercker_clean:
 	bin/kvexpress clean -f sorting
