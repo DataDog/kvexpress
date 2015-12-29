@@ -9,6 +9,7 @@ export LOCKED_FILE="$LOCK_FILE.locked"
 export HOSTNAME=$(hostname)
 export LOCK_URL="kvexpress/locks/e9de90b0a8985bf058580aa8457883b9fd76dd1fb13bdda5e1608884f9276dec/$HOSTNAME"
 export URL_CHECKSUM="307b198c768b7a174b11e00c70bb1bd7b32597a86790279f763c4544dc12d1ff"
+export COMPRESSED_DATA="H4sIAAAJbogA/4SPzUrEQBCE7/MUzXod9g28iD940ZMnWaRNV5LByfQ605vVt7eTIIgI3oaa+r6in0X2bzM+jhWtHUKnpU8DXVJOPUJYfhvkEI4Z3OC5aKSiFteHjalFSn2kMyJ1XCLxrEk8sw0WTCr86eaMGdkF9w+3j0HYWHTZqXoytP2URDLOXJfRrMOA+lJV7Rc3cvFabSuo5sWf9cX0P/B+4lx4wp/jF7T75q9vrp7uduRI80OxlWli60YIuXdNUhlo5pr4NbvpCwAA//8BAAD//38Ab4hOAQAA"
 echo "This is a test of the lock-test file." > $LOCK_FILE
 
 sleep 5
@@ -37,12 +38,12 @@ T_20tryToPullKey() {
 }
 
 T_22testForStoppedFile() {
-  [[ ! -f "stopped" ]]
+  [[ ! -e "stopped" ]]
 }
 
 T_24ignoreStopKey() {
   bin/kvexpress out -k testing -f ignored --ignore_stop
-  [[ -f "ignored" ]]
+  [[ -e "ignored" ]]
 }
 
 T_30lockKey() {
@@ -52,7 +53,7 @@ T_30lockKey() {
 }
 
 T_32lockedFile() {
-  [[ -f $LOCKED_FILE ]]
+  [[ -e $LOCKED_FILE ]]
 }
 
 T_34lockedFileContents() {
@@ -67,14 +68,20 @@ T_36testLockWorking() {
 
 T_38unlockFile() {
   bin/kvexpress unlock -f $LOCK_FILE
-  [[ ! -f $LOCKED_FILE ]]
+  [[ ! -e $LOCKED_FILE ]]
 }
 
 T_40testClean() {
   bin/kvexpress clean -f sorting
-  [[ ! -f sorting ]]
-  [[ ! -f sorting.compare ]]
-  [[ ! -f sorting.last ]]
+  [[ ! -e sorting ]]
+}
+
+T_42_testClean() {
+  [[ ! -e sorting.compare ]]
+}
+
+T_44_testClean() {
+  [[ ! -e sorting.last ]]
 }
 
 T_50testURLIn() {
@@ -89,6 +96,15 @@ T_52outputURL() {
   [[ "$urlfilechecksum" == "$URL_CHECKSUM" ]]
 }
 
+T_54outWithExec() {
+  bin/kvexpress out -k url -f url_exec -e 'touch additional-file'
+  [[ -e url_exec ]]
+}
+
+T_56outWithExec() {
+  [[ -e additional-file ]]
+}
+
 T_60getRawKey() {
   bin/kvexpress raw -k kvexpress/url/checksum -f raw_checksum -l 1
   rawchecksum="$(cat raw_checksum)"
@@ -99,4 +115,16 @@ T_70copyKey() {
   bin/kvexpress copy --keyfrom url --keyto copied
   copiedchecksum="$(consul-cli kv-read kvexpress/copied/checksum)"
   [[ "$copiedchecksum" == "$URL_CHECKSUM" ]]
+}
+
+T_80compressText() {
+  compressedoutput="$(bin/kvexpress in -z true -k compressed -u https://gist.githubusercontent.com/darron/9753b203b32667484105/raw/e66ea4c28c59e54aa8234d742368ccf93527dce5/gistfile1.txt)"
+  compresseddata="$(consul-cli kv-read kvexpress/compressed/data)"
+  [[ "$compresseddata" == "$COMPRESSED_DATA" ]]
+}
+
+T_82decompressText() {
+  bin/kvexpress out -z true -k compressed -f decompressed
+  decompressedfilechecksum="$(shasum -a 256 decompressed | cut -d ' ' -f 1)"
+  [[ "$decompressedfilechecksum" == "$URL_CHECKSUM" ]]
 }
