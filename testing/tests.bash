@@ -15,10 +15,6 @@ sleep 5
 
 T_10insertSortingIntoTesting() {
   result="$(bin/kvexpress in -k testing -f sorting --sorted true)"
-  [[ "$?" -eq "0" ]]
-}
-
-T_12testPredictedChecksum() {
   checksum="$(consul-cli kv-read kvexpress/testing/checksum)"
   [[ "$checksum" == "$PREDICTED_CHECKSUM" ]]
 }
@@ -82,7 +78,7 @@ T_40testClean() {
 }
 
 T_50testURLIn() {
-  bin/kvexpress in -k url -u https://gist.githubusercontent.com/darron/9753b203b32667484105/raw/e66ea4c28c59e54aa8234d742368ccf93527dce5/gistfile1.txt
+  urloutput="$(bin/kvexpress in -k url -u https://gist.githubusercontent.com/darron/9753b203b32667484105/raw/e66ea4c28c59e54aa8234d742368ccf93527dce5/gistfile1.txt)"
   urlchecksum=$(consul-cli kv-read kvexpress/url/checksum)
   [[ "$urlchecksum" == "$URL_CHECKSUM" ]]
 }
@@ -101,6 +97,6 @@ T_60getRawKey() {
 
 T_70copyKey() {
   bin/kvexpress copy --keyfrom url --keyto copied
-  copiedchecksum=$(consul-cli kv-read kvexpress/copied/checksum)
+  copiedchecksum="$(consul-cli kv-read kvexpress/copied/checksum)"
   [[ "$copiedchecksum" == "$URL_CHECKSUM" ]]
 }
