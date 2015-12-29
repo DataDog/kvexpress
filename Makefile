@@ -56,4 +56,4 @@ wercker_clean:
 	rm -f output ignored lock-test lock-test.locked url raw_checksum url_exec additional-file decompressed
 
 wercker: consul sorting
-	basht testing/tests.bash
+	basht test/tests.bash
