@@ -14,6 +14,10 @@ echo "This is a test of the lock-test file." > $LOCK_FILE
 
 sleep 5
 
+T_06runbinary() {
+  result="$(bin/kvexpress)"
+}
+
 T_10insertSortingIntoTesting() {
   result="$(bin/kvexpress in -k testing -f sorting --sorted true)"
   checksum="$(consul-cli kv-read kvexpress/testing/checksum)"
