@@ -41,13 +41,13 @@ consul:
 	consul agent -data-dir `mktemp -d` -bootstrap -server -bind=127.0.0.1 1>/dev/null &
 
 consul_kill:
-	ps auxwww | grep "[c]onsul agent.*tmp.*bind.127.*" | cut -d ' ' -f 3 | xargs kill
+	pkill consul
 
 sorting:
 	curl -s https://gist.githubusercontent.com/darron/94447bfab90617f16962/raw/d4cb39471724800ba9e731f99e5844167e93c5df/sorting.txt > sorting
 
 unit:
-	cd commands && go test -v
+	cd commands && go test -v -cover
 
 test: unit wercker
 
