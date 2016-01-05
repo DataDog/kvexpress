@@ -24,24 +24,17 @@ func Connect(server string, token string) (*consul.Client, error) {
 
 // consulConnect to the Consul server and hand back a client object.
 func consulConnect(server, token string) (*consul.Client, error) {
-	var cleanedToken = ""
 	config := consul.DefaultConfig()
 	config.Address = server
 	// Let's clean up the token so it doesn't appear in the logs.
-	if token != "" && strings.ContainsAny(token, "-") {
+	if token != "" {
 		config.Token = token
-		cleanedToken = cleanupToken(token)
-	}
-	// If it's anonymous - then that's a special case.
-	if token == "anonymous" {
-		config.Token = token
-		cleanedToken = token
 	}
 	consul, err := consul.NewClient(config)
 	if err != nil {
 		return nil, err
 	}
-	Log(fmt.Sprintf("server='%s' token='%s'", server, cleanedToken), "debug")
+	Log(fmt.Sprintf("server='%s' token='%s'", server, cleanupToken(token)), "debug")
 	return consul, nil
 }
 
@@ -49,30 +42,36 @@ func consulConnect(server, token string) (*consul.Client, error) {
 // so that we can see part of the token in the logs - helps with debugging.
 // We don't want the full token in any logs - that's bad.
 func cleanupToken(token string) string {
-	first := strings.Split(token, "-")
-	firstString := fmt.Sprintf("%s", first[0])
-	Log(firstString, "info")
-	return firstString
+	first := strings.SplitN(token, "-", 2)[0]
+	return first
 }
 
 // Get the value from a key in the Consul KV store.
 func Get(c *consul.Client, key string) string {
-	maxTries := consulTries
-	for tries := 1; tries <= maxTries; tries++ {
-		value, err := consulGet(c, key)
+	var str string
+	Retry(func() error {
+		var err error
+		str, err = consulGet(c, key)
+		return err
+	}, consulTries)
+	return str
+}
+
+// Retry loops through the callback func and tries several times to do the thing.
+func Retry(callback func() error, tries int) {
+	var err error
+	for i := 1; i <= tries; i++ {
+		err = callback()
 		if err == nil {
-			return value
+			return
 		}
 		waitTime := time.Duration(tries) * time.Second
-		Log(fmt.Sprintf("Consul Get failure (%d) - trying again. Max: %d", tries, maxTries), "info")
-		if tries < maxTries {
+		Log(fmt.Sprintf("Consul Failure (%d) - trying again. Max: %d", i, tries), "info")
+		if i < tries {
 			time.Sleep(waitTime)
 		}
 	}
-	Log("Panic: Giving up on Consul Get.", "info")
-	fmt.Printf("Panic: Could not get from Consul: '%s'\n", key)
-	StatsdPanic(key, "consul_get")
-	return ""
+	LogFatal("Panic: Giving up on Consul.", "nokey", "no_more_retries")
 }
 
 // consulGet the value from a key in the Consul KV store.
@@ -95,63 +94,47 @@ func consulGet(c *consul.Client, key string) (string, error) {
 
 // Set the value for a key in the Consul KV store.
 func Set(c *consul.Client, key string, value string) bool {
-	maxTries := consulTries
-	for tries := 1; tries <= maxTries; tries++ {
-		if consulSet(c, key, value) {
-			return true
-		}
-		waitTime := time.Duration(tries) * time.Second
-		Log(fmt.Sprintf("Consul Set failure (%d) - trying again. Max: %d", tries, maxTries), "info")
-		if tries < maxTries {
-			time.Sleep(waitTime)
-		}
-	}
-	Log("Panic: Giving up on Consul Set.", "info")
-	fmt.Printf("Panic: Could not set in Consul: '%s'\n", key)
-	StatsdPanic(key, "consul_set")
-	return false
+	var success bool
+	Retry(func() error {
+		var err error
+		success, err = consulSet(c, key, value)
+		return err
+	}, consulTries)
+	return true
 }
 
 // consulSet a value for a key in the Consul KV store.
-func consulSet(c *consul.Client, key string, value string) bool {
+func consulSet(c *consul.Client, key string, value string) (bool, error) {
 	key = strings.TrimPrefix(key, "/")
 	p := &consul.KVPair{Key: key, Value: []byte(value)}
 	kv := c.KV()
 	_, err := kv.Put(p, nil)
 	if err != nil {
-		return false
+		return false, err
 	}
 	Log(fmt.Sprintf("action='consulSet' key='%s'", key), "debug")
-	return true
+	return true, err
 }
 
 // Del removes a key from the Consul KV store.
 func Del(c *consul.Client, key string) bool {
-	maxTries := consulTries
-	for tries := 1; tries <= maxTries; tries++ {
-		if consulDel(c, key) {
-			return true
-		}
-		waitTime := time.Duration(tries) * time.Second
-		Log(fmt.Sprintf("Consul Del failure (%d) - trying again. Max: %d", tries, maxTries), "info")
-		if tries < maxTries {
-			time.Sleep(waitTime)
-		}
-	}
-	Log("Panic: Giving up on Consul Del.", "info")
-	fmt.Printf("Panic: Could not delete from Consul: '%s'\n", key)
-	StatsdPanic(key, "consul_del")
-	return false
+	var success bool
+	Retry(func() error {
+		var err error
+		success, err = consulDel(c, key)
+		return err
+	}, consulTries)
+	return true
 }
 
 // consulDel removes a key from the Consul KV store.
-func consulDel(c *consul.Client, key string) bool {
+func consulDel(c *consul.Client, key string) (bool, error) {
 	kv := c.KV()
 	key = strings.TrimPrefix(key, "/")
 	_, err := kv.Delete(key, nil)
 	if err != nil {
-		return false
+		return false, err
 	}
 	Log(fmt.Sprintf("action='consulDel' key='%s'", key), "info")
-	return true
+	return true, err
 }

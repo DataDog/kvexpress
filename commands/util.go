@@ -64,6 +64,16 @@ func Log(message, priority string) {
 	}
 }
 
+// LogFatal prints to screen, sends to syslog, creates a fatal error
+// and stops
+func LogFatal(message string, id string, location string) {
+	fullMessage := fmt.Sprintf("%s id:%s location:%s\n", message, id, location)
+	Log(fullMessage, "info")
+	fmt.Printf(fullMessage)
+	StatsdPanic(id, location)
+	// StatsdPanic exists with os.Exit(0)
+}
+
 // GetCurrentUsername grabs the current user running the kvexpress binary.
 func GetCurrentUsername() string {
 	usr, _ := user.Current()
