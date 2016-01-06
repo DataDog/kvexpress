@@ -102,6 +102,22 @@ func StatsdRaw(key string) {
 	}
 }
 
+// StatsdReconnect sends metrics when we have Consul connection retries.
+func StatsdReconnect(times int) {
+	if DogStatsd {
+		Log(fmt.Sprintf("dogstatsd='true' reconnect='%d'", times), "debug")
+		statsd, _ := godspeed.NewDefault()
+		defer statsd.Conn.Close()
+		tags := make([]string, 2)
+		hostname, _ := os.Hostname()
+		hostTag := fmt.Sprintf("host:%s", hostname)
+		directionTag := fmt.Sprintf("direction:%s", Direction)
+		tags = append(tags, hostTag)
+		tags = append(tags, directionTag)
+		statsd.Incr("kvexpress.consul_reconnect", tags)
+	}
+}
+
 // StatsdRunTime sends metrics to Dogstatsd on various operations.
 func StatsdRunTime(key string, location string, msec int64) {
 	if DogStatsd {
