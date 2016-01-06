@@ -29,6 +29,7 @@ var GoVersion = runtime.Version()
 func main() {
 	logwriter, e := syslog.New(syslog.LOG_NOTICE, "kvexpress")
 	if e == nil {
+		log.SetFlags(log.Lmicroseconds)
 		log.SetOutput(logwriter)
 	}
 	commands.Log(fmt.Sprintf("kvexpress version:%s", Version), "info")
