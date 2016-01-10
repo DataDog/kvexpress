@@ -28,14 +28,7 @@ gziposx:
 	gzip bin/kvexpress
 	mv bin/kvexpress.gz bin/kvexpress-$(KVEXPRESS_VERSION)-darwin.gz
 
-linux: clean
-	GOOS=linux GOARCH=amd64 go build -ldflags "$(BUILD_FLAGS)" -o bin/kvexpress main.go
-
-gziplinux:
-	gzip bin/kvexpress
-	mv bin/kvexpress.gz bin/kvexpress-$(KVEXPRESS_VERSION)-linux-amd64.gz
-
-release: clean build gziposx clean linux gziplinux clean
+release: clean build gziposx
 
 consul:
 	consul agent -data-dir `mktemp -d` -bootstrap -server -bind=127.0.0.1 1>/dev/null &
