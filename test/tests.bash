@@ -24,10 +24,18 @@ T_10insertSortingIntoTesting() {
   [[ "$checksum" == "$PREDICTED_CHECKSUM" ]]
 }
 
-T_14createOutputFile() {
+T_12createOutputFile() {
   bin/kvexpress out -k testing -f output
   checksum2="$(shasum -a 256 output | cut -d ' ' -f 1)"
   [[ "$checksum2" == "$PREDICTED_CHECKSUM" ]]
+}
+
+T_14makeSurePermissionsFixed() {
+  chmod 777 output
+  echo "Changing the file" > output
+  bin/kvexpress out -k testing -f output
+  permsFixed=$(ls -l output | grep 'rw-r-----')
+  [[ "$?" -eq "0" ]]
 }
 
 T_16createStopKey() {

@@ -54,6 +54,13 @@ func WriteFile(data string, filepath string, perms int, owner string) {
 		fmt.Printf("Panic: Could not write file: '%s'\n", filepath)
 		StatsdPanic(filepath, "write_file")
 	}
+	// Need to make sure to chmod the file as well.
+	file, err := os.Open(filepath)
+	f, err := file.Stat()
+	if f.Mode() != os.FileMode(perms) {
+		Log("File has different perms - chmodding it.", "info")
+		err = os.Chmod(filepath, os.FileMode(perms))
+	}
 	oid := GetOwnerID(owner)
 	gid := GetGroupID(owner)
 	err = os.Chown(filepath, oid, gid)
