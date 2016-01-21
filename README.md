@@ -91,13 +91,17 @@ All logs are sent to syslog and are tagged with `kvexpress`. To enable debug log
 
 To build: `make deps && make`
 
-To run integration tests: `make deps && make && make test` - it will spin up a blank Consul and kill it after the run.
+To run integration tests: `make deps && make && make test` - it will spin up an empty Consul and kill it after the run.
 
 Because we use `user.Current()` - you can't cross compile this. If you want to build for Linux - you must build on Linux. [Closed Issue](https://github.com/DataDog/kvexpress/issues/51#issuecomment-170307910)
 
 To install Consul - [there are instructions here](https://www.consul.io/intro/getting-started/install.html).
 
 To launch an empty [Consul](https://www.consul.io/) instance: `make consul`
+
+## Contributing
+
+We love pull requests from anyone. [Details are available here](https://github.com/DataDog/kvexpress/blob/master/CONTRIBUTING.md).
 
 ## Code of Conduct
 
