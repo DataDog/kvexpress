@@ -13,7 +13,7 @@ import (
 var rawCmd = &cobra.Command{
 	Use:   "raw",
 	Short: "Write a file pulled from any Consul KV data.",
-	Long:  `raw is for writing a file based on any Consul key.`,
+	Long:  `Raw is for writing a file based on any Consul key.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		checkRawFlags()
 		AutoEnable()

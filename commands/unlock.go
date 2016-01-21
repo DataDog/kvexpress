@@ -10,7 +10,7 @@ import (
 
 var unlockCmd = &cobra.Command{
 	Use:   "unlock",
-	Short: "Unock a file on a single node so it updates.",
+	Short: "Unlock a file on a single node so it updates.",
 	Long:  `Unlock is a convenient way to allow a previously locked file to be updated.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		checkUnlockFlags()

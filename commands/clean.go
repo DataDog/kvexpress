@@ -12,7 +12,7 @@ import (
 var cleanCmd = &cobra.Command{
 	Use:   "clean",
 	Short: "Clean local cache files.",
-	Long:  `clean is for cleaning up local cache files.`,
+	Long:  `Clean is for cleaning up local cache files.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		checkCleanFlags()
 		AutoEnable()

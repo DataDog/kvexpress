@@ -13,7 +13,7 @@ import (
 var copyCmd = &cobra.Command{
 	Use:   "copy",
 	Short: "Copy a Consul key to another location.",
-	Long:  `copy is for copying already existing keys.`,
+	Long:  `Copy is for copying already existing keys.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		checkCopyFlags()
 		AutoEnable()

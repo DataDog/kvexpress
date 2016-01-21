@@ -12,7 +12,7 @@ import (
 var outCmd = &cobra.Command{
 	Use:   "out",
 	Short: "Write a file based on kvexpress organized data stored in Consul.",
-	Long:  `out is for writing a file based on a Consul kvexpress key and checksum.`,
+	Long:  `Out is for writing a file based on a Consul kvexpress key and checksum.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		checkOutFlags()
 		AutoEnable()
