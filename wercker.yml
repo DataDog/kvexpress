@@ -1,4 +1,4 @@
-box: darron/kvexpress-test
+box: darron/consul-wercker
 build:
   steps:
     # Build the project
@@ -6,10 +6,10 @@ build:
         name: go build
         code: |
           make deps
-          make build
+          make
 
     # Test the project
     - script:
         name: go test
         code: |
-          make wercker
+          make test
