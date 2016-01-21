@@ -61,7 +61,7 @@ Official releases can be downloaded from [the releases page](https://github.com/
 
 ## How to use it with Consul watches.
 
-Instructions are availalbe [here](https://github.com/DataDog/kvexpress-cookbook#default-usage-with-a-consul-watch).
+Instructions are available [here](https://github.com/DataDog/kvexpress-cookbook#default-usage-with-a-consul-watch).
 
 ## Ad-Hoc Usage with Consul exec
 
