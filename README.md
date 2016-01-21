@@ -23,7 +23,7 @@ Yes you can - but we kept wanting to:
 
 We did this at first with some custom Ruby scripts - but the pattern was apparent and could be applied to many other files as well.
 
-This replaces all the custom Ruby/shell scripts with a single Go binary we can use to get data in and out.
+This replaces our previous custom Ruby/shell scripts with a single Go binary we can use to get data in and out of Consul's KV store.
 
 ## How does it work? - 1000 foot view
 
@@ -55,125 +55,9 @@ This replaces all the custom Ruby/shell scripts with a single Go binary we can u
 5. Write the contents of `data` to the passed `--file` location.
 6. If `--exec` is passed - run that command.
 
-## Command Flags
+## Commands Available
 
-### `in` command flags
-
-```
-Usage:
-  kvexpress in [flags]
-
-Flags:
-  -f, --file="": filename to read data from
-  -k, --key="": key to push data to
-  -S, --sorted[=false]: sort the input file
-  -u, --url="": url to read data from
-
-Global Flags:
-  -c, --chmod=416: permissions for the file
-  -C, --config="": Config file location
-  -a, --datadog_api_key="": Datadog API Key
-  -A, --datadog_app_key="": Datadog App Key
-  -d, --dogstatsd[=false]: send metrics to dogstatsd
-  -D, --dogstatsd_address="localhost:8125": address for dogstatsd server
-  -e, --exec="": Execute this command after
-  -l, --length=10: minimum amount of lines in the file
-  -p, --prefix="kvexpress": prefix for the key
-  -s, --server="localhost:8500": Consul server location
-  -t, --token="": Token for Consul access
-  -o, --owner="": who to write the file as
-```
-
-Example: `kvexpress in -d true -k hosts -f /etc/consul-template/output/hosts.consul -l 100 --sorted=true`
-
-### `out` command flags
-
-```
-Usage:
-  kvexpress out [flags]
-
-Flags:
-  -f, --file="": where to write the data
-      --ignore_stop[=false]: ignore stop key
-  -k, --key="": key to pull data from
-
-Global Flags:
-  -c, --chmod=416: permissions for the file
-  -C, --config="": Config file location
-  -a, --datadog_api_key="": Datadog API Key
-  -A, --datadog_app_key="": Datadog App Key
-  -d, --dogstatsd[=false]: send metrics to dogstatsd
-  -D, --dogstatsd_address="localhost:8125": address for dogstatsd server
-  -e, --exec="": Execute this command after
-  -l, --length=10: minimum amount of lines in the file
-  -p, --prefix="kvexpress": prefix for the key
-  -s, --server="localhost:8500": Consul server location
-  -t, --token="": Token for Consul access
-  -o, --owner="": who to write the file as
-```
-
-Example `out` as a Consul watch:
-
-```
-{
-  "watches": [
-    {
-      "type":"key",
-      "key":"/kvexpress/hosts/checksum",
-      "handler":"kvexpress out -d true -k hosts -f /etc/hosts.consul -l 100 -e 'sudo pkill -HUP dnsmasq'"
-    }
-  ]
-}
-```
-
-### `clean` command flags
-
-```
-Usage:
-  kvexpress clean [flags]
-
-Flags:
-  -f, --file="": file to clean
-
-Global Flags:
-  -c, --chmod=416: permissions for the file
-  -C, --config="": Config file location
-  -a, --datadog_api_key="": Datadog API Key
-  -A, --datadog_app_key="": Datadog App Key
-  -d, --dogstatsd[=false]: send metrics to dogstatsd
-  -D, --dogstatsd_address="localhost:8125": address for dogstatsd server
-  -e, --exec="": Execute this command after
-  -l, --length=10: minimum amount of lines in the file
-  -p, --prefix="kvexpress": prefix for the key
-  -s, --server="localhost:8500": Consul server location
-  -t, --token="": Token for Consul access
-  -o, --owner="": who to write the file as
-```
-
-### `stop` command flags
-
-```
-Usage:
-  kvexpress stop [flags]
-
-Flags:
-  -k, --key="": key to stop
-  -r, --reason="": reason to stop
-
-Global Flags:
-  -c, --chmod=416: permissions for the file
-  -C, --config="": Config file location
-  -a, --datadog_api_key="": Datadog API Key
-  -A, --datadog_app_key="": Datadog App Key
-  -d, --dogstatsd[=false]: send metrics to dogstatsd
-  -D, --dogstatsd_address="localhost:8125": address for dogstatsd server
-  -e, --exec="": Execute this command after
-  -l, --length=10: minimum amount of lines in the file
-  -p, --prefix="kvexpress": prefix for the key
-  -s, --server="localhost:8500": Consul server location
-  -t, --token="": Token for Consul access
-  -o, --owner="": who to write the file as
-  ```
+A detailed list of commands is available [here](https://github.com/DataDog/kvexpress/tree/master/docs/cli.md).
 
 ## Consul KV Structure
 
@@ -199,10 +83,10 @@ There is an optional `stop` key - that if present - will cause all `in` and `out
 
 To build: `make deps && make`
 
-To run integration tests: `make deps && make && make test`
+To run integration tests: `make deps && make && make test` - it will spin up a blank Consul and kill it after the run.
 
-To build for Linux: `make deps && make linux`
+Because we use `user.Current()` - you can't cross compile this. If you want to build for Linux - you must build on Linux. [Closed Issue](https://github.com/DataDog/kvexpress/issues/51#issuecomment-170307910)
+
+To install Consul - [there are instructions here](https://www.consul.io/intro/getting-started/install.html).
 
 To launch an empty [Consul](https://www.consul.io/) instance: `make consul`
-
-`./kvexpress out -h` shows you the flags you need to use.
