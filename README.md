@@ -98,3 +98,8 @@ Because we use `user.Current()` - you can't cross compile this. If you want to b
 To install Consul - [there are instructions here](https://www.consul.io/intro/getting-started/install.html).
 
 To launch an empty [Consul](https://www.consul.io/) instance: `make consul`
+
+## Code of Conduct
+
+This project adheres to the [Open Code of Conduct][code-of-conduct]. By participating, you are expected to honor this code.
+[code-of-conduct]: http://todogroup.org/opencodeofconduct/#kvexpress/darron@froese.org
