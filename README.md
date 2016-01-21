@@ -55,6 +55,10 @@ This replaces our previous custom Ruby/shell scripts with a single Go binary we 
 5. Write the contents of `data` to the passed `--file` location.
 6. If `--exec` is passed - run that command.
 
+## Where can I get it?
+
+Official releases can be downloaded from [the releases page](https://github.com/DataDog/kvexpress/releases).
+
 ## Commands Available
 
 A detailed list of commands is available [here](https://github.com/DataDog/kvexpress/tree/master/docs/cli.md).
