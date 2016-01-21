@@ -59,6 +59,29 @@ This replaces our previous custom Ruby/shell scripts with a single Go binary we 
 
 Official releases can be downloaded from [the releases page](https://github.com/DataDog/kvexpress/releases).
 
+## How to use it with Consul watches.
+
+Instructions are availalbe [here](https://github.com/DataDog/kvexpress-cookbook#default-usage-with-a-consul-watch).
+
+## Ad-Hoc Usage with Consul exec
+
+If you want to push a file to all nodes in your Consul cluster quickly - you can use Consul and kvexpress.
+
+`kvexpress in --prefix tmp --key config --length 5 --url https://gist.githubusercontent.com/darron/f31cade2bd93983058d0/raw/8d7fae64dfc63626997b1dca6da98b3ac7063d8c/gistfile1.txt`
+
+This places the file and checksum in:
+
+```
+tmp/config/data
+tmp/config/checksum
+```
+
+To get the file on every node:
+
+`consul exec "sudo kvexpress out --prefix tmp --key config --length 5 -f /etc/file.conf -e 'sudo restart something here'"`
+
+If you're not seeing it work the way you expect - you can always add `--verbose` to the kvexpress command - that will add lots of additional output.
+
 ## Commands Available
 
 A detailed list of commands is available [here](https://github.com/DataDog/kvexpress/tree/master/docs/cli.md).
