@@ -67,7 +67,7 @@ Instructions are available [here](https://github.com/DataDog/kvexpress-cookbook#
 
 If you want to push a file to all nodes in your Consul cluster quickly - you can use Consul and kvexpress.
 
-`kvexpress in --prefix tmp --key config --length 5 --url https://gist.githubusercontent.com/darron/f31cade2bd93983058d0/raw/8d7fae64dfc63626997b1dca6da98b3ac7063d8c/gistfile1.txt`
+`kvexpress in --prefix tmp --key config --length 5 --url https://git.io/vzz5P`
 
 This places the file and checksum in:
 
