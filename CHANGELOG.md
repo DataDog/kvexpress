@@ -7,6 +7,7 @@
 **Implemented enhancements:**
 
 - Makefile should insert platform rather than assuming OSX. [\#77](https://github.com/DataDog/kvexpress/issues/77)
+- Fix that ugliness with `fmt` width. [\#75](https://github.com/DataDog/kvexpress/issues/75)
 
 **Closed issues:**
 
