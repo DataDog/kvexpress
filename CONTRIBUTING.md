@@ -31,5 +31,6 @@ Some things that will increase the chance that your pull request is accepted:
 
 * Write tests.
 * Make sure your code uses standard Golang conventions. [go-plus](https://atom.io/packages/go-plus) works great with Atom.
+* [Clear is better than clever.](http://go-proverbs.github.io/)
 * Write a [good commit message](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
 * Communicate with us clearly so that we understand what you're trying to accomplish.
