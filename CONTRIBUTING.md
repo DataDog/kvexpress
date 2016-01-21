@@ -1,9 +1,7 @@
 # Contributing
 
 We love pull requests from everyone. By participating in this project, you
-agree to abide by the kvexpress [code of conduct].
-
-[code-of-conduct]: http://todogroup.org/opencodeofconduct/#kvexpress/darron@froese.org
+agree to abide by the kvexpress [code of conduct](http://todogroup.org/opencodeofconduct/#kvexpress/darron@froese.org).
 
 Fork, then clone the repo:
 
@@ -36,7 +34,5 @@ Some things that will increase the chance that your pull request is accepted:
 
 * Write tests.
 * Make sure your code uses standard Golang conventions. [go-plus](https://atom.io/packages/go-plus) works great with Atom.
-* Write a [good commit message][commit].
+* Write a [good commit message](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
 * Communicate with us clearly so that we understand what you're trying to accomplish.
-
-[commit]: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
