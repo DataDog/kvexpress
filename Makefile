@@ -2,6 +2,7 @@ GIT_COMMIT=$(shell git rev-parse HEAD)
 KVEXPRESS_VERSION=$(shell ./version)
 COMPILE_DATE=$(shell date -u +%Y%m%d.%H%M%S)
 BUILD_FLAGS=-X main.CompileDate=$(COMPILE_DATE) -X main.GitCommit=$(GIT_COMMIT) -X main.Version=$(KVEXPRESS_VERSION)
+UNAME=$(shell uname -s | tr '[:upper:]' '[:lower:]')
 
 all: build
 
@@ -24,11 +25,11 @@ clean:
 build: clean
 	go build -ldflags "$(BUILD_FLAGS)" -o bin/kvexpress main.go
 
-gziposx:
+gzip:
 	gzip bin/kvexpress
-	mv bin/kvexpress.gz bin/kvexpress-$(KVEXPRESS_VERSION)-darwin.gz
+	mv bin/kvexpress.gz bin/kvexpress-$(KVEXPRESS_VERSION)-$(UNAME).gz
 
-release: clean build gziposx
+release: clean build gzip
 
 consul:
 	consul agent -data-dir `mktemp -d` -bootstrap -server -bind=127.0.0.1 1>/dev/null &
