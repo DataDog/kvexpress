@@ -61,6 +61,8 @@ Debian packages for Ubuntu can be downloaded from [packagecloud](https://package
 
 Additional binaries can be downloaded from [the releases page](https://github.com/DataDog/kvexpress/releases).
 
+A Chef cookbook is [available as well](https://github.com/DataDog/kvexpress-cookbook).
+
 ## How to use it with Consul watches.
 
 Instructions are available [here](https://github.com/DataDog/kvexpress-cookbook#default-usage-with-a-consul-watch).
