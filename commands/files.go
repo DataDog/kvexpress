@@ -182,9 +182,7 @@ func LockFileRemove(file string) {
 
 // CheckFullFilename makes sure that the filename begins with a slash.
 func CheckFullFilename(file string) {
-	if strings.HasPrefix(file, "/") {
-		// That's good.
-	} else {
+	if !strings.HasPrefix(file, "/") {
 		fmt.Println("Please supply a complete file path.")
 		os.Exit(1)
 	}
