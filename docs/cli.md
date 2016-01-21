@@ -41,6 +41,15 @@ Global Flags:
       --verbose                    log output to stdout
 ```
 
+* [clean](#clean-command-flags)
+* [copy](#copy-command-flags)
+* [in](#in-command-flags)
+* [lock](#lock-command-flags)
+* [out](#out-command-flags)
+* [raw](#raw-command-flags)
+* [stop](#stop-command-flags)
+* [unlock](#unlock-command-flags)
+
 ### `clean` command flags
 
 ```
