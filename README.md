@@ -57,7 +57,9 @@ This replaces our previous custom Ruby/shell scripts with a single Go binary we 
 
 ## Where can I get it?
 
-Official releases can be downloaded from [the releases page](https://github.com/DataDog/kvexpress/releases).
+Debian packages for Ubuntu can be downloaded from [packagecloud](https://packagecloud.io/kvexpress/kvexpress).
+
+Additional binaries can be downloaded from [the releases page](https://github.com/DataDog/kvexpress/releases).
 
 ## How to use it with Consul watches.
 
