@@ -1,3 +1,4 @@
+#!/bin/basht
 
 trap "make consul_kill && make wercker_clean" INT TERM EXIT
 
@@ -19,7 +20,7 @@ T_06runbinary() {
 }
 
 T_10insertSortingIntoTesting() {
-  result="$(bin/kvexpress in -k testing -f sorting --sorted true)"
+  bin/kvexpress in -k testing -f sorting --sorted true
   checksum="$(consul-cli kv-read kvexpress/testing/checksum)"
   [[ "$checksum" == "$PREDICTED_CHECKSUM" ]]
 }
@@ -97,7 +98,7 @@ T_44_testClean() {
 }
 
 T_50testURLIn() {
-  urloutput="$(bin/kvexpress in -k url -u https://gist.githubusercontent.com/darron/9753b203b32667484105/raw/e66ea4c28c59e54aa8234d742368ccf93527dce5/gistfile1.txt)"
+  bin/kvexpress in -k url -u https://gist.githubusercontent.com/darron/9753b203b32667484105/raw/e66ea4c28c59e54aa8234d742368ccf93527dce5/gistfile1.txt
   urlchecksum=$(consul-cli kv-read kvexpress/url/checksum)
   [[ "$urlchecksum" == "$URL_CHECKSUM" ]]
 }
@@ -130,7 +131,7 @@ T_70copyKey() {
 }
 
 T_80compressText() {
-  compressedoutput="$(bin/kvexpress in -z true -k compressed -u https://gist.githubusercontent.com/darron/9753b203b32667484105/raw/e66ea4c28c59e54aa8234d742368ccf93527dce5/gistfile1.txt)"
+  bin/kvexpress in -z true -k compressed -u https://gist.githubusercontent.com/darron/9753b203b32667484105/raw/e66ea4c28c59e54aa8234d742368ccf93527dce5/gistfile1.txt
   compresseddata="$(consul-cli kv-read kvexpress/compressed/data)"
   [[ "$compresseddata" == "$COMPRESSED_DATA" ]]
 }
