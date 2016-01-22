@@ -1,3 +1,0 @@
-#!/bin/bash
-KVEXPRESS_VERSION="1.10-dev"
-echo $KVEXPRESS_VERSION

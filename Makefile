@@ -1,5 +1,5 @@
+KVEXPRESS_VERSION="1.10-dev"
 GIT_COMMIT=$(shell git rev-parse HEAD)
-KVEXPRESS_VERSION=$(shell ./version)
 COMPILE_DATE=$(shell date -u +%Y%m%d.%H%M%S)
 BUILD_FLAGS=-X main.CompileDate=$(COMPILE_DATE) -X main.GitCommit=$(GIT_COMMIT) -X main.Version=$(KVEXPRESS_VERSION)
 UNAME=$(shell uname -s | tr '[:upper:]' '[:lower:]')
