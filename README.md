@@ -3,7 +3,6 @@ kvexpress
 
 ## Why?
 
-
 Small Go utility to:
 
 1. Put data into Consul's KV store.
