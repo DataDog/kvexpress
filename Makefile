@@ -49,5 +49,5 @@ wercker_clean:
 	bin/kvexpress clean -f sorting
 	rm -f output ignored lock-test lock-test.locked url raw_checksum url_exec additional-file decompressed
 
-wercker: consul sorting
+wercker: consul sorting unit
 	basht test/tests.bash
