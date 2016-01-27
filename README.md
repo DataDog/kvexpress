@@ -26,6 +26,8 @@ This replaces our previous custom Ruby/shell scripts with a single Go binary we 
 
 ## How does it work? - 1000 foot view
 
+There's an [introductory blog post available](https://blog.froese.org/2016/01/25/kvexpress-transporting-config-through-consul/) that shows how it can be used.
+
 ### In
 
 `kvexpress in --key hosts --file /etc/consul-template/output/hosts.consul --length 100 --sorted=true`
