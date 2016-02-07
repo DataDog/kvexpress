@@ -3,8 +3,8 @@
 package main
 
 import (
-	"./commands/"
 	"fmt"
+	"github.com/DataDog/kvexpress/commands"
 	"log"
 	"log/syslog"
 	"os"

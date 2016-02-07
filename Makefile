@@ -15,6 +15,7 @@ deps:
 	go get -u github.com/smallfish/simpleyaml
 	go get -u github.com/progrium/basht
 	go get -u github.com/CiscoCloud/consul-cli
+	go get -u github.com/DataDog/kvexpress
 
 format:
 	gofmt -w .
