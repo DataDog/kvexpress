@@ -58,6 +58,8 @@ There's an [introductory blog post available](https://blog.froese.org/2016/01/25
 
 ## Where can I get it?
 
+Build instructions [are available below](#build).
+
 Debian packages for Ubuntu can be downloaded from [packagecloud](https://packagecloud.io/kvexpress/kvexpress).
 
 Additional binaries can be downloaded from [the releases page](https://github.com/DataDog/kvexpress/releases).
@@ -117,7 +119,9 @@ All logs are sent to syslog and are tagged with `kvexpress`. To enable debug log
 
 ## Build
 
-To build: `make deps && make`
+Can be built with the standard go toolchain: `go get -u -v github.com/DataDog/kvexpress`
+
+To build manually - clone the repo then: `make deps && make`
 
 To run integration tests: `make deps && make && make test` - it will spin up an empty Consul and kill it after the run.
 
