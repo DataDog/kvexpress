@@ -21,7 +21,7 @@ T_06runbinary() {
 
 T_10insertSortingIntoTesting() {
   bin/kvexpress in -k testing -f sorting --sorted true
-  checksum="$(consul-cli kv-read kvexpress/testing/checksum)"
+  checksum="$(consul-cli kv read kvexpress/testing/checksum)"
   [[ "$checksum" == "$PREDICTED_CHECKSUM" ]]
 }
 
@@ -41,7 +41,7 @@ T_14makeSurePermissionsFixed() {
 
 T_16createStopKey() {
   bin/kvexpress stop -k testing -r "$STOP_KEY_CONTENTS"
-  stopkey="$(consul-cli kv-read kvexpress/testing/stop)"
+  stopkey="$(consul-cli kv read kvexpress/testing/stop)"
   [[ "$stopkey" == "$STOP_KEY_CONTENTS" ]]
 }
 
@@ -61,7 +61,7 @@ T_24ignoreStopKey() {
 
 T_30lockKey() {
   bin/kvexpress lock -f $LOCK_FILE
-  lockkey="$(consul-cli kv-read $LOCK_URL | grep 'No reason given')"
+  lockkey="$(consul-cli kv read $LOCK_URL | grep 'No reason given')"
   [[ "$?" -eq "0" ]]
 }
 
@@ -99,7 +99,7 @@ T_44_testClean() {
 
 T_50testURLIn() {
   bin/kvexpress in -k url -u https://gist.githubusercontent.com/darron/9753b203b32667484105/raw/e66ea4c28c59e54aa8234d742368ccf93527dce5/gistfile1.txt
-  urlchecksum=$(consul-cli kv-read kvexpress/url/checksum)
+  urlchecksum=$(consul-cli kv read kvexpress/url/checksum)
   [[ "$urlchecksum" == "$URL_CHECKSUM" ]]
 }
 
@@ -126,13 +126,13 @@ T_60getRawKey() {
 
 T_70copyKey() {
   bin/kvexpress copy --keyfrom url --keyto copied
-  copiedchecksum="$(consul-cli kv-read kvexpress/copied/checksum)"
+  copiedchecksum="$(consul-cli kv read kvexpress/copied/checksum)"
   [[ "$copiedchecksum" == "$URL_CHECKSUM" ]]
 }
 
 T_80compressText() {
   bin/kvexpress in -z true -k compressed -u https://gist.githubusercontent.com/darron/9753b203b32667484105/raw/e66ea4c28c59e54aa8234d742368ccf93527dce5/gistfile1.txt
-  compresseddata="$(consul-cli kv-read kvexpress/compressed/data)"
+  compresseddata="$(consul-cli kv read kvexpress/compressed/data)"
   [[ "$compresseddata" == "$COMPRESSED_DATA" ]]
 }
 
