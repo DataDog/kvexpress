@@ -7,12 +7,6 @@ UNAME=$(shell uname -s | tr '[:upper:]' '[:lower:]')
 all: build
 
 deps:
-	go get -u github.com/spf13/cobra
-	go get -u github.com/hashicorp/consul/api
-	go get -u github.com/zorkian/go-datadog-api
-	go get -u github.com/PagerDuty/godspeed
-	go get -u gopkg.in/yaml.v2
-	go get -u github.com/smallfish/simpleyaml
 	go get -u github.com/progrium/basht
 	go get -u github.com/CiscoCloud/consul-cli
 	go get -u github.com/DataDog/kvexpress
