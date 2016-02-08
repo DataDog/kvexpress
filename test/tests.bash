@@ -8,7 +8,7 @@ export STOP_KEY_CONTENTS="Setting a stop key."
 export LOCK_FILE=$(echo `pwd`/lock-test)
 export LOCKED_FILE="$LOCK_FILE.locked"
 export HOSTNAME=$(hostname)
-export LOCK_URL="kvexpress/locks/e9de90b0a8985bf058580aa8457883b9fd76dd1fb13bdda5e1608884f9276dec/$HOSTNAME"
+export LOCK_URL="kvexpress/locks/d1f2c3bf3ef64aeda7f4d6787e3457802c4428d7a13ec0fc77db4a75c1c78baa/$HOSTNAME"
 export URL_CHECKSUM="307b198c768b7a174b11e00c70bb1bd7b32597a86790279f763c4544dc12d1ff"
 export COMPRESSED_DATA="H4sIAAAJbogA/4SPzUrEQBCE7/MUzXod9g28iD940ZMnWaRNV5LByfQ605vVt7eTIIgI3oaa+r6in0X2bzM+jhWtHUKnpU8DXVJOPUJYfhvkEI4Z3OC5aKSiFteHjalFSn2kMyJ1XCLxrEk8sw0WTCr86eaMGdkF9w+3j0HYWHTZqXoytP2URDLOXJfRrMOA+lJV7Rc3cvFabSuo5sWf9cX0P/B+4lx4wp/jF7T75q9vrp7uduRI80OxlWli60YIuXdNUhlo5pr4NbvpCwAA//8BAAD//38Ab4hOAQAA"
 echo "This is a test of the lock-test file." > $LOCK_FILE
