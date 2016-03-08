@@ -36,6 +36,11 @@ T_10insertSortingIntoTesting() {
   [[ "$checksum" == "$PREDICTED_CHECKSUM" ]]
 }
 
+T_11pullBlankKey() {
+  bin/kvexpress out -k random-key-does-not-exist -f output
+  # Should just show the error in the logs.
+}
+
 T_12createOutputFile() {
   bin/kvexpress out -k testing -f output
   checksum2="$(shasum -a 256 output | cut -d ' ' -f 1)"

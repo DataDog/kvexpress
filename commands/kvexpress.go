@@ -56,6 +56,9 @@ func ComputeChecksum(data string) string {
 	computedChecksum := sha256.Sum256(dataBytes)
 	finalChecksum := fmt.Sprintf("%x", computedChecksum)
 	Log(fmt.Sprintf("computedChecksum='%s'", finalChecksum), "debug")
+	if finalChecksum == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" {
+		Log("WARNING: That checksum means the data/key is blank. WARNING", "info")
+	}
 	return finalChecksum
 }
 
