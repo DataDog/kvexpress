@@ -44,10 +44,27 @@ func BlankLineStrip(data []string) []string {
 	return stripped
 }
 
+// CheckFullPath will check the path and recursively create directories if they don't
+// exist.
+func CheckFullPath(file string) {
+	targetDirectory := path.Dir(file)
+	// If there is a file with the same name in the targetDirectory path - it will error.
+	// It will not overwrite it.
+	err := os.MkdirAll(targetDirectory, os.FileMode(0755))
+	if err != nil {
+		Log(fmt.Sprintf("function='CheckFullPath' panic='true' file='%s'", targetDirectory), "info")
+		fmt.Printf("Panic: Could not create directories: '%s'\n", targetDirectory)
+		StatsdPanic(targetDirectory, "create_directory")
+	}
+}
+
 // WriteFile writes a string to a filepath. It also chowns the file to the owner and group
 // of the user running the program if it's not set as a different user.
 func WriteFile(data string, filepath string, perms int, owner string) {
 	var fileChown = false
+	// If a directory doesn't exist then that's a bad thing.
+	// Caused some problems with Consul and file descriptors after a long weekend erroring.
+	CheckFullPath(filepath)
 	err := ioutil.WriteFile(filepath, []byte(data), os.FileMode(perms))
 	if err != nil {
 		Log(fmt.Sprintf("function='WriteFile' panic='true' file='%s'", filepath), "info")
