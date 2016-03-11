@@ -61,7 +61,7 @@ func CheckFullPath(file string) {
 // WriteFile writes a string to a filepath. It also chowns the file to the owner and group
 // of the user running the program if it's not set as a different user.
 func WriteFile(data string, filepath string, perms int, owner string) {
-	var fileChown = false
+
 	// If a directory doesn't exist then that's a bad thing.
 	// Caused some problems with Consul and file descriptors after a long weekend erroring.
 	CheckFullPath(filepath)
@@ -78,9 +78,18 @@ func WriteFile(data string, filepath string, perms int, owner string) {
 		Log("File has different perms - chmodding it.", "info")
 		err = os.Chmod(filepath, os.FileMode(perms))
 	}
+	// Chown the file.
+	fileChown, oid, gid := ChownFile(filepath, owner)
+	Log(fmt.Sprintf("file_wrote='true' location='%s' permissions='%s'", filepath, strconv.FormatInt(int64(perms), 8)), "debug")
+	Log(fmt.Sprintf("file_chown='%t' location='%s' owner='%d' group='%d'", fileChown, filepath, oid, gid), "debug")
+}
+
+// ChownFile does what it sounds like.
+func ChownFile(filepath string, owner string) (bool, int, int) {
+	var fileChown = false
 	oid := GetOwnerID(owner)
 	gid := GetGroupID(owner)
-	err = os.Chown(filepath, oid, gid)
+	err := os.Chown(filepath, oid, gid)
 	if err != nil {
 		fileChown = false
 		fmt.Printf("Panic: Could not chown file: '%s'\n", filepath)
@@ -88,8 +97,7 @@ func WriteFile(data string, filepath string, perms int, owner string) {
 	} else {
 		fileChown = true
 	}
-	Log(fmt.Sprintf("file_wrote='true' location='%s' permissions='%s'", filepath, strconv.FormatInt(int64(perms), 8)), "debug")
-	Log(fmt.Sprintf("file_chown='%t' location='%s' owner='%d' group='%d'", fileChown, filepath, oid, gid), "debug")
+	return fileChown, oid, gid
 }
 
 // CheckFiletoWrite takes a filename and checksum and stops execution if
