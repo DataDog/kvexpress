@@ -12,6 +12,10 @@ import (
 	"strings"
 )
 
+var (
+	fileSuffix = "kvexpress"
+)
+
 // ReadFile reads a file in the filesystem and returns a string.
 func ReadFile(filepath string) string {
 	dat, err := ioutil.ReadFile(filepath)
@@ -61,22 +65,24 @@ func CheckFullPath(file string) {
 // WriteFile writes a string to a filepath. It also chowns the file to the owner and group
 // of the user running the program if it's not set as a different user.
 func WriteFile(data string, filepath string, perms int, owner string) {
-
+	tmpFile := fmt.Sprintf("%s.%s", filepath, fileSuffix)
 	// If a directory doesn't exist then that's a bad thing.
 	// Caused some problems with Consul and file descriptors after a long weekend erroring.
 	CheckFullPath(filepath)
-	err := ioutil.WriteFile(filepath, []byte(data), os.FileMode(perms))
+	// Write the file to a different name.
+	err := ioutil.WriteFile(tmpFile, []byte(data), os.FileMode(perms))
 	if err != nil {
 		Log(fmt.Sprintf("function='WriteFile' panic='true' file='%s'", filepath), "info")
 		fmt.Printf("Panic: Could not write file: '%s'\n", filepath)
 		StatsdPanic(filepath, "write_file")
 	}
-	// Need to make sure to chmod the file as well.
-	file, err := os.Open(filepath)
-	f, err := file.Stat()
-	if f.Mode() != os.FileMode(perms) {
-		Log("File has different perms - chmodding it.", "info")
-		err = os.Chmod(filepath, os.FileMode(perms))
+	// Rename the file so it's not truncated for 1 microsecond
+	// which is actually important at high velocities.
+	err = os.Rename(tmpFile, filepath)
+	if err != nil {
+		Log(fmt.Sprintf("function='Rename' panic='true' file='%s'", filepath), "info")
+		fmt.Printf("Panic: Could not rename file: '%s'\n", filepath)
+		StatsdPanic(filepath, "rename_file")
 	}
 	// Chown the file.
 	fileChown, oid, gid := ChownFile(filepath, owner)
