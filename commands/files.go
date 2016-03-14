@@ -65,17 +65,19 @@ func CheckFullPath(file string) {
 // WriteFile writes a string to a filepath. It also chowns the file to the owner and group
 // of the user running the program if it's not set as a different user.
 func WriteFile(data string, filepath string, perms int, owner string) {
-	tmpFilepath := fmt.Sprintf("%s.%s", filepath, fileSuffix)
 	// If a directory doesn't exist then that's a bad thing.
 	// Caused some problems with Consul and file descriptors after a long weekend erroring.
 	CheckFullPath(filepath)
 	// Write the file to the tmpFilepath.
+	tmpFilepath := fmt.Sprintf("%s.%s", filepath, fileSuffix)
 	err := ioutil.WriteFile(tmpFilepath, []byte(data), os.FileMode(perms))
 	if err != nil {
 		Log(fmt.Sprintf("function='WriteFile' panic='true' file='%s'", filepath), "info")
 		fmt.Printf("Panic: Could not write file: '%s'\n", filepath)
 		StatsdPanic(filepath, "write_file")
 	}
+	// Chown the file.
+	fileChown, oid, gid := ChownFile(tmpFilepath, owner)
 	// Rename the file so it's not truncated for 1 microsecond
 	// which is actually important at high velocities.
 	err = os.Rename(tmpFilepath, filepath)
@@ -84,8 +86,6 @@ func WriteFile(data string, filepath string, perms int, owner string) {
 		fmt.Printf("Panic: Could not rename file: '%s'\n", filepath)
 		StatsdPanic(filepath, "rename_file")
 	}
-	// Chown the file.
-	fileChown, oid, gid := ChownFile(filepath, owner)
 	Log(fmt.Sprintf("file_wrote='true' location='%s' permissions='%s'", filepath, strconv.FormatInt(int64(perms), 8)), "debug")
 	Log(fmt.Sprintf("file_chown='%t' location='%s' owner='%d' group='%d'", fileChown, filepath, oid, gid), "debug")
 }
