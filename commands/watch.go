@@ -21,8 +21,8 @@ var watchCmd = &cobra.Command{
 
 func watchRun(cmd *cobra.Command, args []string) {
 	// Check and aquire lock.
-	// If you've got a lock - set a watch on WatchPrefix.
 	// If you don't get a lock - then wait until you do.
+	// If you've got a lock - set a watch on WatchPrefix.
 
 	// If the watch fires - get the changed key and write into the /kvexpress heirarchy.
 }
@@ -31,6 +31,10 @@ func checkWatchFlags() {
 	Log("Checking cli flags.", "debug")
 	if WatchPrefix == "" {
 		fmt.Println("Need a KV space to watch in -w")
+		os.Exit(1)
+	}
+	if WatchPrefix == PrefixLocation {
+		fmt.Println("You cannot watch the same location you're going to store the result in.")
 		os.Exit(1)
 	}
 	Log("Required cli flags present.", "debug")
