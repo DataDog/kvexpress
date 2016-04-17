@@ -18,6 +18,11 @@ func StatsdIn(key string, dataLength int, data string) {
 		tags := makeTags(key, "complete")
 		statsd.Incr("kvexpress.in", tags)
 		statsd.Gauge("kvexpress.bytes", float64(dataLength), tags)
+		// If the data is compressed - then LineCount will always return 1.
+		// That's not useful or accurate, so let's decompress and count that.
+		if Compress {
+			data = DecompressData(data)
+		}
 		statsd.Gauge("kvexpress.lines", float64(LineCount(data)), tags)
 	}
 }
