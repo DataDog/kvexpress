@@ -157,3 +157,8 @@ T_82decompressText() {
   decompressedfilechecksum="$(shasum -a 256 decompressed | cut -d ' ' -f 1)"
   [[ "$decompressedfilechecksum" == "$URL_CHECKSUM" ]]
 }
+
+# This used to cause a panic - https://github.com/DataDog/kvexpress/issues/92
+T_84readBlankCompressedKey() {
+  bin/kvexpress out -z true -k does-not-exist -f will-never-write
+}

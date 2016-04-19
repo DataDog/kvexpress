@@ -132,13 +132,26 @@ func CompressData(data string) string {
 
 // DecompressData base64 decodes and decompresses a string taken from Consul's KV store.
 func DecompressData(data string) string {
-	// If it's been compressed, it's been base64 encoded.
-	raw, _ := base64.StdEncoding.DecodeString(data)
-	// gunzip the string.
-	unzipped, _ := gzip.NewReader(strings.NewReader(string(raw)))
-	uncompressed, _ := ioutil.ReadAll(unzipped)
-	Log(fmt.Sprintf("decompressing='true' size='%d'", len(uncompressed)), "info")
-	return string(uncompressed)
+	if data != "" {
+		// If it's been compressed, it's been base64 encoded.
+		raw, err := base64.StdEncoding.DecodeString(data)
+		if err != nil {
+			Log("function='DecompressData' panic='true' method='base64.StdEncoding.DecodeString'", "info")
+			fmt.Println("Panic: Could not base64 decode string.")
+			StatsdPanic("key", "DecompressData")
+		}
+		// gunzip the string.
+		unzipped, err := gzip.NewReader(strings.NewReader(string(raw)))
+		if err != nil {
+			Log("function='DecompressData' panic='true' method='gzip.NewReader'", "info")
+			fmt.Println("Panic: Could not gunzip string.")
+			StatsdPanic("key", "DecompressData")
+		}
+		uncompressed, _ := ioutil.ReadAll(unzipped)
+		Log(fmt.Sprintf("decompressing='true' size='%d'", len(uncompressed)), "info")
+		return string(uncompressed)
+	}
+	return ""
 }
 
 // GetHostname returns the hostname.

@@ -22,3 +22,10 @@ func TestDecompressData(t *testing.T) {
 		t.Error("The decompression is off.")
 	}
 }
+
+func TestDecompressBlankData(t *testing.T) {
+	blank := DecompressData("")
+	if blank != "" {
+		t.Error("The decompression isn't working with blank input.")
+	}
+}
