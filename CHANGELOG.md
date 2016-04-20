@@ -2,12 +2,36 @@
 
 ## [Unreleased](https://github.com/DataDog/kvexpress/tree/HEAD)
 
-[Full Changelog](https://github.com/DataDog/kvexpress/compare/v1.9...HEAD)
+[Full Changelog](https://github.com/DataDog/kvexpress/compare/v1.11...HEAD)
+
+**Fixed bugs:**
+
+- If you're using compression... [\#92](https://github.com/DataDog/kvexpress/issues/92)
+- When using the compression option the lines metric is fixed at 1. [\#91](https://github.com/DataDog/kvexpress/issues/91)
+
+## [v1.11](https://github.com/DataDog/kvexpress/tree/v1.11) (2016-03-14)
+[Full Changelog](https://github.com/DataDog/kvexpress/compare/v1.10...v1.11)
+
+**Fixed bugs:**
+
+- Writing to a file should be atomic [\#88](https://github.com/DataDog/kvexpress/issues/88)
+- Atomic rename instead of truncate and write in place. [\#89](https://github.com/DataDog/kvexpress/pull/89) ([darron](https://github.com/darron))
+
+## [v1.10](https://github.com/DataDog/kvexpress/tree/v1.10) (2016-03-09)
+[Full Changelog](https://github.com/DataDog/kvexpress/compare/v1.9...v1.10)
 
 **Implemented enhancements:**
 
+- The SHA256 of a blank key is always the same. [\#87](https://github.com/DataDog/kvexpress/issues/87)
+- kvexpress can't currently make directories [\#86](https://github.com/DataDog/kvexpress/issues/86)
 - Makefile should insert platform rather than assuming OSX. [\#77](https://github.com/DataDog/kvexpress/issues/77)
 - Fix that ugliness with `fmt` width. [\#75](https://github.com/DataDog/kvexpress/issues/75)
+- Fix the wercker autotest. [\#72](https://github.com/DataDog/kvexpress/issues/72)
+
+**Fixed bugs:**
+
+- The SHA256 of a blank key is always the same. [\#87](https://github.com/DataDog/kvexpress/issues/87)
+- kvexpress can't currently make directories [\#86](https://github.com/DataDog/kvexpress/issues/86)
 
 **Closed issues:**
 
