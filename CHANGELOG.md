@@ -1,8 +1,7 @@
 # Change Log
 
-## [Unreleased](https://github.com/DataDog/kvexpress/tree/HEAD)
-
-[Full Changelog](https://github.com/DataDog/kvexpress/compare/v1.11...HEAD)
+## [v1.12](https://github.com/DataDog/kvexpress/tree/v1.12) (2016-04-20)
+[Full Changelog](https://github.com/DataDog/kvexpress/compare/v1.11...v1.12)
 
 **Fixed bugs:**
 
