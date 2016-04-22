@@ -21,8 +21,8 @@ func StatsdSetup() *godspeed.Godspeed {
 
 // StatsdIn sends metrics to Dogstatsd on a `kvexpress in` operation.
 func StatsdIn(key string, dataLength int, data string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' stats='in'", DogStatsd, key), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='in'", key), "debug")
 		statsd := StatsdSetup()
 		if statsd != nil {
 			defer statsd.Conn.Close()
@@ -41,8 +41,8 @@ func StatsdIn(key string, dataLength int, data string) {
 
 // StatsdOut sends metrics to Dogstatsd on a `kvexpress out` operation.
 func StatsdOut(key string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' stats='out'", DogStatsd, key), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='out'", key), "debug")
 		statsd := StatsdSetup()
 		if statsd != nil {
 			defer statsd.Conn.Close()
@@ -55,8 +55,8 @@ func StatsdOut(key string) {
 // StatsdLocked sends metrics to Dogstatsd on a `kvexpress out` operation
 // that is blocked by a locked file.
 func StatsdLocked(file string) {
+	Log(fmt.Sprintf("dogstatsd='%t' file='%s' stats='locked'", DogStatsd, file), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' file='%s' stats='locked'", file), "debug")
 		statsd := StatsdSetup()
 		if statsd != nil {
 			defer statsd.Conn.Close()
@@ -69,8 +69,8 @@ func StatsdLocked(file string) {
 // StatsdLength sends metrics to Dogstatsd on a `kvexpress out` operation
 // where the file isn't long enough.
 func StatsdLength(key string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' stats='not_long_enough'", DogStatsd, key), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='not_long_enough'", key), "debug")
 		statsd := StatsdSetup()
 		if statsd != nil {
 			defer statsd.Conn.Close()
@@ -83,8 +83,8 @@ func StatsdLength(key string) {
 // StatsdChecksum sends metrics to Dogstatsd on a `kvexpress out` operation
 // where the checksum doesn't match.
 func StatsdChecksum(key string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' stats='checksum_mismatch'", DogStatsd, key), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='checksum_mismatch'", key), "debug")
 		statsd := StatsdSetup()
 		if statsd != nil {
 			defer statsd.Conn.Close()
@@ -96,8 +96,8 @@ func StatsdChecksum(key string) {
 
 // StatsdLock sends metrics to Dogstatsd on a `kvexpress lock` operation.
 func StatsdLock(key string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' stats='lock'", DogStatsd, key), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='lock'", key), "debug")
 		statsd := StatsdSetup()
 		if statsd != nil {
 			defer statsd.Conn.Close()
@@ -109,8 +109,8 @@ func StatsdLock(key string) {
 
 // StatsdUnlock sends metrics to Dogstatsd on a `kvexpress unlock` operation.
 func StatsdUnlock(key string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' stats='unlock'", DogStatsd, key), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='unlock'", key), "debug")
 		statsd := StatsdSetup()
 		if statsd != nil {
 			defer statsd.Conn.Close()
@@ -122,8 +122,8 @@ func StatsdUnlock(key string) {
 
 // StatsdRaw sends metrics to Dogstatsd on a `kvexpress raw` operation.
 func StatsdRaw(key string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' stats='raw'", DogStatsd, key), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='raw'", key), "debug")
 		statsd := StatsdSetup()
 		if statsd != nil {
 			defer statsd.Conn.Close()
@@ -135,8 +135,8 @@ func StatsdRaw(key string) {
 
 // StatsdReconnect sends metrics when we have Consul connection retries.
 func StatsdReconnect(times int) {
+	Log(fmt.Sprintf("dogstatsd='%t' reconnect='%d'", DogStatsd, times), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' reconnect='%d'", times), "debug")
 		statsd := StatsdSetup()
 		if statsd != nil {
 			defer statsd.Conn.Close()
@@ -153,8 +153,8 @@ func StatsdReconnect(times int) {
 
 // StatsdRunTime sends metrics to Dogstatsd on various operations.
 func StatsdRunTime(key string, location string, msec int64) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' location='%s' msec='%d'", DogStatsd, key, location, msec), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' location='%s' msec='%d'", key, location, msec), "debug")
 		statsd := StatsdSetup()
 		if statsd != nil {
 			defer statsd.Conn.Close()
@@ -169,8 +169,8 @@ func StatsdRunTime(key string, location string, msec int64) {
 // StatsdPanic sends metrics to Dogstatsd when something really bad happens.
 // It also stops the execution of kvexpress.
 func StatsdPanic(key, location string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' location='%s' stats='panic'", DogStatsd, key, location), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' location='%s' stats='panic'", key, location), "debug")
 		statsd := StatsdSetup()
 		if statsd != nil {
 			defer statsd.Conn.Close()
