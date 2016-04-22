@@ -75,7 +75,10 @@ func ChecksumCompare(data string, checksum string) bool {
 
 // UnixDiff runs diff to generate text for the Datadog events.
 func UnixDiff(old, new string) string {
-	diff, _ := exec.Command("diff", "-u", old, new).Output()
+	diff, err := exec.Command("diff", "-u", old, new).Output()
+	if err != nil {
+		return "There was an error generating the diff."
+	}
 	text := string(diff)
 	finalText := removeLines(text, 3)
 	return finalText
