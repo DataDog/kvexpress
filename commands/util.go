@@ -76,7 +76,11 @@ func LogFatal(message string, id string, location string) {
 
 // GetCurrentUsername grabs the current user running the kvexpress binary.
 func GetCurrentUsername() string {
-	usr, _ := user.Current()
+	usr, err := user.Current()
+	if err != nil {
+		Log("GetCurrentUsername(): user.Current has failed.", "info")
+		return ""
+	}
 	username := usr.Username
 	Log(fmt.Sprintf("username='%s'", username), "debug")
 	return username
@@ -88,7 +92,10 @@ func GetOwnerID(owner string) int {
 	var status = ""
 	usr, err := user.Lookup(owner)
 	if err != nil {
-		usr, _ = user.Current()
+		usr, err = user.Current()
+		if err != nil {
+			Log("GetOwnerID(): Both user.Lookup and user.Current have failed.", "info")
+		}
 		uid = usr.Uid
 		status = "not_found"
 	} else {
@@ -97,6 +104,9 @@ func GetOwnerID(owner string) int {
 	}
 	Log(fmt.Sprintf("owner='%s' status='%s' uid='%s'", owner, status, uid), "debug")
 	uidInt, err := strconv.ParseInt(uid, 10, 64)
+	if err != nil {
+		Log("GetOwnerID(): Could not convert string into UID.", "info")
+	}
 	return int(uidInt)
 }
 
@@ -106,7 +116,10 @@ func GetGroupID(owner string) int {
 	var status = ""
 	usr, err := user.Lookup(owner)
 	if err != nil {
-		usr, _ = user.Current()
+		usr, err = user.Current()
+		if err != nil {
+			Log("GetGroupID(): Both user.Lookup and user.Current have failed.", "info")
+		}
 		gid = usr.Gid
 		status = "not_found"
 	} else {
@@ -115,6 +128,9 @@ func GetGroupID(owner string) int {
 	}
 	Log(fmt.Sprintf("owner='%s' status='%s' gid='%s'", owner, status, gid), "debug")
 	gidInt, err := strconv.ParseInt(gid, 10, 64)
+	if err != nil {
+		Log("GetGroupID(): Could not convert string into GID.", "info")
+	}
 	return int(gidInt)
 }
 
@@ -147,7 +163,12 @@ func DecompressData(data string) string {
 			fmt.Println("Panic: Could not gunzip string.")
 			StatsdPanic("key", "DecompressData")
 		}
-		uncompressed, _ := ioutil.ReadAll(unzipped)
+		uncompressed, err := ioutil.ReadAll(unzipped)
+		if err != nil {
+			Log("function='DecompressData' panic='true' method='ioutil.ReadAll'", "info")
+			fmt.Println("Panic: Could not ioutil.ReadAll string.")
+			StatsdPanic("key", "DecompressData")
+		}
 		Log(fmt.Sprintf("decompressing='true' size='%d'", len(uncompressed)), "info")
 		return string(uncompressed)
 	}
