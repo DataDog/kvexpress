@@ -120,7 +120,10 @@ func CheckFiletoWrite(filename, checksum string) {
 		Log(fmt.Sprintf("Can NOT write a directory %s", filename), "info")
 		os.Exit(1)
 	default:
-		data, _ := ioutil.ReadFile(filename)
+		data, err := ioutil.ReadFile(filename)
+		if err != nil {
+			Log(fmt.Sprintf("CheckFiletoWrite(): Error reading file: '%s'", filename), "info")
+		}
 		computedChecksum := ComputeChecksum(string(data))
 		if computedChecksum == checksum {
 			Log(fmt.Sprintf("'%s' has the same checksum. Stopping.", filename), "info")
