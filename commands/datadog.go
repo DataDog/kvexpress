@@ -184,6 +184,19 @@ func StatsdPanic(key, location string) {
 	os.Exit(0)
 }
 
+// StatsdConsul sends metrics to DogStatsd when Consul has a KV write or delete error.
+func StatsdConsul(key, location string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' location='%s' stats='consul_error'", DogStatsd, key, location), "info")
+	if DogStatsd {
+		statsd := StatsdSetup()
+		if statsd != nil {
+			defer statsd.Conn.Close()
+			tags := makeTags(key, location)
+			statsd.Incr("kvexpress.consul_error", tags)
+		}
+	}
+}
+
 // DDAPIConnect connects to the Datadog API and returns a client object.
 func DDAPIConnect(api, app string) *datadog.Client {
 	client := datadog.NewClient(api, app)
