@@ -1,6 +1,8 @@
 kvexpress
 ===============
 
+[![wercker status](https://app.wercker.com/status/2d3a369ee24527dc322cfe4eb790d60a/m "wercker status")](https://app.wercker.com/project/bykey/2d3a369ee24527dc322cfe4eb790d60a)
+
 ## Why?
 
 Small Go utility to:
