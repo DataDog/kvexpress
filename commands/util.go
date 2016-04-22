@@ -156,7 +156,10 @@ func DecompressData(data string) string {
 
 // GetHostname returns the hostname.
 func GetHostname() string {
-	hostname, _ := os.Hostname()
+	hostname, err := os.Hostname()
+	if err != nil {
+		return ""
+	}
 	return hostname
 }
 

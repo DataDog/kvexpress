@@ -114,7 +114,7 @@ func StatsdReconnect(times int) {
 		statsd, _ := godspeed.NewDefault()
 		defer statsd.Conn.Close()
 		tags := make([]string, 2)
-		hostname, _ := os.Hostname()
+		hostname := GetHostname()
 		hostTag := fmt.Sprintf("host:%s", hostname)
 		directionTag := fmt.Sprintf("direction:%s", Direction)
 		tags = append(tags, hostTag)
