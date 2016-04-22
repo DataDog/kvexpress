@@ -214,9 +214,9 @@ func DDStopEvent(dd *datadog.Client, key, value string) {
 	tags = append(tags, "kvexpress:stop")
 	title := fmt.Sprintf("Stop key is present: %s. Stopping.", key)
 	event := datadog.Event{Title: title, Text: value, AlertType: "error", Tags: tags}
-	post, _ := dd.PostEvent(&event)
-	if post != nil {
-
+	post, err := dd.PostEvent(&event)
+	if (post == nil) || (err != nil) {
+		Log("DDStopEvent(): Error posting to Datadog.", "info")
 	}
 }
 
@@ -227,9 +227,9 @@ func DDLengthEvent(dd *datadog.Client, key, value string) {
 	tags = append(tags, "kvexpress:length")
 	title := fmt.Sprintf("Not long enough: %s. Stopping.", key)
 	event := datadog.Event{Title: title, Text: value, AlertType: "error", Tags: tags}
-	post, _ := dd.PostEvent(&event)
-	if post != nil {
-
+	post, err := dd.PostEvent(&event)
+	if (post == nil) || (err != nil) {
+		Log("DDLengthEvent(): Error posting to Datadog.", "info")
 	}
 }
 
@@ -240,9 +240,9 @@ func DDSaveDataEvent(dd *datadog.Client, key, value string) {
 	tags = append(tags, "kvexpress:success")
 	title := fmt.Sprintf("Updated: %s", key)
 	event := datadog.Event{Title: title, Text: value, AlertType: "info", Tags: tags}
-	post, _ := dd.PostEvent(&event)
-	if post != nil {
-
+	post, err := dd.PostEvent(&event)
+	if (post == nil) || (err != nil) {
+		Log("DDSaveDataEvent(): Error posting to Datadog.", "info")
 	}
 }
 
@@ -255,9 +255,9 @@ func DDCopyDataEvent(dd *datadog.Client, keyFrom, keyTo string) {
 	tags = append(tags, fmt.Sprintf("keyFrom:%s", keyFrom))
 	title := fmt.Sprintf("Copy: %s to %s", keyFrom, keyTo)
 	event := datadog.Event{Title: title, Text: title, AlertType: "info", Tags: tags}
-	post, _ := dd.PostEvent(&event)
-	if post != nil {
-
+	post, err := dd.PostEvent(&event)
+	if (post == nil) || (err != nil) {
+		Log("DDCopyDataEvent(): Error posting to Datadog.", "info")
 	}
 }
 
@@ -268,8 +268,8 @@ func DDSaveStopEvent(dd *datadog.Client, key, value string) {
 	tags = append(tags, "kvexpress:stop_set")
 	title := fmt.Sprintf("Set Stop Key: %s", key)
 	event := datadog.Event{Title: title, Text: value, AlertType: "warning", Tags: tags}
-	post, _ := dd.PostEvent(&event)
-	if post != nil {
-
+	post, err := dd.PostEvent(&event)
+	if (post == nil) || (err != nil) {
+		Log("DDSaveStopEvent(): Error posting to Datadog.", "info")
 	}
 }
