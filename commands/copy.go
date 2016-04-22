@@ -29,7 +29,10 @@ func copyRun(cmd *cobra.Command, args []string) {
 	KeyData := KeyPath(KeyFrom, "data")
 	KeyChecksum := KeyPath(KeyFrom, "checksum")
 
-	c, _ := Connect(ConsulServer, Token)
+	c, err := Connect(ConsulServer, Token)
+	if err != nil {
+		LogFatal("Could not connect to Consul.", KeyFrom, "consul_connect")
+	}
 
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
 		dog = DDAPIConnect(DatadogAPIKey, DatadogAPPKey)

@@ -28,7 +28,10 @@ func outRun(cmd *cobra.Command, args []string) {
 	KeyStop := KeyPath(KeyOutLocation, "stop")
 	KeyLock := FileLockPath(FiletoWrite)
 
-	c, _ := Connect(ConsulServer, Token)
+	c, err := Connect(ConsulServer, Token)
+	if err != nil {
+		LogFatal("Could not connect to Consul.", KeyOutLocation, "consul_connect")
+	}
 
 	LockKeyData := Get(c, KeyLock)
 

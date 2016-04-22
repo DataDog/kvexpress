@@ -18,6 +18,7 @@ func Connect(server string, token string) (*consul.Client, error) {
 	consul, err := consulConnect(server, token)
 	if err != nil {
 		Log("Consul connection is bad.", "info")
+		return nil, err
 	}
 	return consul, err
 }
