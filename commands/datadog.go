@@ -194,7 +194,7 @@ func DDAPIConnect(api, app string) *datadog.Client {
 func makeTags(key, location string) []string {
 	tags := make([]string, 4)
 	keyTag := fmt.Sprintf("key:%s", key)
-	hostname, _ := os.Hostname()
+	hostname := GetHostname()
 	hostTag := fmt.Sprintf("host:%s", hostname)
 	directionTag := fmt.Sprintf("direction:%s", Direction)
 	locationTag := fmt.Sprintf("location:%s", location)
