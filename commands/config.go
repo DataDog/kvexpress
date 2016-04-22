@@ -9,7 +9,26 @@ import (
 	"os"
 )
 
-// RIPE for refactoring.
+// GetStringConfig grabs the string from the config object.
+func GetStringConfig(c *simpleyaml.Yaml, configValue string) string {
+	result, err := c.Get(configValue).String()
+	if err != nil {
+		Log(fmt.Sprintf("Could not get '%s' from config.", configValue), "info")
+	}
+	if result != "" {
+		return result
+	}
+	return ""
+}
+
+// ParseConfig takes the data from a file and parses the config.
+func ParseConfig(data []byte) *simpleyaml.Yaml {
+	config, err := simpleyaml.NewYaml(data)
+	if err != nil {
+		Log("Could not parse the configuration.", "info")
+	}
+	return config
+}
 
 // LoadConfig opens a file and reads the yaml formatted configuration data.
 // It will set configuration globals and/or ENV variables as required.
@@ -19,40 +38,42 @@ func LoadConfig(filename string) {
 	if err != nil {
 		data = []byte("")
 	}
-	config, err := simpleyaml.NewYaml(data)
+	config := ParseConfig(data)
 
-	datadogHost, _ := config.Get("datadog_host").String()
-
+	datadogHost := GetStringConfig(config, "datadog_host")
 	if datadogHost != "" {
 		os.Setenv("DATADOG_HOST", datadogHost)
 	}
 
-	datadogAPIKey, _ := config.Get("datadog_api_key").String()
+	datadogAPIKey := GetStringConfig(config, "datadog_api_key")
 	if datadogAPIKey != "" {
 		DatadogAPIKey = datadogAPIKey
 	}
 
-	datadogAPPKey, _ := config.Get("datadog_app_key").String()
+	datadogAPPKey := GetStringConfig(config, "datadog_app_key")
 	if datadogAPPKey != "" {
 		DatadogAPPKey = datadogAPPKey
 	}
 
-	token, _ := config.Get("token").String()
+	token := GetStringConfig(config, "token")
 	if token != "" {
 		Token = token
 	}
 
-	consulServer, _ := config.Get("consul_server").String()
+	consulServer := GetStringConfig(config, "consul_server")
 	if consulServer != "" {
 		ConsulServer = consulServer
 	}
 
-	dogstatsd, _ := config.Get("dogstatsd").Bool()
+	dogstatsd, err := config.Get("dogstatsd").Bool()
+	if err != nil {
+		Log("Could not get 'dogstatsd' from config.", "info")
+	}
 	if dogstatsd {
 		DogStatsd = true
 	}
 
-	dogstatsdAddress, _ := config.Get("dogstatsd_address").String()
+	dogstatsdAddress := GetStringConfig(config, "dogstatsd_address")
 	if dogstatsdAddress != "" {
 		DogStatsdAddress = dogstatsdAddress
 	}
