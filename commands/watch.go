@@ -29,7 +29,7 @@ var (
 )
 
 const (
-	watchSleep = 2
+	watchSleep = 3
 )
 
 var watchCmd = &cobra.Command{
@@ -44,15 +44,17 @@ var watchCmd = &cobra.Command{
 }
 
 func watchRun(cmd *cobra.Command, args []string) {
-	// Check and aquire lock.
+	// Connect to Consul.
 	c, err := Connect(ConsulServer, Token)
 	if err != nil {
 		Log("Could not connect to consul.", "info")
 	}
+	// Setup the lock.
 	Lock, err = c.LockKey(WriteLockKey)
 	if err != nil {
 		Log("Could not setup LockKey.", "info")
 	}
+	// Acquire the lock.
 	go acquireConsulLock(c)
 
 	// Setup a goroutine to teardown the lock properly.
@@ -61,13 +63,16 @@ func watchRun(cmd *cobra.Command, args []string) {
 	go teardownLock(ctrlc)
 
 	// When we've got a lock - then we can setup a watch.
-	go startWatch()
-
-	time.Sleep(time.Duration(300) * time.Second)
-	// If you don't get a lock - then wait until you do.
-	// If you've got a lock - set a watch on WatchPrefix.
-
 	// If the watch fires - get the changed key and write into the PrefixLocation heirarchy.
+	for {
+		if LeaderCh == nil {
+			Log("I do NOT have the lock - waiting.", "info")
+		} else {
+			// TODO: Let's setup a watch here now.
+			Log("I have the lock - let's setup a watch.", "info")
+		}
+		time.Sleep(time.Duration(5) * time.Second)
+	}
 }
 
 func checkWatchFlags() {
@@ -92,17 +97,8 @@ func init() {
 	watchCmd.Flags().StringVarP(&WatchPrefix, "watch", "w", "", "Consul KV space to watch.")
 }
 
-func startWatch() {
-	for {
-		if LeaderCh == nil {
-			Log("I do NOT have the lock - waiting.", "info")
-		} else {
-			Log("I have the lock - let's setup a watch.", "info")
-		}
-		time.Sleep(time.Duration(5) * time.Second)
-	}
-}
-
+// acquireConsulLock sets up a Consul lock so that we can exclusively lock
+// PrefixLocation for writes.
 func acquireConsulLock(c *consul.Client) {
 	var err error
 	for {
@@ -125,7 +121,8 @@ func acquireConsulLock(c *consul.Client) {
 	}
 }
 
-// Let's properly teardown the lock
+// Let's properly teardown the Consul lock. Otherwise we have to wait
+// for the session TTL to expire.
 func teardownLock(c chan os.Signal) {
 	sig := <-c
 	message := fmt.Sprintf("Received '%s' - shutting down.", sig)
