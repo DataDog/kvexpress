@@ -130,12 +130,16 @@ func teardownLock(c chan os.Signal) {
 	fmt.Printf("%s\n", message)
 
 	// Unlock Consul.
-	fmt.Printf("Unlocking Consul.\n")
-	err := Lock.Unlock()
-	if err != nil {
-		Log(fmt.Sprintf("Could not unlock. Err: %s", err), "info")
-		os.Exit(1)
+	if LeaderCh != nil {
+		fmt.Printf("Unlocking Consul.\n")
+		err := Lock.Unlock()
+		if err != nil {
+			Log(fmt.Sprintf("Could not unlock. Err: %s", err), "info")
+			os.Exit(1)
+		}
+		fmt.Printf("Consul unlocked.\n")
+	} else {
+		fmt.Printf("Did NOT have the lock - not unlocking.\n")
 	}
-	fmt.Printf("Consul unlocked.\n")
 	os.Exit(0)
 }
