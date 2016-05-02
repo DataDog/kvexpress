@@ -121,18 +121,11 @@ func acquireConsulLock(c *consul.Client) {
 	}
 }
 
-// Let's properly teardown the Consul lock. Otherwise we have to wait
-// for the session TTL to expire.
-func teardownLock(c chan os.Signal) {
-	sig := <-c
-	message := fmt.Sprintf("Received '%s' - shutting down.", sig)
-	Log(message, "info")
-	fmt.Printf("%s\n", message)
-
-	// Unlock Consul.
+// releaseConsulLock safely releases the Consul lock.
+func releaseConsulLock(lock *consul.Lock) {
 	if LeaderCh != nil {
 		fmt.Printf("Unlocking Consul.\n")
-		err := Lock.Unlock()
+		err := lock.Unlock()
 		if err != nil {
 			Log(fmt.Sprintf("Could not unlock. Err: %s", err), "info")
 			os.Exit(1)
@@ -142,4 +135,16 @@ func teardownLock(c chan os.Signal) {
 		fmt.Printf("Did NOT have the lock - not unlocking.\n")
 	}
 	os.Exit(0)
+}
+
+// Let's properly teardown the Consul lock. Otherwise we have to wait
+// for the session TTL to expire.
+func teardownLock(c chan os.Signal) {
+	sig := <-c
+	message := fmt.Sprintf("Received '%s' - shutting down.", sig)
+	Log(message, "info")
+	fmt.Printf("%s\n", message)
+
+	// Unlock Consul and exit.
+	releaseConsulLock(Lock)
 }
