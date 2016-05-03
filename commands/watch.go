@@ -29,7 +29,8 @@ var (
 )
 
 const (
-	watchSleep = 3
+	watchSleep   = 3
+	pollDuration = 60
 )
 
 var watchCmd = &cobra.Command{
@@ -70,9 +71,15 @@ func watchRun(cmd *cobra.Command, args []string) {
 		} else {
 			// TODO: Let's setup a watch here now.
 			Log("I have the lock - let's setup a watch.", "info")
+			CreateWatch(c, WatchPrefix)
 		}
-		time.Sleep(time.Duration(5) * time.Second)
+		time.Sleep(time.Duration(pollDuration) * time.Second)
 	}
+}
+
+// CreateWatch actually does the watching on the prefix.
+func CreateWatch(c *consul.Client, prefix string) {
+
 }
 
 func checkWatchFlags() {
