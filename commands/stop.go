@@ -27,7 +27,10 @@ func stopRun(cmd *cobra.Command, args []string) {
 
 	KeyStop := KeyPath(KeyStopLocation, "stop")
 
-	c, _ := Connect(ConsulServer, Token)
+	c, err := Connect(ConsulServer, Token)
+	if err != nil {
+		LogFatal("Could not connect to Consul.", KeyStopLocation, "consul_connect")
+	}
 
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
 		dog = DDAPIConnect(DatadogAPIKey, DatadogAPPKey)

@@ -9,147 +9,192 @@ import (
 	"os"
 )
 
+// StatsdSetup sets up the connection to dogstatsd.
+func StatsdSetup() *godspeed.Godspeed {
+	statsd, err := godspeed.NewDefault()
+	if err != nil {
+		Log("StatsdSetup(): Problem setting up connection.", "info")
+		return nil
+	}
+	return statsd
+}
+
 // StatsdIn sends metrics to Dogstatsd on a `kvexpress in` operation.
 func StatsdIn(key string, dataLength int, data string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' stats='in'", DogStatsd, key), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='in'", key), "debug")
-		statsd, _ := godspeed.NewDefault()
-		defer statsd.Conn.Close()
-		tags := makeTags(key, "complete")
-		statsd.Incr("kvexpress.in", tags)
-		statsd.Gauge("kvexpress.bytes", float64(dataLength), tags)
-		// If the data is compressed - then LineCount will always return 1.
-		// That's not useful or accurate, so let's decompress and count that.
-		if Compress {
-			data = DecompressData(data)
+		statsd := StatsdSetup()
+		if statsd != nil {
+			defer statsd.Conn.Close()
+			tags := makeTags(key, "complete")
+			statsd.Incr("kvexpress.in", tags)
+			statsd.Gauge("kvexpress.bytes", float64(dataLength), tags)
+			// If the data is compressed - then LineCount will always return 1.
+			// That's not useful or accurate, so let's decompress and count that.
+			if Compress {
+				data = DecompressData(data)
+			}
+			statsd.Gauge("kvexpress.lines", float64(LineCount(data)), tags)
 		}
-		statsd.Gauge("kvexpress.lines", float64(LineCount(data)), tags)
 	}
 }
 
 // StatsdOut sends metrics to Dogstatsd on a `kvexpress out` operation.
 func StatsdOut(key string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' stats='out'", DogStatsd, key), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='out'", key), "debug")
-		statsd, _ := godspeed.NewDefault()
-		defer statsd.Conn.Close()
-		tags := makeTags(key, "complete")
-		statsd.Incr("kvexpress.out", tags)
+		statsd := StatsdSetup()
+		if statsd != nil {
+			defer statsd.Conn.Close()
+			tags := makeTags(key, "complete")
+			statsd.Incr("kvexpress.out", tags)
+		}
 	}
 }
 
 // StatsdLocked sends metrics to Dogstatsd on a `kvexpress out` operation
 // that is blocked by a locked file.
 func StatsdLocked(file string) {
+	Log(fmt.Sprintf("dogstatsd='%t' file='%s' stats='locked'", DogStatsd, file), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' file='%s' stats='locked'", file), "debug")
-		statsd, _ := godspeed.NewDefault()
-		defer statsd.Conn.Close()
-		tags := makeTags(file, "complete")
-		statsd.Incr("kvexpress.locked", tags)
+		statsd := StatsdSetup()
+		if statsd != nil {
+			defer statsd.Conn.Close()
+			tags := makeTags(file, "complete")
+			statsd.Incr("kvexpress.locked", tags)
+		}
 	}
 }
 
 // StatsdLength sends metrics to Dogstatsd on a `kvexpress out` operation
 // where the file isn't long enough.
 func StatsdLength(key string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' stats='not_long_enough'", DogStatsd, key), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='not_long_enough'", key), "debug")
-		statsd, _ := godspeed.NewDefault()
-		defer statsd.Conn.Close()
-		tags := makeTags(key, "not_long_enough")
-		statsd.Incr("kvexpress.not_long_enough", tags)
+		statsd := StatsdSetup()
+		if statsd != nil {
+			defer statsd.Conn.Close()
+			tags := makeTags(key, "not_long_enough")
+			statsd.Incr("kvexpress.not_long_enough", tags)
+		}
 	}
 }
 
 // StatsdChecksum sends metrics to Dogstatsd on a `kvexpress out` operation
 // where the checksum doesn't match.
 func StatsdChecksum(key string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' stats='checksum_mismatch'", DogStatsd, key), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='checksum_mismatch'", key), "debug")
-		statsd, _ := godspeed.NewDefault()
-		defer statsd.Conn.Close()
-		tags := makeTags(key, "checksum_mismatch")
-		statsd.Incr("kvexpress.checksum_mismatch", tags)
+		statsd := StatsdSetup()
+		if statsd != nil {
+			defer statsd.Conn.Close()
+			tags := makeTags(key, "checksum_mismatch")
+			statsd.Incr("kvexpress.checksum_mismatch", tags)
+		}
 	}
 }
 
 // StatsdLock sends metrics to Dogstatsd on a `kvexpress lock` operation.
 func StatsdLock(key string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' stats='lock'", DogStatsd, key), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='lock'", key), "debug")
-		statsd, _ := godspeed.NewDefault()
-		defer statsd.Conn.Close()
-		tags := makeTags(key, "complete")
-		statsd.Incr("kvexpress.lock", tags)
+		statsd := StatsdSetup()
+		if statsd != nil {
+			defer statsd.Conn.Close()
+			tags := makeTags(key, "complete")
+			statsd.Incr("kvexpress.lock", tags)
+		}
 	}
 }
 
 // StatsdUnlock sends metrics to Dogstatsd on a `kvexpress unlock` operation.
 func StatsdUnlock(key string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' stats='unlock'", DogStatsd, key), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='unlock'", key), "debug")
-		statsd, _ := godspeed.NewDefault()
-		defer statsd.Conn.Close()
-		tags := makeTags(key, "complete")
-		statsd.Incr("kvexpress.unlock", tags)
+		statsd := StatsdSetup()
+		if statsd != nil {
+			defer statsd.Conn.Close()
+			tags := makeTags(key, "complete")
+			statsd.Incr("kvexpress.unlock", tags)
+		}
 	}
 }
 
 // StatsdRaw sends metrics to Dogstatsd on a `kvexpress raw` operation.
 func StatsdRaw(key string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' stats='raw'", DogStatsd, key), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' stats='raw'", key), "debug")
-		statsd, _ := godspeed.NewDefault()
-		defer statsd.Conn.Close()
-		tags := makeTags(key, "complete")
-		statsd.Incr("kvexpress.raw", tags)
+		statsd := StatsdSetup()
+		if statsd != nil {
+			defer statsd.Conn.Close()
+			tags := makeTags(key, "complete")
+			statsd.Incr("kvexpress.raw", tags)
+		}
 	}
 }
 
 // StatsdReconnect sends metrics when we have Consul connection retries.
 func StatsdReconnect(times int) {
+	Log(fmt.Sprintf("dogstatsd='%t' reconnect='%d'", DogStatsd, times), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' reconnect='%d'", times), "debug")
-		statsd, _ := godspeed.NewDefault()
-		defer statsd.Conn.Close()
-		tags := make([]string, 2)
-		hostname, _ := os.Hostname()
-		hostTag := fmt.Sprintf("host:%s", hostname)
-		directionTag := fmt.Sprintf("direction:%s", Direction)
-		tags = append(tags, hostTag)
-		tags = append(tags, directionTag)
-		statsd.Incr("kvexpress.consul_reconnect", tags)
+		statsd := StatsdSetup()
+		if statsd != nil {
+			defer statsd.Conn.Close()
+			tags := make([]string, 2)
+			hostname := GetHostname()
+			hostTag := fmt.Sprintf("host:%s", hostname)
+			directionTag := fmt.Sprintf("direction:%s", Direction)
+			tags = append(tags, hostTag)
+			tags = append(tags, directionTag)
+			statsd.Incr("kvexpress.consul_reconnect", tags)
+		}
 	}
 }
 
 // StatsdRunTime sends metrics to Dogstatsd on various operations.
 func StatsdRunTime(key string, location string, msec int64) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' location='%s' msec='%d'", DogStatsd, key, location, msec), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' location='%s' msec='%d'", key, location, msec), "debug")
-		statsd, _ := godspeed.NewDefault()
-		defer statsd.Conn.Close()
-		tags := makeTags(key, location)
-		locationTag := fmt.Sprintf("location:%s", location)
-		tags = append(tags, locationTag)
-		statsd.Gauge("kvexpress.time", float64(msec), tags)
+		statsd := StatsdSetup()
+		if statsd != nil {
+			defer statsd.Conn.Close()
+			tags := makeTags(key, location)
+			locationTag := fmt.Sprintf("location:%s", location)
+			tags = append(tags, locationTag)
+			statsd.Gauge("kvexpress.time", float64(msec), tags)
+		}
 	}
 }
 
 // StatsdPanic sends metrics to Dogstatsd when something really bad happens.
 // It also stops the execution of kvexpress.
 func StatsdPanic(key, location string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' location='%s' stats='panic'", DogStatsd, key, location), "debug")
 	if DogStatsd {
-		Log(fmt.Sprintf("dogstatsd='true' key='%s' location='%s' stats='panic'", key, location), "debug")
-		statsd, _ := godspeed.NewDefault()
-		defer statsd.Conn.Close()
-		tags := makeTags(key, location)
-		statsd.Incr("kvexpress.panic", tags)
+		statsd := StatsdSetup()
+		if statsd != nil {
+			defer statsd.Conn.Close()
+			tags := makeTags(key, location)
+			statsd.Incr("kvexpress.panic", tags)
+		}
 	}
 	// If we're going to panic, we might as well stop right here.
 	// Means we can't connect to Consul, download a URL or
 	// write and/or chown files.
 	os.Exit(0)
+}
+
+// StatsdConsul sends metrics to DogStatsd when Consul has a KV write or delete error.
+func StatsdConsul(key, location string) {
+	Log(fmt.Sprintf("dogstatsd='%t' key='%s' location='%s' stats='consul_error'", DogStatsd, key, location), "info")
+	if DogStatsd {
+		statsd := StatsdSetup()
+		if statsd != nil {
+			defer statsd.Conn.Close()
+			tags := makeTags(key, location)
+			statsd.Incr("kvexpress.consul_error", tags)
+		}
+	}
 }
 
 // DDAPIConnect connects to the Datadog API and returns a client object.
@@ -162,7 +207,7 @@ func DDAPIConnect(api, app string) *datadog.Client {
 func makeTags(key, location string) []string {
 	tags := make([]string, 4)
 	keyTag := fmt.Sprintf("key:%s", key)
-	hostname, _ := os.Hostname()
+	hostname := GetHostname()
 	hostTag := fmt.Sprintf("host:%s", hostname)
 	directionTag := fmt.Sprintf("direction:%s", Direction)
 	locationTag := fmt.Sprintf("location:%s", location)
@@ -182,9 +227,9 @@ func DDStopEvent(dd *datadog.Client, key, value string) {
 	tags = append(tags, "kvexpress:stop")
 	title := fmt.Sprintf("Stop key is present: %s. Stopping.", key)
 	event := datadog.Event{Title: title, Text: value, AlertType: "error", Tags: tags}
-	post, _ := dd.PostEvent(&event)
-	if post != nil {
-
+	post, err := dd.PostEvent(&event)
+	if (post == nil) || (err != nil) {
+		Log("DDStopEvent(): Error posting to Datadog.", "info")
 	}
 }
 
@@ -195,9 +240,9 @@ func DDLengthEvent(dd *datadog.Client, key, value string) {
 	tags = append(tags, "kvexpress:length")
 	title := fmt.Sprintf("Not long enough: %s. Stopping.", key)
 	event := datadog.Event{Title: title, Text: value, AlertType: "error", Tags: tags}
-	post, _ := dd.PostEvent(&event)
-	if post != nil {
-
+	post, err := dd.PostEvent(&event)
+	if (post == nil) || (err != nil) {
+		Log("DDLengthEvent(): Error posting to Datadog.", "info")
 	}
 }
 
@@ -208,9 +253,9 @@ func DDSaveDataEvent(dd *datadog.Client, key, value string) {
 	tags = append(tags, "kvexpress:success")
 	title := fmt.Sprintf("Updated: %s", key)
 	event := datadog.Event{Title: title, Text: value, AlertType: "info", Tags: tags}
-	post, _ := dd.PostEvent(&event)
-	if post != nil {
-
+	post, err := dd.PostEvent(&event)
+	if (post == nil) || (err != nil) {
+		Log("DDSaveDataEvent(): Error posting to Datadog.", "info")
 	}
 }
 
@@ -223,9 +268,9 @@ func DDCopyDataEvent(dd *datadog.Client, keyFrom, keyTo string) {
 	tags = append(tags, fmt.Sprintf("keyFrom:%s", keyFrom))
 	title := fmt.Sprintf("Copy: %s to %s", keyFrom, keyTo)
 	event := datadog.Event{Title: title, Text: title, AlertType: "info", Tags: tags}
-	post, _ := dd.PostEvent(&event)
-	if post != nil {
-
+	post, err := dd.PostEvent(&event)
+	if (post == nil) || (err != nil) {
+		Log("DDCopyDataEvent(): Error posting to Datadog.", "info")
 	}
 }
 
@@ -236,8 +281,8 @@ func DDSaveStopEvent(dd *datadog.Client, key, value string) {
 	tags = append(tags, "kvexpress:stop_set")
 	title := fmt.Sprintf("Set Stop Key: %s", key)
 	event := datadog.Event{Title: title, Text: value, AlertType: "warning", Tags: tags}
-	post, _ := dd.PostEvent(&event)
-	if post != nil {
-
+	post, err := dd.PostEvent(&event)
+	if (post == nil) || (err != nil) {
+		Log("DDSaveStopEvent(): Error posting to Datadog.", "info")
 	}
 }

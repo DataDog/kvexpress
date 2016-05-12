@@ -18,6 +18,7 @@ func Connect(server string, token string) (*consul.Client, error) {
 	consul, err := consulConnect(server, token)
 	if err != nil {
 		Log("Consul connection is bad.", "info")
+		return nil, err
 	}
 	return consul, err
 }
@@ -99,6 +100,9 @@ func Set(c *consul.Client, key string, value string) bool {
 	Retry(func() error {
 		var err error
 		success, err = consulSet(c, key, value)
+		if success != true {
+			StatsdConsul(key, "set")
+		}
 		return err
 	}, consulTries)
 	return true
@@ -123,6 +127,9 @@ func Del(c *consul.Client, key string) bool {
 	Retry(func() error {
 		var err error
 		success, err = consulDel(c, key)
+		if success != true {
+			StatsdConsul(key, "delete")
+		}
 		return err
 	}, consulTries)
 	return true

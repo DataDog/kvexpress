@@ -35,7 +35,11 @@ func ReadURL(url string) string {
 		StatsdPanic(url, "read_url")
 	}
 	defer resp.Body.Close()
-	body, _ := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		Log(fmt.Sprintf("ReadURL(): Error reading '%s'", url), "info")
+		return fmt.Sprintf("There was an error reading the body of the url: %s", url)
+	}
 	return string(body)
 }
 
@@ -114,7 +118,10 @@ func GenerateLockReason() string {
 
 // LockFile sets a key in Consul so that a particular file won't be updated. See commands/lock.go
 func LockFile(key string) bool {
-	c, _ := Connect(ConsulServer, Token)
+	c, err := Connect(ConsulServer, Token)
+	if err != nil {
+		LogFatal("Could not connect to Consul.", key, "consul_connect")
+	}
 	saved := Set(c, key, LockReason)
 	if saved {
 		StatsdLock(key)
@@ -125,7 +132,10 @@ func LockFile(key string) bool {
 
 // UnlockFile removes a key in Consul so that a particular file can be updated. See commands/unlock.go
 func UnlockFile(key string) bool {
-	c, _ := Connect(ConsulServer, Token)
+	c, err := Connect(ConsulServer, Token)
+	if err != nil {
+		LogFatal("copy: Could not connect to Consul.", key, "consul_connect")
+	}
 	value := Del(c, key)
 	StatsdUnlock(key)
 	return value

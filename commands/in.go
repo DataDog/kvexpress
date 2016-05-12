@@ -44,7 +44,10 @@ func inRun(cmd *cobra.Command, args []string) {
 	CheckFiletoWrite(CompareFile, "")
 	CheckFiletoWrite(LastFile, "")
 
-	c, _ := Connect(ConsulServer, Token)
+	c, err := Connect(ConsulServer, Token)
+	if err != nil {
+		LogFatal("Could not connect to Consul.", KeyInLocation, "consul_connect")
+	}
 
 	if DatadogAPIKey != "" && DatadogAPPKey != "" {
 		dog = DDAPIConnect(DatadogAPIKey, DatadogAPPKey)

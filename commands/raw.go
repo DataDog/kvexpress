@@ -24,7 +24,10 @@ var rawCmd = &cobra.Command{
 func rawRun(cmd *cobra.Command, args []string) {
 	start := time.Now()
 
-	c, _ := Connect(ConsulServer, Token)
+	c, err := Connect(ConsulServer, Token)
+	if err != nil {
+		LogFatal("Could not connect to Consul.", RawKeyOutLocation, "consul_connect")
+	}
 
 	// Get the KV data out of Consul.
 	KVData := Get(c, RawKeyOutLocation)
