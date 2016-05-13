@@ -12,10 +12,6 @@ import (
 	"strings"
 )
 
-func init() {
-	// Nothing happens here.
-}
-
 // LengthCheck makes sure a string has at least minLength lines.
 func LengthCheck(data string, minLength int) bool {
 	length := LineCount(data)
