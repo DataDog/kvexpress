@@ -27,7 +27,7 @@ gzip:
 release: clean build gzip
 
 consul:
-	consul agent -data-dir `mktemp -d` -bootstrap -server -bind=127.0.0.1 1>/dev/null &
+	consul agent -data-dir `mktemp -d` -bootstrap -server -bind=127.0.0.1 -ui 1>/dev/null &
 
 consul_kill:
 	pkill consul
