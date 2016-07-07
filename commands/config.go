@@ -79,3 +79,19 @@ func LoadConfig(filename string) {
 	}
 
 }
+
+// CheckConsulTokenEnv looks for an ENV variable to automatically set Token.
+func CheckConsulTokenEnv(defaultToken string, currentToken string) string {
+	// If a token isn't specified - these will match - be default.
+	if defaultToken == currentToken {
+		if os.Getenv("CONSUL_TOKEN") != "" {
+			envToken := os.Getenv("CONSUL_TOKEN")
+			Log(fmt.Sprintf("CONSUL_TOKEN present: %s", envToken), "debug")
+			return envToken
+		}
+		Log(fmt.Sprintf("CONSUL_TOKEN NOT present - using default: %s", defaultToken), "debug")
+		return defaultToken
+	}
+	Log(fmt.Sprintf("Tokens don't match - current: %s", currentToken), "debug")
+	return currentToken
+}
