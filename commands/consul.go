@@ -67,7 +67,7 @@ func Retry(callback func() error, tries int) {
 			return
 		}
 		waitTime := time.Duration(tries) * time.Second
-		Log(fmt.Sprintf("Consul Failure (%d) - trying again. Max: %d", i, tries), "info")
+		Log(fmt.Sprintf("Consul Failure (%d) - trying again. Max: %d. Error: %s", i, tries, err), "info")
 		StatsdReconnect(tries)
 		if i < tries {
 			time.Sleep(waitTime)
