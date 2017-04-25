@@ -5,7 +5,7 @@ package commands
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/zorkian/go-datadog-api"
+	"gopkg.in/zorkian/go-datadog-api.v1"
 	"os"
 	"time"
 )
