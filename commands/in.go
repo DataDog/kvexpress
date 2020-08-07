@@ -4,10 +4,11 @@ package commands
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
-	"gopkg.in/zorkian/go-datadog-api.v1"
 	"os"
 	"time"
+
+	"github.com/spf13/cobra"
+	"gopkg.in/zorkian/go-datadog-api.v1"
 )
 
 var inCmd = &cobra.Command{
@@ -87,6 +88,16 @@ func inRun(cmd *cobra.Command, args []string) {
 			DDLengthEvent(dog, KeyInLocation, FileString)
 		}
 		RunTime(start, KeyInLocation, "not_long_enough")
+		os.Exit(1)
+	}
+
+	tooLong := LengthCheck(FileString, MaxFileLength)
+	if tooLong {
+		Log("File is too large. Stopping.", "info")
+		if DatadogAPIKey != "" && DatadogAPPKey != "" {
+			DDValueTooLargeEvent(dog, KeyInLocation, FileString)
+		}
+		RunTime(start, KeyInLocation, "value_too_large")
 		os.Exit(1)
 	}
 

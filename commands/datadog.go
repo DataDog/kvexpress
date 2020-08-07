@@ -4,9 +4,10 @@ package commands
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/PagerDuty/godspeed"
 	"gopkg.in/zorkian/go-datadog-api.v1"
-	"os"
 )
 
 // StatsdSetup sets up the connection to dogstatsd.
@@ -243,6 +244,19 @@ func DDLengthEvent(dd *datadog.Client, key, value string) {
 	post, err := dd.PostEvent(&event)
 	if (post == nil) || (err != nil) {
 		Log("DDLengthEvent(): Error posting to Datadog.", "info")
+	}
+}
+
+// DDTooLongEvent sends a Datadog event to the API when the file/url is too long.
+func DDValueTooLargeEvent(dd *datadog.Client, key, value string) {
+	Log(fmt.Sprintf("datadog='true' DDValueTooLargeEvent='true' key='%s'", key), "debug")
+	tags := makeTags(key, "value_too_large")
+	tags = append(tags, "kvexpress:value_too_large")
+	title := fmt.Sprintf("Value too large: %s. Stopping.", key)
+	event := datadog.Event{Title: title, Text: value, AlertType: "error", Tags: tags}
+	post, err := dd.PostEvent(&event)
+	if (post == nil) || (err != nil) {
+		Log("DDValueTooLargeEvent(): Error posting to Datadog.", "info")
 	}
 }
 
