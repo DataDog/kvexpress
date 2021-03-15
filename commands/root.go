@@ -4,6 +4,7 @@ package commands
 
 import (
 	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -56,6 +57,8 @@ var (
 
 	// DogStatsdAddress if you're not running a local Datadog agent.
 	DogStatsdAddress string
+	DogStatsdHost    string
+	DogStatsdPort    int
 
 	// DatadogAPIKey is for sending events to Datadog through the HTTP api.
 	DatadogAPIKey string

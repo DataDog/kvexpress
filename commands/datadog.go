@@ -4,13 +4,22 @@ package commands
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/PagerDuty/godspeed"
 	"gopkg.in/zorkian/go-datadog-api.v1"
-	"os"
 )
 
 // StatsdSetup sets up the connection to dogstatsd.
 func StatsdSetup() *godspeed.Godspeed {
+	if DogStatsdAddress != "" {
+		statsd, err := godspeed.New(DogStatsdHost, DogStatsdPort, false)
+		if err != nil {
+			Log(fmt.Sprintf("StatsdSetup(): Problem setting up connection. DogStatsdHost='%s' DogStatsdPort='%i'", DogStatsdHost, DogStatsdPort), "info")
+			return nil
+		}
+		return statsd
+	}
 	statsd, err := godspeed.NewDefault()
 	if err != nil {
 		Log("StatsdSetup(): Problem setting up connection.", "info")

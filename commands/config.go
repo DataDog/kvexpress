@@ -4,9 +4,12 @@ package commands
 
 import (
 	"fmt"
-	"github.com/smallfish/simpleyaml"
 	"io/ioutil"
 	"os"
+	"strconv"
+	"strings"
+
+	"github.com/smallfish/simpleyaml"
 )
 
 // GetStringConfig grabs the string from the config object.
@@ -28,6 +31,16 @@ func ParseConfig(data []byte) *simpleyaml.Yaml {
 		Log("Could not parse the configuration.", "info")
 	}
 	return config
+}
+
+func ParseStatsdAddress(address string) (string, int) {
+	host := strings.Split(address, ":")[0]
+	port, err := strconv.Atoi(strings.Split(address, ":")[1])
+	if err != nil {
+		Log("Could not parse dogstatsd address", "info")
+		os.Exit(1)
+	}
+	return host, port
 }
 
 // LoadConfig opens a file and reads the yaml formatted configuration data.
@@ -76,6 +89,7 @@ func LoadConfig(filename string) {
 	dogstatsdAddress := GetStringConfig(config, "dogstatsd_address")
 	if dogstatsdAddress != "" {
 		DogStatsdAddress = dogstatsdAddress
+		DogStatsdHost, DogStatsdPort = ParseStatsdAddress(dogstatsdAddress)
 	}
 
 }
