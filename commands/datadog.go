@@ -15,7 +15,7 @@ func StatsdSetup() *godspeed.Godspeed {
 	if DogStatsdAddress != "" {
 		statsd, err := godspeed.New(DogStatsdHost, DogStatsdPort, false)
 		if err != nil {
-			Log(fmt.Sprintf("StatsdSetup(): Problem setting up connection. DogStatsdHost='%s' DogStatsdPort='%i'", DogStatsdHost, DogStatsdPort), "info")
+			Log(fmt.Sprintf("StatsdSetup(): Problem setting up connection. DogStatsdHost='%s' DogStatsdPort='%b'", DogStatsdHost, DogStatsdPort), "info")
 			return nil
 		}
 		return statsd

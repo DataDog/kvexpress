@@ -5,9 +5,9 @@ package commands
 import (
 	"fmt"
 	"io/ioutil"
+	"net"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/smallfish/simpleyaml"
 )
@@ -34,10 +34,14 @@ func ParseConfig(data []byte) *simpleyaml.Yaml {
 }
 
 func ParseStatsdAddress(address string) (string, int) {
-	host := strings.Split(address, ":")[0]
-	port, err := strconv.Atoi(strings.Split(address, ":")[1])
+	host, portStr, err := net.SplitHostPort(address)
 	if err != nil {
-		Log("Could not parse dogstatsd address", "info")
+		Log(fmt.Sprintf("Could not parse dogstatsd address: '%s'", err), "info")
+		os.Exit(1)
+	}
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		Log(fmt.Sprintf("Could not parse dogstatsd address: '%s'", err), "info")
 		os.Exit(1)
 	}
 	return host, port
