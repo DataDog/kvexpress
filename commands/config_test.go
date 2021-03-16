@@ -3,8 +3,13 @@
 package commands
 
 import (
-	"github.com/smallfish/simpleyaml"
+	"fmt"
+	"os"
+	"os/exec"
+	"reflect"
 	"testing"
+
+	"github.com/smallfish/simpleyaml"
 )
 
 var yaml = `---
@@ -34,4 +39,35 @@ func TestConfigValues(t *testing.T) {
 		}
 		t.Logf("Value: %s", configValue)
 	}
+}
+
+func TestParseStatsdAddress(t *testing.T) {
+	var goodAddrs = []string{"localhost:8100", "10.0.0.4:8100", "[2001:db8::1]:8080"}
+	for _, addr := range goodAddrs {
+		host, port := ParseStatsdAddress(addr)
+		if host == "" {
+			t.Errorf("Host should not be empty")
+		}
+		if reflect.TypeOf(port).Kind() != reflect.Int {
+			t.Errorf("Port should be of type 'int'")
+		}
+		if &port == nil {
+			t.Errorf("Port should not be empty")
+		}
+
+	}
+
+	// test os.Exit() functionality
+	if os.Getenv("CRASH_TEST") == "1" {
+		ParseStatsdAddress("localhost")
+		return
+	}
+	cmd := exec.Command(os.Args[0], "-test.run=TestParseStatsdAddress")
+	cmd.Env = append(os.Environ(), "CRASH_TEST=1")
+	err := cmd.Run()
+	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
+		fmt.Printf("Error is %v\n", e)
+		return
+	}
+	t.Fatalf("ParseStatsdAddress ran with err %v, want exit status 1", err)
 }
