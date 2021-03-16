@@ -55,6 +55,10 @@ func stopRun(cmd *cobra.Command, args []string) {
 
 func checkStopFlags() {
 	Log("Checking cli flags.", "debug")
+
+	// Check for Consul Token ENV variable.
+	Token = CheckConsulTokenEnv(defaultConsulToken, Token)
+
 	if KeyStopLocation == "" {
 		fmt.Println("Need a key to stop in -k")
 		os.Exit(1)

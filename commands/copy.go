@@ -96,6 +96,10 @@ func copyRun(cmd *cobra.Command, args []string) {
 
 func checkCopyFlags() {
 	Log("Checking cli flags.", "debug")
+
+	// Check for Consul Token ENV variable.
+	Token = CheckConsulTokenEnv(defaultConsulToken, Token)
+
 	if KeyFrom == "" {
 		fmt.Println("Need a key location in --keyfrom")
 		os.Exit(1)

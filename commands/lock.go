@@ -33,6 +33,10 @@ func lockRun(cmd *cobra.Command, args []string) {
 
 func checkLockFlags() {
 	Log("Checking cli flags.", "debug")
+
+	// Check for Consul Token ENV variable.
+	Token = CheckConsulTokenEnv(defaultConsulToken, Token)
+
 	if FiletoLock == "" {
 		fmt.Println("Need a file to lock with -f")
 		os.Exit(1)

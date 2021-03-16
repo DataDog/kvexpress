@@ -106,6 +106,10 @@ func outRun(cmd *cobra.Command, args []string) {
 
 func checkOutFlags() {
 	Log("Checking cli flags.", "debug")
+
+	// Check for Consul Token ENV variable.
+	Token = CheckConsulTokenEnv(defaultConsulToken, Token)
+
 	if KeyOutLocation == "" {
 		fmt.Println("Need a key location in -k")
 		os.Exit(1)

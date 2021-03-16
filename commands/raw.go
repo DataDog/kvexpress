@@ -56,6 +56,10 @@ func rawRun(cmd *cobra.Command, args []string) {
 
 func checkRawFlags() {
 	Log("Checking cli flags.", "debug")
+
+	// Check for Consul Token ENV variable.
+	Token = CheckConsulTokenEnv(defaultConsulToken, Token)
+
 	if RawKeyOutLocation == "" {
 		fmt.Println("Need a key location in -k")
 		os.Exit(1)
