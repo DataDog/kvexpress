@@ -11,10 +11,15 @@ import (
 	"log"
 	"os"
 	"os/user"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
 )
+
+const Base64 string = "^(?:[A-Za-z0-9+\\/]{4})*(?:[A-Za-z0-9+\\/]{2}==|[A-Za-z0-9+\\/]{3}=|[A-Za-z0-9+\\/]{4})$"
+
+var rxBase64 = regexp.MustCompile(Base64)
 
 // ReturnCurrentUTC returns the current UTC time in RFC3339 format.
 func ReturnCurrentUTC() string {
@@ -134,45 +139,48 @@ func GetGroupID(owner string) int {
 	return int(gidInt)
 }
 
-// CompressData compresses and base64 encodes a string to place into Consul's KV store.
-func CompressData(data string) string {
+// CompressData compresses a string to place into Consul's KV store.
+func CompressData(data string) []byte {
 	var compressed bytes.Buffer
 	gz, _ := gzip.NewWriterLevel(&compressed, gzip.BestCompression)
 	gz.Write([]byte(data))
 	gz.Flush()
 	gz.Close()
-	encoded := base64.StdEncoding.EncodeToString(compressed.Bytes())
+	encoded := compressed.Bytes()
 	Log(fmt.Sprintf("compressing='true' full_size='%d' compressed_size='%d'", len(data), len(encoded)), "info")
 	return encoded
 }
 
 // DecompressData base64 decodes and decompresses a string taken from Consul's KV store.
-func DecompressData(data string) string {
-	if data != "" {
-		// If it's been compressed, it's been base64 encoded.
-		raw, err := base64.StdEncoding.DecodeString(data)
+func DecompressData(data []byte) string {
+	if data == nil {
+		return ""
+	}
+	// If it's been compressed, it's may have been base64 encoded (previous 1.16).
+	if rxBase64.Match(data) {
+		raw, err := base64.StdEncoding.DecodeString(string(data))
 		if err != nil {
 			Log("function='DecompressData' panic='true' method='base64.StdEncoding.DecodeString'", "info")
 			fmt.Println("Panic: Could not base64 decode string.")
 			StatsdPanic("key", "DecompressData")
 		}
-		// gunzip the string.
-		unzipped, err := gzip.NewReader(strings.NewReader(string(raw)))
-		if err != nil {
-			Log("function='DecompressData' panic='true' method='gzip.NewReader'", "info")
-			fmt.Println("Panic: Could not gunzip string.")
-			StatsdPanic("key", "DecompressData")
-		}
-		uncompressed, err := ioutil.ReadAll(unzipped)
-		if err != nil {
-			Log("function='DecompressData' panic='true' method='ioutil.ReadAll'", "info")
-			fmt.Println("Panic: Could not ioutil.ReadAll string.")
-			StatsdPanic("key", "DecompressData")
-		}
-		Log(fmt.Sprintf("decompressing='true' size='%d'", len(uncompressed)), "info")
-		return string(uncompressed)
+		data = raw
 	}
-	return ""
+	// gunzip the string.
+	unzipped, err := gzip.NewReader(bytes.NewReader(data))
+	if err != nil {
+		Log("function='DecompressData' panic='true' method='gzip.NewReader'", "info")
+		fmt.Println("Panic: Could not gunzip string.")
+		StatsdPanic("key", "DecompressData")
+	}
+	uncompressed, err := ioutil.ReadAll(unzipped)
+	if err != nil {
+		Log("function='DecompressData' panic='true' method='ioutil.ReadAll'", "info")
+		fmt.Println("Panic: Could not ioutil.ReadAll string.")
+		StatsdPanic("key", "DecompressData")
+	}
+	Log(fmt.Sprintf("decompressing='true' size='%d'", len(uncompressed)), "info")
+	return string(uncompressed)
 }
 
 // GetHostname returns the hostname.

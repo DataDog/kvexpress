@@ -4,10 +4,11 @@ package commands
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
-	"gopkg.in/zorkian/go-datadog-api.v1"
 	"os"
 	"time"
+
+	"github.com/spf13/cobra"
+	"gopkg.in/zorkian/go-datadog-api.v1"
 )
 
 var inCmd = &cobra.Command{
@@ -134,12 +135,15 @@ func inRun(cmd *cobra.Command, args []string) {
 	if CurrentChecksum != CompareChecksum {
 		Log("consul checksum='different' update='true'", "info")
 		// Compress data here.
+		var CompareRaw []byte
 		if Compress {
-			CompareData = CompressData(CompareData)
+			CompareRaw = CompressData(CompareData)
+		} else {
+			CompareRaw = []byte(CompareData)
 		}
-		saved := Set(c, KeyData, CompareData)
+		saved := SetRaw(c, KeyData, CompareRaw)
 		if saved {
-			CompareDataBytes := len(CompareData)
+			CompareDataBytes := len(CompareRaw)
 			Log(fmt.Sprintf("consul KeyData='%s' saved='true' size='%d'", KeyData, CompareDataBytes), "info")
 			Set(c, KeyChecksum, CompareChecksum)
 			if DatadogAPIKey != "" && DatadogAPPKey != "" {

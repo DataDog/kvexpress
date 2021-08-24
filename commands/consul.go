@@ -4,9 +4,10 @@ package commands
 
 import (
 	"fmt"
-	consul "github.com/hashicorp/consul/api"
 	"strings"
 	"time"
+
+	consul "github.com/hashicorp/consul/api"
 )
 
 const (
@@ -49,13 +50,18 @@ func cleanupToken(token string) string {
 
 // Get the value from a key in the Consul KV store.
 func Get(c *consul.Client, key string) string {
-	var str string
+	return string(GetRaw(c, key))
+}
+
+// Get the raw value from a key in the Consul KV store.
+func GetRaw(c *consul.Client, key string) []byte {
+	var data []byte
 	Retry(func() error {
 		var err error
-		str, err = consulGet(c, key)
+		data, err = consulGet(c, key)
 		return err
 	}, consulTries)
-	return str
+	return data
 }
 
 // Retry loops through the callback func and tries several times to do the thing.
@@ -77,18 +83,16 @@ func Retry(callback func() error, tries int) {
 }
 
 // consulGet the value from a key in the Consul KV store.
-func consulGet(c *consul.Client, key string) (string, error) {
-	var value string
+func consulGet(c *consul.Client, key string) ([]byte, error) {
+	var value []byte
 	kv := c.KV()
 	key = strings.TrimPrefix(key, "/")
 	pair, _, err := kv.Get(key, nil)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	if pair != nil {
-		value = string(pair.Value[:])
-	} else {
-		value = ""
+		value = pair.Value[:]
 	}
 	Log(fmt.Sprintf("action='consulGet' key='%s'", key), "debug")
 	return value, err
@@ -96,6 +100,11 @@ func consulGet(c *consul.Client, key string) (string, error) {
 
 // Set the value for a key in the Consul KV store.
 func Set(c *consul.Client, key string, value string) bool {
+	return SetRaw(c, key, []byte(value))
+}
+
+// Set the value for a key in the Consul KV store.
+func SetRaw(c *consul.Client, key string, value []byte) bool {
 	var success bool
 	Retry(func() error {
 		var err error
@@ -109,9 +118,9 @@ func Set(c *consul.Client, key string, value string) bool {
 }
 
 // consulSet a value for a key in the Consul KV store.
-func consulSet(c *consul.Client, key string, value string) (bool, error) {
+func consulSet(c *consul.Client, key string, value []byte) (bool, error) {
 	key = strings.TrimPrefix(key, "/")
-	p := &consul.KVPair{Key: key, Value: []byte(value)}
+	p := &consul.KVPair{Key: key, Value: value}
 	kv := c.KV()
 	_, err := kv.Put(p, nil)
 	if err != nil {

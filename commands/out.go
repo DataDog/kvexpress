@@ -57,11 +57,14 @@ func outRun(cmd *cobra.Command, args []string) {
 	}
 
 	// Get the KV data out of Consul.
-	KVData := Get(c, KeyData)
+	KVRaw := GetRaw(c, KeyData)
 
 	// Decompress here if necessary.
+	var KVData string
 	if Compress {
-		KVData = DecompressData(KVData)
+		KVData = DecompressData(KVRaw)
+	} else {
+		KVData = string(KVRaw)
 	}
 
 	// Get the Checksum data out of Consul.
