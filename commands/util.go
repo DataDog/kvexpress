@@ -137,7 +137,7 @@ func GetGroupID(owner string) int {
 // CompressData compresses and base64 encodes a string to place into Consul's KV store.
 func CompressData(data string) string {
 	var compressed bytes.Buffer
-	gz := gzip.NewWriter(&compressed)
+	gz, _ := gzip.NewWriterLevel(&compressed, gzip.BestCompression)
 	gz.Write([]byte(data))
 	gz.Flush()
 	gz.Close()
