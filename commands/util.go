@@ -7,6 +7,7 @@ import (
 	"compress/gzip"
 	"encoding/base64"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -14,6 +15,13 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/andybalholm/brotli"
+)
+
+const (
+	GZIPb64 = iota
+	BROTLI
 )
 
 // ReturnCurrentUTC returns the current UTC time in RFC3339 format.
@@ -134,45 +142,52 @@ func GetGroupID(owner string) int {
 	return int(gidInt)
 }
 
-// CompressData compresses and base64 encodes a string to place into Consul's KV store.
-func CompressData(data string) string {
+// CompressData compresses a string to place into Consul's KV store.
+func CompressData(data string) ([]byte, uint64) {
 	var compressed bytes.Buffer
-	gz, _ := gzip.NewWriterLevel(&compressed, gzip.BestCompression)
+	gz := brotli.NewWriterLevel(&compressed, brotli.BestCompression)
 	gz.Write([]byte(data))
-	gz.Flush()
 	gz.Close()
-	encoded := base64.StdEncoding.EncodeToString(compressed.Bytes())
+	encoded := compressed.Bytes()
 	Log(fmt.Sprintf("compressing='true' full_size='%d' compressed_size='%d'", len(data), len(encoded)), "info")
-	return encoded
+	return encoded, BROTLI
 }
 
-// DecompressData base64 decodes and decompresses a string taken from Consul's KV store.
-func DecompressData(data string) string {
-	if data != "" {
-		// If it's been compressed, it's been base64 encoded.
-		raw, err := base64.StdEncoding.DecodeString(data)
+// DecompressData decompresses a string taken from Consul's KV store.
+func DecompressData(data []byte, compressFlags uint64) string {
+	if data == nil {
+		return ""
+	}
+
+	var r io.Reader
+	switch compressFlags {
+	case GZIPb64:
+		raw, err := base64.StdEncoding.DecodeString(string(data))
 		if err != nil {
 			Log("function='DecompressData' panic='true' method='base64.StdEncoding.DecodeString'", "info")
 			fmt.Println("Panic: Could not base64 decode string.")
 			StatsdPanic("key", "DecompressData")
 		}
+		data = raw
 		// gunzip the string.
-		unzipped, err := gzip.NewReader(strings.NewReader(string(raw)))
+		unzipped, err := gzip.NewReader(bytes.NewReader(data))
 		if err != nil {
 			Log("function='DecompressData' panic='true' method='gzip.NewReader'", "info")
 			fmt.Println("Panic: Could not gunzip string.")
 			StatsdPanic("key", "DecompressData")
 		}
-		uncompressed, err := ioutil.ReadAll(unzipped)
-		if err != nil {
-			Log("function='DecompressData' panic='true' method='ioutil.ReadAll'", "info")
-			fmt.Println("Panic: Could not ioutil.ReadAll string.")
-			StatsdPanic("key", "DecompressData")
-		}
-		Log(fmt.Sprintf("decompressing='true' size='%d'", len(uncompressed)), "info")
-		return string(uncompressed)
+		r = unzipped
+	case BROTLI:
+		r = brotli.NewReader(bytes.NewReader(data))
 	}
-	return ""
+	uncompressed, err := ioutil.ReadAll(r)
+	if err != nil {
+		Log("function='DecompressData' panic='true' method='ioutil.ReadAll'", "info")
+		fmt.Println("Panic: Could not ioutil.ReadAll string.")
+		StatsdPanic("key", "DecompressData")
+	}
+	Log(fmt.Sprintf("decompressing='true' size='%d'", len(uncompressed)), "info")
+	return string(uncompressed)
 }
 
 // GetHostname returns the hostname.

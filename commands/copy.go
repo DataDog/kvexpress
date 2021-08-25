@@ -4,10 +4,11 @@ package commands
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
-	"gopkg.in/zorkian/go-datadog-api.v1"
 	"os"
 	"time"
+
+	"github.com/spf13/cobra"
+	"gopkg.in/zorkian/go-datadog-api.v1"
 )
 
 var copyCmd = &cobra.Command{
@@ -39,11 +40,14 @@ func copyRun(cmd *cobra.Command, args []string) {
 	}
 
 	// Get the KV data out of Consul.
-	KVData := Get(c, KeyData)
+	KVRaw, KVFlags := GetRaw(c, KeyData)
 
 	// Decompress here if necessary.
+	var KVData string
 	if Compress {
-		KVData = DecompressData(KVData)
+		KVData = DecompressData(KVRaw, KVFlags)
+	} else {
+		KVData = string(KVRaw)
 	}
 
 	// Get the Checksum data out of Consul.
@@ -60,16 +64,19 @@ func copyRun(cmd *cobra.Command, args []string) {
 	// If the data is long enough and the checksum matches, save to the new key location.
 	if longEnough && checksumMatch {
 		Log(fmt.Sprintf("copy='true' keyFrom='%s' keyTo='%s'", KeyFrom, KeyTo), "info")
+		var cFlags uint64
 		if Compress {
-			KVData = CompressData(KVData)
+			KVRaw, cFlags = CompressData(KVData)
+		} else {
+			KVRaw = []byte(KVData)
 		}
 		// New destination key Locations
 		KeyData = KeyPath(KeyTo, "data")
 		KeyChecksum = KeyPath(KeyTo, "checksum")
 		// Save it.
-		saved := Set(c, KeyData, KVData)
+		saved := SetRaw(c, KeyData, KVRaw, cFlags)
 		if saved {
-			KVDataBytes := len(KVData)
+			KVDataBytes := len(KVRaw)
 			Log(fmt.Sprintf("consul KeyData='%s' saved='true' size='%d'", KeyData, KVDataBytes), "info")
 			Set(c, KeyChecksum, Checksum)
 			if DatadogAPIKey != "" && DatadogAPPKey != "" {
