@@ -7,6 +7,7 @@ import (
 	"compress/gzip"
 	"encoding/base64"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -14,11 +15,13 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/andybalholm/brotli"
 )
 
 const (
 	GZIPb64 = iota
-	GZIP
+	BROTLI
 )
 
 // ReturnCurrentUTC returns the current UTC time in RFC3339 format.
@@ -142,13 +145,12 @@ func GetGroupID(owner string) int {
 // CompressData compresses a string to place into Consul's KV store.
 func CompressData(data string) ([]byte, uint64) {
 	var compressed bytes.Buffer
-	gz, _ := gzip.NewWriterLevel(&compressed, gzip.BestCompression)
+	gz := brotli.NewWriterLevel(&compressed, brotli.BestCompression)
 	gz.Write([]byte(data))
-	gz.Flush()
 	gz.Close()
 	encoded := compressed.Bytes()
 	Log(fmt.Sprintf("compressing='true' full_size='%d' compressed_size='%d'", len(data), len(encoded)), "info")
-	return encoded, GZIP
+	return encoded, BROTLI
 }
 
 // DecompressData decompresses a string taken from Consul's KV store.
@@ -156,8 +158,10 @@ func DecompressData(data []byte, compressFlags uint64) string {
 	if data == nil {
 		return ""
 	}
-	// If it's been compressed, it's may have been base64 encoded (previous 1.16).
-	if compressFlags == GZIPb64 {
+
+	var r io.Reader
+	switch compressFlags {
+	case GZIPb64:
 		raw, err := base64.StdEncoding.DecodeString(string(data))
 		if err != nil {
 			Log("function='DecompressData' panic='true' method='base64.StdEncoding.DecodeString'", "info")
@@ -165,15 +169,18 @@ func DecompressData(data []byte, compressFlags uint64) string {
 			StatsdPanic("key", "DecompressData")
 		}
 		data = raw
+		// gunzip the string.
+		unzipped, err := gzip.NewReader(bytes.NewReader(data))
+		if err != nil {
+			Log("function='DecompressData' panic='true' method='gzip.NewReader'", "info")
+			fmt.Println("Panic: Could not gunzip string.")
+			StatsdPanic("key", "DecompressData")
+		}
+		r = unzipped
+	case BROTLI:
+		r = brotli.NewReader(bytes.NewReader(data))
 	}
-	// gunzip the string.
-	unzipped, err := gzip.NewReader(bytes.NewReader(data))
-	if err != nil {
-		Log("function='DecompressData' panic='true' method='gzip.NewReader'", "info")
-		fmt.Println("Panic: Could not gunzip string.")
-		StatsdPanic("key", "DecompressData")
-	}
-	uncompressed, err := ioutil.ReadAll(unzipped)
+	uncompressed, err := ioutil.ReadAll(r)
 	if err != nil {
 		Log("function='DecompressData' panic='true' method='ioutil.ReadAll'", "info")
 		fmt.Println("Panic: Could not ioutil.ReadAll string.")
