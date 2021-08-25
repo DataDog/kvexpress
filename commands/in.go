@@ -136,12 +136,13 @@ func inRun(cmd *cobra.Command, args []string) {
 		Log("consul checksum='different' update='true'", "info")
 		// Compress data here.
 		var CompareRaw []byte
+		var cFlags uint64
 		if Compress {
-			CompareRaw = CompressData(CompareData)
+			CompareRaw, cFlags = CompressData(CompareData)
 		} else {
 			CompareRaw = []byte(CompareData)
 		}
-		saved := SetRaw(c, KeyData, CompareRaw)
+		saved := SetRaw(c, KeyData, CompareRaw, cFlags)
 		if saved {
 			CompareDataBytes := len(CompareRaw)
 			Log(fmt.Sprintf("consul KeyData='%s' saved='true' size='%d'", KeyData, CompareDataBytes), "info")

@@ -4,9 +4,10 @@ package commands
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
 	"time"
+
+	"github.com/spf13/cobra"
 )
 
 var outCmd = &cobra.Command{
@@ -57,12 +58,12 @@ func outRun(cmd *cobra.Command, args []string) {
 	}
 
 	// Get the KV data out of Consul.
-	KVRaw := GetRaw(c, KeyData)
+	KVRaw, KVFlags := GetRaw(c, KeyData)
 
 	// Decompress here if necessary.
 	var KVData string
 	if Compress {
-		KVData = DecompressData(KVRaw)
+		KVData = DecompressData(KVRaw, KVFlags)
 	} else {
 		KVData = string(KVRaw)
 	}

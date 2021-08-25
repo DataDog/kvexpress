@@ -11,15 +11,15 @@ import (
 	"log"
 	"os"
 	"os/user"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
 )
 
-const Base64 string = "^(?:[A-Za-z0-9+\\/]{4})*(?:[A-Za-z0-9+\\/]{2}==|[A-Za-z0-9+\\/]{3}=|[A-Za-z0-9+\\/]{4})$"
-
-var rxBase64 = regexp.MustCompile(Base64)
+const (
+	GZIPb64 = iota
+	GZIP
+)
 
 // ReturnCurrentUTC returns the current UTC time in RFC3339 format.
 func ReturnCurrentUTC() string {
@@ -140,7 +140,7 @@ func GetGroupID(owner string) int {
 }
 
 // CompressData compresses a string to place into Consul's KV store.
-func CompressData(data string) []byte {
+func CompressData(data string) ([]byte, uint64) {
 	var compressed bytes.Buffer
 	gz, _ := gzip.NewWriterLevel(&compressed, gzip.BestCompression)
 	gz.Write([]byte(data))
@@ -148,16 +148,16 @@ func CompressData(data string) []byte {
 	gz.Close()
 	encoded := compressed.Bytes()
 	Log(fmt.Sprintf("compressing='true' full_size='%d' compressed_size='%d'", len(data), len(encoded)), "info")
-	return encoded
+	return encoded, GZIP
 }
 
-// DecompressData base64 decodes and decompresses a string taken from Consul's KV store.
-func DecompressData(data []byte) string {
+// DecompressData decompresses a string taken from Consul's KV store.
+func DecompressData(data []byte, compressFlags uint64) string {
 	if data == nil {
 		return ""
 	}
 	// If it's been compressed, it's may have been base64 encoded (previous 1.16).
-	if rxBase64.Match(data) {
+	if compressFlags == GZIPb64 {
 		raw, err := base64.StdEncoding.DecodeString(string(data))
 		if err != nil {
 			Log("function='DecompressData' panic='true' method='base64.StdEncoding.DecodeString'", "info")

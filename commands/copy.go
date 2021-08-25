@@ -40,12 +40,12 @@ func copyRun(cmd *cobra.Command, args []string) {
 	}
 
 	// Get the KV data out of Consul.
-	KVRaw := GetRaw(c, KeyData)
+	KVRaw, KVFlags := GetRaw(c, KeyData)
 
 	// Decompress here if necessary.
 	var KVData string
 	if Compress {
-		KVData = DecompressData(KVRaw)
+		KVData = DecompressData(KVRaw, KVFlags)
 	} else {
 		KVData = string(KVRaw)
 	}
@@ -64,8 +64,9 @@ func copyRun(cmd *cobra.Command, args []string) {
 	// If the data is long enough and the checksum matches, save to the new key location.
 	if longEnough && checksumMatch {
 		Log(fmt.Sprintf("copy='true' keyFrom='%s' keyTo='%s'", KeyFrom, KeyTo), "info")
+		var cFlags uint64
 		if Compress {
-			KVRaw = CompressData(KVData)
+			KVRaw, cFlags = CompressData(KVData)
 		} else {
 			KVRaw = []byte(KVData)
 		}
@@ -73,7 +74,7 @@ func copyRun(cmd *cobra.Command, args []string) {
 		KeyData = KeyPath(KeyTo, "data")
 		KeyChecksum = KeyPath(KeyTo, "checksum")
 		// Save it.
-		saved := SetRaw(c, KeyData, KVRaw)
+		saved := SetRaw(c, KeyData, KVRaw, cFlags)
 		if saved {
 			KVDataBytes := len(KVRaw)
 			Log(fmt.Sprintf("consul KeyData='%s' saved='true' size='%d'", KeyData, KVDataBytes), "info")

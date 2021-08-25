@@ -50,18 +50,23 @@ func cleanupToken(token string) string {
 
 // Get the value from a key in the Consul KV store.
 func Get(c *consul.Client, key string) string {
-	return string(GetRaw(c, key))
+	data, _ := GetRaw(c, key)
+	return string(data)
 }
 
-// Get the raw value from a key in the Consul KV store.
-func GetRaw(c *consul.Client, key string) []byte {
+// Get the raw value + flags from a key in the Consul KV store.
+func GetRaw(c *consul.Client, key string) ([]byte, uint64) {
 	var data []byte
+	var flags uint64
 	Retry(func() error {
-		var err error
-		data, err = consulGet(c, key)
+		pair, err := consulGet(c, key)
+		if pair != nil {
+			data = pair.Value[:]
+			flags = pair.Flags
+		}
 		return err
 	}, consulTries)
-	return data
+	return data, flags
 }
 
 // Retry loops through the callback func and tries several times to do the thing.
@@ -83,32 +88,28 @@ func Retry(callback func() error, tries int) {
 }
 
 // consulGet the value from a key in the Consul KV store.
-func consulGet(c *consul.Client, key string) ([]byte, error) {
-	var value []byte
+func consulGet(c *consul.Client, key string) (*consul.KVPair, error) {
 	kv := c.KV()
 	key = strings.TrimPrefix(key, "/")
 	pair, _, err := kv.Get(key, nil)
 	if err != nil {
 		return nil, err
 	}
-	if pair != nil {
-		value = pair.Value[:]
-	}
 	Log(fmt.Sprintf("action='consulGet' key='%s'", key), "debug")
-	return value, err
+	return pair, err
 }
 
 // Set the value for a key in the Consul KV store.
 func Set(c *consul.Client, key string, value string) bool {
-	return SetRaw(c, key, []byte(value))
+	return SetRaw(c, key, []byte(value), 0)
 }
 
 // Set the value for a key in the Consul KV store.
-func SetRaw(c *consul.Client, key string, value []byte) bool {
+func SetRaw(c *consul.Client, key string, value []byte, flags uint64) bool {
 	var success bool
 	Retry(func() error {
 		var err error
-		success, err = consulSet(c, key, value)
+		success, err = consulSet(c, key, value, flags)
 		if success != true {
 			StatsdConsul(key, "set")
 		}
@@ -118,9 +119,9 @@ func SetRaw(c *consul.Client, key string, value []byte) bool {
 }
 
 // consulSet a value for a key in the Consul KV store.
-func consulSet(c *consul.Client, key string, value []byte) (bool, error) {
+func consulSet(c *consul.Client, key string, value []byte, flags uint64) (bool, error) {
 	key = strings.TrimPrefix(key, "/")
-	p := &consul.KVPair{Key: key, Value: value}
+	p := &consul.KVPair{Key: key, Value: value, Flags: flags}
 	kv := c.KV()
 	_, err := kv.Put(p, nil)
 	if err != nil {
